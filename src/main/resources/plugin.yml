@@ -1,0 +1,8 @@
+name: ${name}
+version: ${version}
+description: ${description}
+authors: ${authors}
+website: ${url}
+
+main: ${mainClass}
+api-version: ${apiVersion}
