@@ -16,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public final class ChatUtils {
@@ -118,6 +119,10 @@ public final class ChatUtils {
 			Bukkit.getLogger().severe(serializeLegacyComponent(message.color(NamedTextColor.RED)));
 		}
 		return true;
+	}
+
+	public static @NotNull String extractMessage(@NotNull String[] args, int start) {
+		return String.join(" ", Arrays.copyOfRange(args, start, args.length));
 	}
 
 	@Contract("_ -> new")
