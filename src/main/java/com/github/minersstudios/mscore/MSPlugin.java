@@ -1,14 +1,18 @@
 package com.github.minersstudios.mscore;
 
-import com.github.minersstudios.mscore.utils.MSListener;
+import com.github.minersstudios.mscore.tabcompleters.Empty;
 import com.google.common.base.Charsets;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.util.Enumeration;
@@ -35,6 +39,7 @@ public abstract class MSPlugin extends JavaPlugin {
 		long time = System.currentTimeMillis();
 		try {
 			this.loadListeners();
+			this.registerCommands();
 		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
@@ -125,6 +130,55 @@ public abstract class MSPlugin extends JavaPlugin {
 	}
 
 	/**
+	 * Registers all command in the project that is annotated with {@link MSCommand}
+	 * <p>
+	 * All commands must be implemented using {@link MSCommandExecutor} and located in the "com.github.minersstudios.plugin-name.commands" folder
+	 *
+	 * @throws ClassNotFoundException If the class was not found
+	 */
+	public void registerCommands() throws ClassNotFoundException {
+		for (String className : getClassNames()) {
+			if (StringUtil.startsWithIgnoreCase(className, "com.github.minersstudios." + this.getName() + ".commands")) {
+				Class<?> clazz = this.getClassLoader().loadClass(className);
+				MSCommand msCommand = clazz.getAnnotation(MSCommand.class);
+				if (msCommand != null) {
+					try {
+						if (clazz.getDeclaredConstructor().newInstance() instanceof MSCommandExecutor msCommandExecutor) {
+							this.registerCommand(msCommand.command(), msCommandExecutor, msCommandExecutor);
+						} else {
+							this.getLogger().log(Level.WARNING, "Registered command that is not instance of MSCommandExecutor (" + clazz.getName() + ")");
+						}
+					} catch (Exception e) {
+						this.getLogger().log(Level.SEVERE, "Failed to register command", e);
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * @param command         command to be registered
+	 * @param commandExecutor command executor
+	 * @param tabCompleter    command tab completer, {@link Empty} if null
+	 */
+	public final void registerCommand(
+			@NotNull String command,
+			@NotNull CommandExecutor commandExecutor,
+			@Nullable TabCompleter tabCompleter
+	) {
+		PluginCommand pluginCommand = this.getCommand(command);
+		if (pluginCommand == null) {
+			throw new NullPointerException("Command : \"" + command + "\" must to be registered in the plugin.yml");
+		}
+		pluginCommand.setExecutor(commandExecutor);
+		pluginCommand.setTabCompleter(
+				tabCompleter == null
+				? new Empty()
+				: tabCompleter
+		);
+	}
+
+	/**
 	 * Loads all listeners in the project that is annotated with {@link MSListener}
 	 * <p>
 	 * All listeners must be implemented using {@link Listener} and located in the "com.github.minersstudios.plugin-name.listeners" folder
@@ -157,7 +211,7 @@ public abstract class MSPlugin extends JavaPlugin {
 	 *
 	 * @return plugin class names
 	 */
-	public @NotNull Set<String> getClassNames() {
+	public final @NotNull Set<String> getClassNames() {
 		Set<String> classNames = new HashSet<>();
 		try (JarFile jarFile = new JarFile(this.getFile())) {
 			Enumeration<JarEntry> entries = jarFile.entries();
@@ -182,11 +236,11 @@ public abstract class MSPlugin extends JavaPlugin {
 
 	public void disable() {}
 
-	public @NotNull File getConfigFile() {
+	public final @NotNull File getConfigFile() {
 		return this.configFile;
 	}
 
-	public @NotNull File getPluginFolder() {
+	public final @NotNull File getPluginFolder() {
 		return this.pluginFolder;
 	}
 }
