@@ -171,11 +171,7 @@ public abstract class MSPlugin extends JavaPlugin {
 			throw new NullPointerException("Command : \"" + command + "\" must to be registered in the plugin.yml");
 		}
 		pluginCommand.setExecutor(commandExecutor);
-		pluginCommand.setTabCompleter(
-				tabCompleter == null
-				? new Empty()
-				: tabCompleter
-		);
+		pluginCommand.setTabCompleter(tabCompleter);
 	}
 
 	/**
