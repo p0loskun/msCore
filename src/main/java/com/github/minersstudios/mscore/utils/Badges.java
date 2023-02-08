@@ -13,7 +13,9 @@ public final class Badges {
 	public static final Component
 			GREEN_EXCLAMATION_MARK = Component.text(" ꀒ "),
 			YELLOW_EXCLAMATION_MARK = Component.text(" ꀓ "),
-			RED_EXCLAMATION_MARK = Component.text(" ꀑ ");
+			RED_EXCLAMATION_MARK = Component.text(" ꀑ "),
+			SPEECH = Component.text(" ꀕ "),
+			DISCORD = Component.text(" ꀔ ");
 
 	private Badges() {
 		throw new IllegalStateException("Utility class");
