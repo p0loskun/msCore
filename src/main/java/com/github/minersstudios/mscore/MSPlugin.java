@@ -1,13 +1,21 @@
 package com.github.minersstudios.mscore;
 
+import com.github.minersstudios.mscore.utils.MSListener;
 import com.google.common.base.Charsets;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.logging.Level;
 
 public abstract class MSPlugin extends JavaPlugin {
@@ -24,6 +32,11 @@ public abstract class MSPlugin extends JavaPlugin {
 	public final void onEnable() {
 		long time = System.currentTimeMillis();
 		this.enable();
+		try {
+			this.loadListeners("com.github.minersstudios." + this.getName() + ".listeners");
+		} catch (IOException | ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
 		if (this.isEnabled()) {
 			this.getLogger().log(Level.INFO, ChatColor.GREEN + "Enabled in " + (System.currentTimeMillis() - time) + "ms");
 		}
@@ -106,6 +119,44 @@ public abstract class MSPlugin extends JavaPlugin {
 	public void saveDefaultConfig() {
 		if (!this.configFile.exists()) {
 			this.saveResource("config.yml", false);
+		}
+	}
+
+	private void loadListeners(@NotNull String packageName) throws IOException, ClassNotFoundException {
+		for (String className : getClassNamesFromJarFile(this.getFile())) {
+			if (StringUtil.startsWithIgnoreCase(className, packageName)) {
+				Class<?> clazz = this.getClassLoader().loadClass(className);
+				if (clazz.isAnnotationPresent(MSListener.class)) {
+					try {
+						if (clazz.getDeclaredConstructor().newInstance() instanceof Listener listener) {
+							this.getServer().getPluginManager().registerEvents(listener, this);
+						} else {
+							this.getLogger().log(Level.WARNING, "Registered listener that is not instance of Listener (" + clazz.getName() + ")");
+						}
+					} catch (Exception e) {
+						this.getLogger().log(Level.SEVERE, "Failed to load listener", e);
+					}
+				}
+			}
+		}
+	}
+
+	private static Set<String> getClassNamesFromJarFile(File givenFile) {
+		Set<String> classNames = new HashSet<>();
+		try (JarFile jarFile = new JarFile(givenFile)) {
+			Enumeration<JarEntry> entries = jarFile.entries();
+			while (entries.hasMoreElements()) {
+				String entryName = entries.nextElement().getName();
+				if (entryName.endsWith(".class")) {
+					classNames.add(entryName
+							.replace("/", ".")
+							.replace(".class", "")
+					);
+				}
+			}
+			return classNames;
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
 	}
 
