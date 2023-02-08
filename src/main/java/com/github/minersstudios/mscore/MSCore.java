@@ -23,7 +23,7 @@ public final class MSCore extends MSPlugin {
 	}
 
 	@Contract(pure = true)
-	public static @NotNull MSCore getInstance() {
+	public static MSCore getInstance() {
 		return instance;
 	}
 

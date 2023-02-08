@@ -19,24 +19,26 @@ import java.util.jar.JarFile;
 import java.util.logging.Level;
 
 public abstract class MSPlugin extends JavaPlugin {
-	private final File pluginFolder;
-	private final File configFile;
+	private File pluginFolder;
+	private File configFile;
 	private FileConfiguration newConfig;
 
-	protected MSPlugin() {
+	@Override
+	public final void onLoad() {
 		this.pluginFolder = new File("config/minersstudios/" + this.getName() + "/");
 		this.configFile = new File(pluginFolder, "config.yml");
+		this.load();
 	}
 
 	@Override
 	public final void onEnable() {
 		long time = System.currentTimeMillis();
-		this.enable();
 		try {
-			this.loadListeners("com.github.minersstudios." + this.getName() + ".listeners");
-		} catch (IOException | ClassNotFoundException e) {
+			this.loadListeners();
+		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
+		this.enable();
 		if (this.isEnabled()) {
 			this.getLogger().log(Level.INFO, ChatColor.GREEN + "Enabled in " + (System.currentTimeMillis() - time) + "ms");
 		}
@@ -122,9 +124,16 @@ public abstract class MSPlugin extends JavaPlugin {
 		}
 	}
 
-	private void loadListeners(@NotNull String packageName) throws IOException, ClassNotFoundException {
-		for (String className : getClassNamesFromJarFile(this.getFile())) {
-			if (StringUtil.startsWithIgnoreCase(className, packageName)) {
+	/**
+	 * Loads all listeners in the project that is annotated with {@link MSListener}
+	 * <p>
+	 * All listeners must be implemented using {@link Listener} and located in the "com.github.minersstudios.plugin-name.listeners" folder
+	 *
+	 * @throws ClassNotFoundException If the class was not found
+	 */
+	public void loadListeners() throws ClassNotFoundException {
+		for (String className : getClassNames()) {
+			if (StringUtil.startsWithIgnoreCase(className, "com.github.minersstudios." + this.getName() + ".listeners")) {
 				Class<?> clazz = this.getClassLoader().loadClass(className);
 				if (clazz.isAnnotationPresent(MSListener.class)) {
 					try {
@@ -141,9 +150,16 @@ public abstract class MSPlugin extends JavaPlugin {
 		}
 	}
 
-	private static Set<String> getClassNamesFromJarFile(File givenFile) {
+	/**
+	 * Gathers the names of all plugin classes and converts them to a package-like string
+	 * <p>
+	 * "com/example/Example.class" -> "com.example.Example"
+	 *
+	 * @return plugin class names
+	 */
+	public @NotNull Set<String> getClassNames() {
 		Set<String> classNames = new HashSet<>();
-		try (JarFile jarFile = new JarFile(givenFile)) {
+		try (JarFile jarFile = new JarFile(this.getFile())) {
 			Enumeration<JarEntry> entries = jarFile.entries();
 			while (entries.hasMoreElements()) {
 				String entryName = entries.nextElement().getName();
@@ -159,6 +175,8 @@ public abstract class MSPlugin extends JavaPlugin {
 			throw new RuntimeException(e);
 		}
 	}
+
+	public void load() {}
 
 	public void enable() {}
 
