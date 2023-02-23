@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public final class CommandUtils {
 
 	private CommandUtils() {
@@ -24,7 +25,7 @@ public final class CommandUtils {
 	 */
 	public static @NotNull List<String> getTimeSuggestions(@NotNull String input) {
 		List<String> suggestions = new ArrayList<>();
-		if (!input.matches("[1-9]+")) return suggestions;
+		if (!input.matches("\\d+")) return suggestions;
 		suggestions.add(input + "s");
 		suggestions.add(input + "m");
 		suggestions.add(input + "h");
@@ -44,7 +45,7 @@ public final class CommandUtils {
 	 */
 	public static @NotNull Date getDateFromString(@NotNull String string) {
 		long number = Long.parseLong(string.replaceAll("[smhdMy]", ""));
-		String chronoUnit = string.replaceAll("[0-9]+", "");
+		String chronoUnit = string.replaceAll("\\d+", "");
 		Instant instant = Instant.now();
 		return Date.from(
 				switch (chronoUnit) {

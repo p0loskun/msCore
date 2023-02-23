@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public final class ChatUtils {
 	public static final Style DEFAULT_STYLE = Style.style(
 			NamedTextColor.WHITE,
