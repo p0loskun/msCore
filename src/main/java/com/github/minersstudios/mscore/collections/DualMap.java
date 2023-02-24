@@ -4,90 +4,87 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 public final class DualMap<K1, K2, V> {
-	private final @NotNull HashMap<K1, V> primaryMap = new HashMap<>();
-	private final @NotNull HashMap<K2, K1> secondaryKeyMap = new HashMap<>();
+	private final @NotNull HashMap<K1, Map.Entry<K2, V>> map = new HashMap<>();
+	private final @NotNull HashMap<K2, K1> keyMap = new HashMap<>();
 
-	public V put(@NotNull K1 key1, @NotNull K2 key2, @NotNull V value) {
-		this.secondaryKeyMap.put(key2, key1);
-		return this.primaryMap.put(key1, value);
+	public @Nullable V put(@NotNull K1 key1, @NotNull K2 key2, @NotNull V value) {
+		this.keyMap.put(key2, key1);
+		Map.Entry<K2, V> entry = new AbstractMap.SimpleEntry<>(key2, value);
+		return this.map.put(key1, entry) != null ? entry.getValue() : null;
 	}
 
 	@Contract(pure = true)
 	public @NotNull Set<K1> primaryKeySet() {
-		return this.primaryMap.keySet();
+		return this.map.keySet();
 	}
 
 	@Contract(pure = true)
 	public @NotNull Set<K2> secondaryKeySet() {
-		return this.secondaryKeyMap.keySet();
+		return this.keyMap.keySet();
 	}
 
 	@Contract(pure = true)
 	public @NotNull Collection<V> values() {
-		return this.primaryMap.values();
+		return this.map.values().stream()
+				.map(Map.Entry::getValue)
+				.collect(Collectors.toList());
 	}
 
-	public @NotNull K1 getPrimaryKey(@NotNull K2 key2) {
-		return this.secondaryKeyMap.get(key2);
+	public @Nullable K1 getPrimaryKey(@Nullable K2 key2) {
+		return this.keyMap.get(key2);
 	}
 
-	public @NotNull K2 getSecondaryKey(@NotNull K1 key1) {
-		for (Map.Entry<K2, K1> entry : this.secondaryKeyMap.entrySet()) {
-			if (entry.getValue().equals(key1)) {
-				return entry.getKey();
-			}
-		}
-		throw new NullPointerException();
+	public @Nullable K2 getSecondaryKey(@Nullable K1 key1) {
+		Map.Entry<K2, V> entry = this.map.get(key1);
+		return entry != null ? entry.getKey() : null;
 	}
 
 	public @Nullable V getByPrimaryKey(@Nullable K1 key1) {
-		return this.primaryMap.get(key1);
+		Map.Entry<K2, V> entry = this.map.get(key1);
+		return entry != null ? entry.getValue() : null;
 	}
 
 	public @Nullable V getBySecondaryKey(@Nullable K2 key2) {
-		K1 key1 = this.secondaryKeyMap.get(key2);
-		return this.getByPrimaryKey(key1);
+		return this.getByPrimaryKey(this.keyMap.get(key2));
 	}
 
-	public boolean containsPrimaryKey(@Nullable K1 key) {
-		return this.primaryMap.containsKey(key);
+	public boolean containsPrimaryKey(@Nullable K1 key1) {
+		return this.map.containsKey(key1);
 	}
 
-	public boolean containsSecondaryKey(@Nullable K2 key) {
-		return this.secondaryKeyMap.containsKey(key);
+	public boolean containsSecondaryKey(@Nullable K2 key2) {
+		return this.secondaryKeySet().contains(key2);
 	}
 
 	public boolean containsValue(@Nullable V value) {
-		return this.primaryMap.containsValue(value);
+		return this.values().contains(value);
 	}
 
-	public @NotNull V removeByPrimaryKey(@NotNull K1 key) {
-		V removed = this.primaryMap.remove(key);
-		this.secondaryKeyMap.remove(this.getSecondaryKey(key));
-		return removed;
+	public @Nullable V removeByPrimaryKey(@NotNull K1 key1) {
+		Map.Entry<K2, V> entry = this.map.remove(key1);
+		this.keyMap.remove(entry.getKey());
+		return entry.getValue();
 	}
 
-	public @NotNull V removeBySecondaryKey(@NotNull K2 key2) {
-		return this.removeByPrimaryKey(this.getPrimaryKey(key2));
+	public @Nullable V removeBySecondaryKey(@NotNull K2 key2) {
+		return this.map.remove(this.keyMap.remove(key2)).getValue();
 	}
 
 	public void clear() {
-		this.primaryMap.clear();
-		this.secondaryKeyMap.clear();
+		this.map.clear();
+		this.keyMap.clear();
 	}
 
 	public int size() {
-		return this.primaryMap.size();
+		return this.map.size();
 	}
 
 	public boolean isEmpty() {
-		return this.primaryMap.isEmpty();
+		return this.map.isEmpty();
 	}
 }
