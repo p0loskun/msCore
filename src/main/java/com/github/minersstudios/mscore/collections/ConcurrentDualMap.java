@@ -16,7 +16,7 @@ public final class ConcurrentDualMap<K1, K2, V> {
 	public @Nullable V put(@NotNull K1 key1, @NotNull K2 key2, @NotNull V value) {
 		this.keyMap.put(key2, key1);
 		Map.Entry<K2, V> entry = new AbstractMap.SimpleEntry<>(key2, value);
-		return this.map.put(key1, entry) != null ? entry.getValue() : null;
+		return this.map.put(key1, entry) != null ? value : null;
 	}
 
 	@Contract(pure = true)
