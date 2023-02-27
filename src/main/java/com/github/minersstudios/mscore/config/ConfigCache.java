@@ -24,15 +24,15 @@ public final class ConfigCache {
 
 	public final @NotNull DateTimeFormatter timeFormatter;
 
-	public final DualMap<Integer, String, CustomDecorData> customDecorMap = new DualMap<>();
+	public final DualMap<String, Integer, CustomDecorData> customDecorMap = new DualMap<>();
 	public final List<Recipe> customDecorRecipes = new ArrayList<>();
 
 	public final DualMap<Integer, String, CustomBlockData> customBlockMap = new DualMap<>();
 	public final Map<Integer, CustomBlockData> cachedNoteBlockData = new HashMap<>();
 	public final List<Recipe> customBlockRecipes = new ArrayList<>();
 
-	public final DualMap<Integer, String, CustomItem> customItemMap = new DualMap<>();
-	public final DualMap<Integer, String, RenameableItem> renameableItemMap = new DualMap<>();
+	public final DualMap<String, Integer, CustomItem> customItemMap = new DualMap<>();
+	public final DualMap<String, Integer, RenameableItem> renameableItemMap = new DualMap<>();
 	public final List<RenameableItem> renameableItemsMenu = new ArrayList<>();
 	public final List<Recipe> customItemRecipes = new ArrayList<>();
 

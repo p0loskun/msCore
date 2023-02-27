@@ -39,7 +39,7 @@ public final class MSItemUtils {
 		if (itemStack == null) return false;
 		ItemMeta itemMeta = itemStack.getItemMeta();
 		if (itemMeta == null || !itemMeta.hasCustomModelData()) return false;
-		CustomItem customItem = MSCore.getConfigCache().customItemMap.getByPrimaryKey(itemMeta.getCustomModelData());
+		CustomItem customItem = MSCore.getConfigCache().customItemMap.getBySecondaryKey(itemMeta.getCustomModelData());
 		if (
 				customItem != null
 						&& customItem.getItemStack().getType() == itemStack.getType()
@@ -56,7 +56,7 @@ public final class MSItemUtils {
 		if (itemStack == null) return false;
 		ItemMeta itemMeta = itemStack.getItemMeta();
 		if (itemMeta == null || !itemMeta.hasCustomModelData()) return false;
-		RenameableItem renameableItem = MSCore.getConfigCache().renameableItemMap.getByPrimaryKey(itemMeta.getCustomModelData());
+		RenameableItem renameableItem = MSCore.getConfigCache().renameableItemMap.getBySecondaryKey(itemMeta.getCustomModelData());
 		return renameableItem != null
 				&& renameableItem.getResultItemStack().getType() == itemStack.getType();
 	}
@@ -69,7 +69,7 @@ public final class MSItemUtils {
 		Pattern pattern = Pattern.compile("msitem:\\w+");
 		Matcher matcher = pattern.matcher(namespacedKeyStr.toLowerCase(Locale.ROOT));
 		if (matcher.find()) {
-			CustomItem customItem = MSCore.getConfigCache().customItemMap.getBySecondaryKey(matcher.group(1));
+			CustomItem customItem = MSCore.getConfigCache().customItemMap.getByPrimaryKey(matcher.group(1));
 			if (customItem == null) return null;
 			return customItem.getItemStack();
 		}

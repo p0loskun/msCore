@@ -48,7 +48,7 @@ public final class MSDecorUtils {
 		if (itemStack == null) return false;
 		ItemMeta itemMeta = itemStack.getItemMeta();
 		if (itemMeta == null || !itemMeta.hasCustomModelData()) return false;
-		CustomDecorData customDecorData = MSCore.getConfigCache().customDecorMap.getByPrimaryKey(itemMeta.getCustomModelData());
+		CustomDecorData customDecorData = MSCore.getConfigCache().customDecorMap.getBySecondaryKey(itemMeta.getCustomModelData());
 		return customDecorData != null
 				&& customDecorData.isSimilar(itemStack);
 	}
@@ -61,7 +61,7 @@ public final class MSDecorUtils {
 		Pattern pattern = Pattern.compile("msdecor:\\w+");
 		Matcher matcher = pattern.matcher(namespacedKeyStr.toLowerCase(Locale.ROOT));
 		if (matcher.find()) {
-			CustomDecorData customDecorData = MSCore.getConfigCache().customDecorMap.getBySecondaryKey(matcher.group(1));
+			CustomDecorData customDecorData = MSCore.getConfigCache().customDecorMap.getByPrimaryKey(matcher.group(1));
 			if (customDecorData == null) return null;
 			return customDecorData.getItemStack();
 		}
