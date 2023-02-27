@@ -2,6 +2,10 @@ package com.github.minersstudios.mscore.utils;
 
 import com.github.minersstudios.mscore.MSCore;
 import com.github.minersstudios.msdecor.customdecor.CustomDecorData;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
+import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Contract;
@@ -14,9 +18,25 @@ import java.util.regex.Pattern;
 
 @SuppressWarnings("unused")
 public final class MSDecorUtils {
+	public static final ImmutableSet<Material> CUSTOM_DECOR_MATERIALS = Sets.immutableEnumSet(
+			Material.BARRIER,
+			Material.STRUCTURE_VOID,
+			Material.LIGHT
+	);
 
 	private MSDecorUtils() {
 		throw new IllegalStateException("Utility class");
+	}
+
+	@Contract("null -> false")
+	public static boolean isCustomDecorMaterial(@Nullable Material material) {
+		return CUSTOM_DECOR_MATERIALS.contains(material);
+	}
+
+	@Contract("null -> false")
+	public static boolean isCustomDecorEntity(@Nullable Entity entity) {
+		if (entity == null) return false;
+		return entity.getScoreboardTags().contains("customDecor");
 	}
 
 	/**
