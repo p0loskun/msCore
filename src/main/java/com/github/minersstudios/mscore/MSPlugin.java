@@ -24,14 +24,16 @@ import java.util.logging.Level;
 
 @SuppressWarnings("unused")
 public abstract class MSPlugin extends JavaPlugin {
-	private File pluginFolder;
-	private File configFile;
-	private FileConfiguration newConfig;
+	protected File pluginFolder;
+	protected File configFile;
+	protected FileConfiguration newConfig;
+	protected boolean loadedCustoms;
 
 	@Override
 	public final void onLoad() {
 		this.pluginFolder = new File("config/minersstudios/" + this.getName() + "/");
 		this.configFile = new File(pluginFolder, "config.yml");
+		this.loadedCustoms = false;
 		this.load();
 	}
 
@@ -239,5 +241,13 @@ public abstract class MSPlugin extends JavaPlugin {
 
 	public final @NotNull File getPluginFolder() {
 		return this.pluginFolder;
+	}
+
+	public final boolean isLoadedCustoms() {
+		return this.loadedCustoms;
+	}
+
+	public final void setLoadedCustoms(boolean loadedCustoms) {
+		this.loadedCustoms = loadedCustoms;
 	}
 }

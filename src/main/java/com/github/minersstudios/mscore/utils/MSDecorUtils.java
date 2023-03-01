@@ -1,11 +1,17 @@
 package com.github.minersstudios.mscore.utils;
 
 import com.github.minersstudios.mscore.MSCore;
+import com.github.minersstudios.msdecor.customdecor.CustomDecor;
 import com.github.minersstudios.msdecor.customdecor.CustomDecorData;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Contract;
@@ -26,6 +32,37 @@ public final class MSDecorUtils {
 
 	private MSDecorUtils() {
 		throw new IllegalStateException("Utility class");
+	}
+
+	public static void placeCustomDecor(
+			@NotNull Block block,
+			@NotNull Player player,
+			@NotNull CustomDecorData customDecorData,
+			@NotNull BlockFace blockFace
+	) {
+		placeCustomDecor(block, player, customDecorData, blockFace, null, null);
+	}
+
+	public static void placeCustomDecor(
+			@NotNull Block block,
+			@NotNull Player player,
+			@NotNull CustomDecorData customDecorData,
+			@NotNull BlockFace blockFace,
+			@Nullable EquipmentSlot hand
+	) {
+		placeCustomDecor(block, player, customDecorData, blockFace, hand, null);
+	}
+
+	public static void placeCustomDecor(
+			@NotNull Block block,
+			@NotNull Player player,
+			@NotNull CustomDecorData customDecorData,
+			@NotNull BlockFace blockFace,
+			@Nullable EquipmentSlot hand,
+			@Nullable Component customName
+	) {
+		CustomDecor customDecor = new CustomDecor(block, player, customDecorData);
+		customDecor.setCustomDecor(blockFace, hand, customName);
 	}
 
 	@Contract("null -> false")
@@ -58,7 +95,7 @@ public final class MSDecorUtils {
 	 * @return {@link CustomDecorData} item stack
 	 */
 	public static @Nullable ItemStack getCustomDecorItem(@NotNull String namespacedKeyStr) {
-		Pattern pattern = Pattern.compile("msdecor:\\w+");
+		Pattern pattern = Pattern.compile("msdecor:(\\w+)");
 		Matcher matcher = pattern.matcher(namespacedKeyStr.toLowerCase(Locale.ROOT));
 		if (matcher.find()) {
 			CustomDecorData customDecorData = MSCore.getConfigCache().customDecorMap.getByPrimaryKey(matcher.group(1));

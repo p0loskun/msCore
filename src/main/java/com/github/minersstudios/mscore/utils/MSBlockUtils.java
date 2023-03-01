@@ -30,7 +30,6 @@ public final class MSBlockUtils {
 		if (itemMeta == null || !itemMeta.hasCustomModelData()) return false;
 		CustomBlockData customBlockData = MSCore.getConfigCache().customBlockMap.getByPrimaryKey(itemMeta.getCustomModelData());
 		return customBlockData != null
-				&& customBlockData.getItemMaterial() == itemStack.getType()
 				&& customBlockData.getItemCustomModelData() == itemMeta.getCustomModelData();
 	}
 
@@ -39,7 +38,7 @@ public final class MSBlockUtils {
 	 * @return {@link CustomBlockData} item stack
 	 */
 	public static @Nullable ItemStack getCustomBlockItem(@NotNull String namespacedKeyStr) {
-		Pattern pattern = Pattern.compile("msblock:\\w+");
+		Pattern pattern = Pattern.compile("msblock:(\\w+)");
 		Matcher matcher = pattern.matcher(namespacedKeyStr.toLowerCase(Locale.ROOT));
 		if (matcher.find()) {
 			CustomBlockData customBlockData = MSCore.getConfigCache().customBlockMap.getBySecondaryKey(matcher.group(1));

@@ -42,7 +42,7 @@ public final class MSItemUtils {
 		CustomItem customItem = MSCore.getConfigCache().customItemMap.getBySecondaryKey(itemMeta.getCustomModelData());
 		if (
 				customItem != null
-						&& customItem.getItemStack().getType() == itemStack.getType()
+				&& customItem.getItemStack().getType() == itemStack.getType()
 		) return true;
 		return checkForRenameableItem && isRenameableItem(itemStack);
 	}
@@ -66,7 +66,7 @@ public final class MSItemUtils {
 	 * @return {@link CustomItem} item stack
 	 */
 	public static @Nullable ItemStack getCustomItemItemStack(@NotNull String namespacedKeyStr) {
-		Pattern pattern = Pattern.compile("msitem:\\w+");
+		Pattern pattern = Pattern.compile("msitem:(\\w+)");
 		Matcher matcher = pattern.matcher(namespacedKeyStr.toLowerCase(Locale.ROOT));
 		if (matcher.find()) {
 			CustomItem customItem = MSCore.getConfigCache().customItemMap.getByPrimaryKey(matcher.group(1));
