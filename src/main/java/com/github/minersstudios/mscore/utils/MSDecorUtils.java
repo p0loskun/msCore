@@ -37,30 +37,32 @@ public final class MSDecorUtils {
 	public static void placeCustomDecor(
 			@NotNull Block block,
 			@NotNull Player player,
-			@NotNull CustomDecorData customDecorData,
+			@NotNull String key,
 			@NotNull BlockFace blockFace
 	) {
-		placeCustomDecor(block, player, customDecorData, blockFace, null, null);
+		placeCustomDecor(block, player, key, blockFace, null, null);
 	}
 
 	public static void placeCustomDecor(
 			@NotNull Block block,
 			@NotNull Player player,
-			@NotNull CustomDecorData customDecorData,
+			@NotNull String key,
 			@NotNull BlockFace blockFace,
 			@Nullable EquipmentSlot hand
 	) {
-		placeCustomDecor(block, player, customDecorData, blockFace, hand, null);
+		placeCustomDecor(block, player, key, blockFace, hand, null);
 	}
 
 	public static void placeCustomDecor(
 			@NotNull Block block,
 			@NotNull Player player,
-			@NotNull CustomDecorData customDecorData,
+			@NotNull String key,
 			@NotNull BlockFace blockFace,
 			@Nullable EquipmentSlot hand,
 			@Nullable Component customName
 	) {
+		CustomDecorData customDecorData = MSDecorUtils.getCustomDecorData(key);
+		if (customDecorData == null) throw new NullPointerException();
 		CustomDecor customDecor = new CustomDecor(block, player, customDecorData);
 		customDecor.setCustomDecor(blockFace, hand, customName);
 	}
@@ -91,17 +93,27 @@ public final class MSDecorUtils {
 	}
 
 	/**
+	 * Gets {@link CustomDecorData} item stack
+	 *
 	 * @param namespacedKeyStr {@link CustomDecorData} namespaced key string, example - (msdecor:example)
 	 * @return {@link CustomDecorData} item stack
 	 */
 	public static @Nullable ItemStack getCustomDecorItem(@NotNull String namespacedKeyStr) {
+		CustomDecorData customDecorData = getCustomDecorData(namespacedKeyStr);
+		return customDecorData != null ? customDecorData.getItemStack() : null;
+	}
+
+	/**
+	 * Gets {@link CustomDecorData} from namespaced key string
+	 *
+	 * @param namespacedKeyStr {@link CustomDecorData} namespaced key string, example - (msdecor:example)
+	 * @return {@link CustomDecorData}
+	 */
+	public static @Nullable CustomDecorData getCustomDecorData(@NotNull String namespacedKeyStr) {
 		Pattern pattern = Pattern.compile("msdecor:(\\w+)");
 		Matcher matcher = pattern.matcher(namespacedKeyStr.toLowerCase(Locale.ROOT));
-		if (matcher.find()) {
-			CustomDecorData customDecorData = MSCore.getConfigCache().customDecorMap.getByPrimaryKey(matcher.group(1));
-			if (customDecorData == null) return null;
-			return customDecorData.getItemStack();
-		}
-		return null;
+		return matcher.find()
+				? MSCore.getConfigCache().customDecorMap.getByPrimaryKey(matcher.group(1))
+				: null;
 	}
 }

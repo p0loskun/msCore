@@ -87,13 +87,13 @@
 		<dependency>
 			<groupId>com.github.MinersStudios</groupId>
 			<artifactId>msDecor</artifactId>
-			<version>1.0.0</version>
+			<version>release-34ed6bb39c-1</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.github.MinersStudios</groupId>
 			<artifactId>msItems</artifactId>
-			<version>release-65a49593c5-1</version>
+			<version>release-0e64c870b6-1</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

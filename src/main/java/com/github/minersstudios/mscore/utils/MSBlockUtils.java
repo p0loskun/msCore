@@ -34,17 +34,27 @@ public final class MSBlockUtils {
 	}
 
 	/**
+	 * Gets {@link CustomBlockData} item stack
+	 *
 	 * @param namespacedKeyStr {@link CustomBlockData} namespaced key string, example - (msblock:example)
 	 * @return {@link CustomBlockData} item stack
 	 */
 	public static @Nullable ItemStack getCustomBlockItem(@NotNull String namespacedKeyStr) {
+		CustomBlockData customBlockData = getCustomBlockData(namespacedKeyStr);
+		return customBlockData != null ? customBlockData.craftItemStack() : null;
+	}
+
+	/**
+	 * Gets {@link CustomBlockData} from namespaced key string
+	 *
+	 * @param namespacedKeyStr {@link CustomBlockData} namespaced key string, example - (msblock:example)
+	 * @return {@link CustomBlockData}
+	 */
+	public static @Nullable CustomBlockData getCustomBlockData(@NotNull String namespacedKeyStr) {
 		Pattern pattern = Pattern.compile("msblock:(\\w+)");
 		Matcher matcher = pattern.matcher(namespacedKeyStr.toLowerCase(Locale.ROOT));
-		if (matcher.find()) {
-			CustomBlockData customBlockData = MSCore.getConfigCache().customBlockMap.getBySecondaryKey(matcher.group(1));
-			if (customBlockData == null) return null;
-			return customBlockData.craftItemStack();
-		}
-		return null;
+		return matcher.find()
+				? MSCore.getConfigCache().customBlockMap.getBySecondaryKey(matcher.group(1))
+				: null;
 	}
 }

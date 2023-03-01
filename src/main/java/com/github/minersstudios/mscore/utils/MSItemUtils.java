@@ -62,17 +62,27 @@ public final class MSItemUtils {
 	}
 
 	/**
+	 * Gets {@link CustomItem} item stack
+	 *
 	 * @param namespacedKeyStr {@link CustomItem} namespaced key string, example - (msitem:example)
 	 * @return {@link CustomItem} item stack
 	 */
 	public static @Nullable ItemStack getCustomItemItemStack(@NotNull String namespacedKeyStr) {
+		CustomItem customItem = getCustomItem(namespacedKeyStr);
+		return customItem != null ? customItem.getItemStack() : null;
+	}
+
+	/**
+	 * Gets {@link CustomItem} from namespaced key string
+	 *
+	 * @param namespacedKeyStr {@link CustomItem} namespaced key string, example - (msitem:example)
+	 * @return {@link CustomItem}
+	 */
+	public static @Nullable CustomItem getCustomItem(@NotNull String namespacedKeyStr) {
 		Pattern pattern = Pattern.compile("msitem:(\\w+)");
 		Matcher matcher = pattern.matcher(namespacedKeyStr.toLowerCase(Locale.ROOT));
-		if (matcher.find()) {
-			CustomItem customItem = MSCore.getConfigCache().customItemMap.getByPrimaryKey(matcher.group(1));
-			if (customItem == null) return null;
-			return customItem.getItemStack();
-		}
-		return null;
+		return matcher.find()
+				? MSCore.getConfigCache().customItemMap.getByPrimaryKey(matcher.group(1))
+				: null;
 	}
 }
