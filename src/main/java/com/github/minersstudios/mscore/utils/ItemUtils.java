@@ -23,11 +23,14 @@ public final class ItemUtils {
 	 * @throws NullPointerException if it can't find custom item/block/decor with this namespaced key
 	 */
 	public static @Nullable ItemStack getMSItemStack(@NotNull String namespacedKeyStr) {
-		ItemStack customItem = MSItemUtils.getCustomItemItemStack(namespacedKeyStr);
-		if (customItem != null) return customItem;
-		ItemStack customBlockItem = MSBlockUtils.getCustomBlockItem(namespacedKeyStr);
-		if (customBlockItem != null) return customBlockItem;
-		return MSDecorUtils.getCustomDecorItem(namespacedKeyStr);
+		if (namespacedKeyStr.matches("msitem:\\w+")) {
+			return MSItemUtils.getCustomItemItemStack(namespacedKeyStr);
+		} else if (namespacedKeyStr.matches("msblock:\\w+")) {
+			return MSBlockUtils.getCustomBlockItem(namespacedKeyStr);
+		} else if (namespacedKeyStr.matches("msdecor:\\w+")) {
+			return MSDecorUtils.getCustomDecorItem(namespacedKeyStr);
+		}
+		return null;
 	}
 
 	@Contract("null, null -> false")

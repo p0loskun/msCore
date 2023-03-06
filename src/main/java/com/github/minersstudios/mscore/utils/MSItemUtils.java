@@ -69,7 +69,7 @@ public final class MSItemUtils {
 	 */
 	public static @Nullable ItemStack getCustomItemItemStack(@NotNull String namespacedKeyStr) {
 		CustomItem customItem = getCustomItem(namespacedKeyStr);
-		return customItem != null ? customItem.getItemStack() : null;
+		return customItem == null ? null : customItem.getItemStack();
 	}
 
 	/**
@@ -81,8 +81,9 @@ public final class MSItemUtils {
 	public static @Nullable CustomItem getCustomItem(@NotNull String namespacedKeyStr) {
 		Pattern pattern = Pattern.compile("msitem:(\\w+)");
 		Matcher matcher = pattern.matcher(namespacedKeyStr.toLowerCase(Locale.ROOT));
-		return matcher.find()
-				? MSCore.getConfigCache().customItemMap.getByPrimaryKey(matcher.group(1))
-				: null;
+		if (matcher.find()) {
+			return MSCore.getConfigCache().customItemMap.getByPrimaryKey(matcher.group(1));
+		}
+		return null;
 	}
 }

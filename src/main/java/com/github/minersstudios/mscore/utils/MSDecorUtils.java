@@ -112,8 +112,9 @@ public final class MSDecorUtils {
 	public static @Nullable CustomDecorData getCustomDecorData(@NotNull String namespacedKeyStr) {
 		Pattern pattern = Pattern.compile("msdecor:(\\w+)");
 		Matcher matcher = pattern.matcher(namespacedKeyStr.toLowerCase(Locale.ROOT));
-		return matcher.find()
-				? MSCore.getConfigCache().customDecorMap.getByPrimaryKey(matcher.group(1))
-				: null;
+		if (matcher.find()) {
+			return MSCore.getConfigCache().customDecorMap.getByPrimaryKey(matcher.group(1));
+		}
+		return null;
 	}
 }

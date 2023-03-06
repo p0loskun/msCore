@@ -140,7 +140,7 @@ public abstract class MSPlugin extends JavaPlugin {
 	 * @throws ClassNotFoundException If the class was not found
 	 */
 	public void registerCommands() throws ClassNotFoundException {
-		for (String className : getClassNames()) {
+		for (String className : this.getClassNames()) {
 			if (StringUtil.startsWithIgnoreCase(className, "com.github.minersstudios." + this.getName() + ".commands")) {
 				Class<?> clazz = this.getClassLoader().loadClass(className);
 				MSCommand msCommand = clazz.getAnnotation(MSCommand.class);
@@ -149,7 +149,7 @@ public abstract class MSPlugin extends JavaPlugin {
 						if (clazz.getDeclaredConstructor().newInstance() instanceof MSCommandExecutor msCommandExecutor) {
 							this.registerCommand(msCommand.command(), msCommandExecutor, msCommandExecutor);
 						} else {
-							this.getLogger().log(Level.WARNING, "Registered command that is not instance of MSCommandExecutor (" + clazz.getName() + ")");
+							this.getLogger().log(Level.WARNING, "Registered command that is not instance of MSCommandExecutor (" + className + ")");
 						}
 					} catch (Exception e) {
 						this.getLogger().log(Level.SEVERE, "Failed to register command", e);
@@ -185,7 +185,7 @@ public abstract class MSPlugin extends JavaPlugin {
 	 * @throws ClassNotFoundException If the class was not found
 	 */
 	public void loadListeners() throws ClassNotFoundException {
-		for (String className : getClassNames()) {
+		for (String className : this.getClassNames()) {
 			if (StringUtil.startsWithIgnoreCase(className, "com.github.minersstudios." + this.getName() + ".listeners")) {
 				Class<?> clazz = this.getClassLoader().loadClass(className);
 				if (clazz.isAnnotationPresent(MSListener.class)) {
@@ -193,7 +193,7 @@ public abstract class MSPlugin extends JavaPlugin {
 						if (clazz.getDeclaredConstructor().newInstance() instanceof Listener listener) {
 							this.getServer().getPluginManager().registerEvents(listener, this);
 						} else {
-							this.getLogger().log(Level.WARNING, "Registered listener that is not instance of Listener (" + clazz.getName() + ")");
+							this.getLogger().log(Level.WARNING, "Registered listener that is not instance of Listener (" + className + ")");
 						}
 					} catch (Exception e) {
 						this.getLogger().log(Level.SEVERE, "Failed to load listener", e);

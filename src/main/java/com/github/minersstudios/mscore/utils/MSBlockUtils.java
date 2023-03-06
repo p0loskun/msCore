@@ -41,7 +41,7 @@ public final class MSBlockUtils {
 	 */
 	public static @Nullable ItemStack getCustomBlockItem(@NotNull String namespacedKeyStr) {
 		CustomBlockData customBlockData = getCustomBlockData(namespacedKeyStr);
-		return customBlockData != null ? customBlockData.craftItemStack() : null;
+		return customBlockData == null ? null : customBlockData.craftItemStack();
 	}
 
 	/**
@@ -53,8 +53,9 @@ public final class MSBlockUtils {
 	public static @Nullable CustomBlockData getCustomBlockData(@NotNull String namespacedKeyStr) {
 		Pattern pattern = Pattern.compile("msblock:(\\w+)");
 		Matcher matcher = pattern.matcher(namespacedKeyStr.toLowerCase(Locale.ROOT));
-		return matcher.find()
-				? MSCore.getConfigCache().customBlockMap.getBySecondaryKey(matcher.group(1))
-				: null;
+		if (matcher.find()) {
+			return MSCore.getConfigCache().customBlockMap.getBySecondaryKey(matcher.group(1));
+		}
+		return null;
 	}
 }
