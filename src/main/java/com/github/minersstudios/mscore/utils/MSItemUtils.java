@@ -1,12 +1,14 @@
 package com.github.minersstudios.mscore.utils;
 
 import com.github.minersstudios.mscore.MSCore;
+import com.github.minersstudios.msdecor.MSDecor;
 import com.github.minersstudios.msitems.items.CustomItem;
 import com.github.minersstudios.msitems.items.RenameableItem;
+import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
@@ -15,6 +17,8 @@ import java.util.regex.Pattern;
 
 @SuppressWarnings("unused")
 public final class MSItemUtils {
+	public static final NamespacedKey CUSTOM_ITEM_TYPE_NAMESPACED_KEY = new NamespacedKey(MSDecor.getInstance(), "type");
+	public static final NamespacedKey CUSTOM_ITEM_RENAMEABLE_NAMESPACED_KEY = new NamespacedKey(MSDecor.getInstance(), "renameable");
 
 	private MSItemUtils() {
 		throw new IllegalStateException("Utility class");
@@ -38,13 +42,7 @@ public final class MSItemUtils {
 	public static boolean isCustomItem(@Nullable ItemStack itemStack, boolean checkForRenameableItem) {
 		if (itemStack == null) return false;
 		ItemMeta itemMeta = itemStack.getItemMeta();
-		if (itemMeta == null || !itemMeta.hasCustomModelData()) return false;
-		CustomItem customItem = MSCore.getConfigCache().customItemMap.getBySecondaryKey(itemMeta.getCustomModelData());
-		if (
-				customItem != null
-				&& customItem.getItemStack().getType() == itemStack.getType()
-		) return true;
-		return checkForRenameableItem && isRenameableItem(itemStack);
+		return itemMeta != null && itemMeta.getPersistentDataContainer().has(CUSTOM_ITEM_TYPE_NAMESPACED_KEY);
 	}
 
 	/**
@@ -55,10 +53,7 @@ public final class MSItemUtils {
 	public static boolean isRenameableItem(@Nullable ItemStack itemStack) {
 		if (itemStack == null) return false;
 		ItemMeta itemMeta = itemStack.getItemMeta();
-		if (itemMeta == null || !itemMeta.hasCustomModelData()) return false;
-		RenameableItem renameableItem = MSCore.getConfigCache().renameableItemMap.getBySecondaryKey(itemMeta.getCustomModelData());
-		return renameableItem != null
-				&& renameableItem.getResultItemStack().getType() == itemStack.getType();
+		return itemMeta != null && itemMeta.getPersistentDataContainer().has(CUSTOM_ITEM_RENAMEABLE_NAMESPACED_KEY);
 	}
 
 	/**
@@ -67,9 +62,25 @@ public final class MSItemUtils {
 	 * @param namespacedKeyStr {@link CustomItem} namespaced key string, example - (msitem:example)
 	 * @return {@link CustomItem} item stack
 	 */
-	public static @Nullable ItemStack getCustomItemItemStack(@NotNull String namespacedKeyStr) {
+	public static @Nullable ItemStack getCustomItemItemStack(@Nullable String namespacedKeyStr) {
 		CustomItem customItem = getCustomItem(namespacedKeyStr);
 		return customItem == null ? null : customItem.getItemStack();
+	}
+
+	/**
+	 * Gets {@link CustomItem} from {@link ItemStack}
+	 *
+	 * @param itemStack {@link ItemStack}
+	 * @return {@link CustomItem}
+	 */
+	public static @Nullable CustomItem getCustomItem(@Nullable ItemStack itemStack) {
+		return isCustomItem(itemStack)
+				? getCustomItem(
+						itemStack.getItemMeta()
+						.getPersistentDataContainer()
+						.get(CUSTOM_ITEM_TYPE_NAMESPACED_KEY, PersistentDataType.STRING)
+				)
+				: null;
 	}
 
 	/**
@@ -78,7 +89,9 @@ public final class MSItemUtils {
 	 * @param namespacedKeyStr {@link CustomItem} namespaced key string, example - (msitem:example)
 	 * @return {@link CustomItem}
 	 */
-	public static @Nullable CustomItem getCustomItem(@NotNull String namespacedKeyStr) {
+	@Contract("null -> null")
+	public static @Nullable CustomItem getCustomItem(@Nullable String namespacedKeyStr) {
+		if (namespacedKeyStr == null) return null;
 		Pattern pattern = Pattern.compile("msitem:(\\w+)");
 		Matcher matcher = pattern.matcher(namespacedKeyStr.toLowerCase(Locale.ROOT));
 		if (matcher.find()) {

@@ -1,11 +1,13 @@
 package com.github.minersstudios.mscore.utils;
 
+import com.github.minersstudios.msblock.MSBlock;
 import com.github.minersstudios.msblock.customblock.CustomBlockData;
 import com.github.minersstudios.mscore.MSCore;
+import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
@@ -14,6 +16,7 @@ import java.util.regex.Pattern;
 
 @SuppressWarnings("unused")
 public final class MSBlockUtils {
+	public static final NamespacedKey CUSTOM_BLOCK_TYPE_NAMESPACED_KEY = new NamespacedKey(MSBlock.getInstance(), "type");
 
 	private MSBlockUtils() {
 		throw new IllegalStateException("Utility class");
@@ -27,10 +30,7 @@ public final class MSBlockUtils {
 	public static boolean isCustomBlock(@Nullable ItemStack itemStack) {
 		if (itemStack == null) return false;
 		ItemMeta itemMeta = itemStack.getItemMeta();
-		if (itemMeta == null || !itemMeta.hasCustomModelData()) return false;
-		CustomBlockData customBlockData = MSCore.getConfigCache().customBlockMap.getByPrimaryKey(itemMeta.getCustomModelData());
-		return customBlockData != null
-				&& customBlockData.getItemCustomModelData() == itemMeta.getCustomModelData();
+		return itemMeta != null && itemMeta.getPersistentDataContainer().has(CUSTOM_BLOCK_TYPE_NAMESPACED_KEY);
 	}
 
 	/**
@@ -39,9 +39,25 @@ public final class MSBlockUtils {
 	 * @param namespacedKeyStr {@link CustomBlockData} namespaced key string, example - (msblock:example)
 	 * @return {@link CustomBlockData} item stack
 	 */
-	public static @Nullable ItemStack getCustomBlockItem(@NotNull String namespacedKeyStr) {
+	public static @Nullable ItemStack getCustomBlockItem(@Nullable String namespacedKeyStr) {
 		CustomBlockData customBlockData = getCustomBlockData(namespacedKeyStr);
 		return customBlockData == null ? null : customBlockData.craftItemStack();
+	}
+
+	/**
+	 * Gets {@link CustomBlockData} from {@link ItemStack}
+	 *
+	 * @param itemStack {@link ItemStack}
+	 * @return {@link CustomBlockData}
+	 */
+	public static @Nullable CustomBlockData getCustomDecorData(@Nullable ItemStack itemStack) {
+		return isCustomBlock(itemStack)
+				? getCustomBlockData(
+						itemStack.getItemMeta()
+						.getPersistentDataContainer()
+						.get(CUSTOM_BLOCK_TYPE_NAMESPACED_KEY, PersistentDataType.STRING)
+				)
+				: null;
 	}
 
 	/**
@@ -50,7 +66,8 @@ public final class MSBlockUtils {
 	 * @param namespacedKeyStr {@link CustomBlockData} namespaced key string, example - (msblock:example)
 	 * @return {@link CustomBlockData}
 	 */
-	public static @Nullable CustomBlockData getCustomBlockData(@NotNull String namespacedKeyStr) {
+	public static @Nullable CustomBlockData getCustomBlockData(@Nullable String namespacedKeyStr) {
+		if (namespacedKeyStr == null) return null;
 		Pattern pattern = Pattern.compile("msblock:(\\w+)");
 		Matcher matcher = pattern.matcher(namespacedKeyStr.toLowerCase(Locale.ROOT));
 		if (matcher.find()) {

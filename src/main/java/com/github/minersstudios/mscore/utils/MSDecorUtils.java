@@ -1,12 +1,14 @@
 package com.github.minersstudios.mscore.utils;
 
 import com.github.minersstudios.mscore.MSCore;
+import com.github.minersstudios.msdecor.MSDecor;
 import com.github.minersstudios.msdecor.customdecor.CustomDecor;
 import com.github.minersstudios.msdecor.customdecor.CustomDecorData;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
@@ -14,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,6 +27,7 @@ import java.util.regex.Pattern;
 
 @SuppressWarnings("unused")
 public final class MSDecorUtils {
+	public static final NamespacedKey CUSTOM_DECOR_TYPE_NAMESPACED_KEY = new NamespacedKey(MSDecor.getInstance(), "type");
 	public static final ImmutableSet<Material> CUSTOM_DECOR_MATERIALS = Sets.immutableEnumSet(
 			Material.BARRIER,
 			Material.STRUCTURE_VOID,
@@ -86,10 +90,7 @@ public final class MSDecorUtils {
 	public static boolean isCustomDecor(@Nullable ItemStack itemStack) {
 		if (itemStack == null) return false;
 		ItemMeta itemMeta = itemStack.getItemMeta();
-		if (itemMeta == null || !itemMeta.hasCustomModelData()) return false;
-		CustomDecorData customDecorData = MSCore.getConfigCache().customDecorMap.getBySecondaryKey(itemMeta.getCustomModelData());
-		return customDecorData != null
-				&& customDecorData.isSimilar(itemStack);
+		return itemMeta != null && itemMeta.getPersistentDataContainer().has(CUSTOM_DECOR_TYPE_NAMESPACED_KEY);
 	}
 
 	/**
@@ -98,9 +99,25 @@ public final class MSDecorUtils {
 	 * @param namespacedKeyStr {@link CustomDecorData} namespaced key string, example - (msdecor:example)
 	 * @return {@link CustomDecorData} item stack
 	 */
-	public static @Nullable ItemStack getCustomDecorItem(@NotNull String namespacedKeyStr) {
+	public static @Nullable ItemStack getCustomDecorItem(@Nullable String namespacedKeyStr) {
 		CustomDecorData customDecorData = getCustomDecorData(namespacedKeyStr);
 		return customDecorData != null ? customDecorData.getItemStack() : null;
+	}
+
+	/**
+	 * Gets {@link CustomDecorData} from {@link ItemStack}
+	 *
+	 * @param itemStack {@link ItemStack}
+	 * @return {@link CustomDecorData}
+	 */
+	public static @Nullable CustomDecorData getCustomDecorData(@Nullable ItemStack itemStack) {
+		return isCustomDecor(itemStack)
+				? getCustomDecorData(
+						itemStack.getItemMeta()
+						.getPersistentDataContainer()
+						.get(CUSTOM_DECOR_TYPE_NAMESPACED_KEY, PersistentDataType.STRING)
+				)
+				: null;
 	}
 
 	/**
@@ -109,7 +126,9 @@ public final class MSDecorUtils {
 	 * @param namespacedKeyStr {@link CustomDecorData} namespaced key string, example - (msdecor:example)
 	 * @return {@link CustomDecorData}
 	 */
-	public static @Nullable CustomDecorData getCustomDecorData(@NotNull String namespacedKeyStr) {
+	@Contract("null -> null")
+	public static @Nullable CustomDecorData getCustomDecorData(@Nullable String namespacedKeyStr) {
+		if (namespacedKeyStr == null) return null;
 		Pattern pattern = Pattern.compile("msdecor:(\\w+)");
 		Matcher matcher = pattern.matcher(namespacedKeyStr.toLowerCase(Locale.ROOT));
 		if (matcher.find()) {
