@@ -81,7 +81,7 @@
 		<dependency>
 			<groupId>com.github.MinersStudios</groupId>
 			<artifactId>msBlock</artifactId>
-			<version>1.4.2</version>
+			<version>release-f49b4d317e-1</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

@@ -2,6 +2,7 @@ package com.github.minersstudios.mscore.utils;
 
 import com.github.minersstudios.mscore.MSCore;
 import com.github.minersstudios.msdecor.MSDecor;
+import com.github.minersstudios.msitems.MSItems;
 import com.github.minersstudios.msitems.items.CustomItem;
 import com.github.minersstudios.msitems.items.RenameableItem;
 import org.bukkit.NamespacedKey;
@@ -17,8 +18,8 @@ import java.util.regex.Pattern;
 
 @SuppressWarnings("unused")
 public final class MSItemUtils {
-	public static final NamespacedKey CUSTOM_ITEM_TYPE_NAMESPACED_KEY = new NamespacedKey(MSDecor.getInstance(), "type");
-	public static final NamespacedKey CUSTOM_ITEM_RENAMEABLE_NAMESPACED_KEY = new NamespacedKey(MSDecor.getInstance(), "renameable");
+	public static final NamespacedKey CUSTOM_ITEM_TYPE_NAMESPACED_KEY = new NamespacedKey(MSItems.getInstance(), "type");
+	public static final NamespacedKey CUSTOM_ITEM_RENAMEABLE_NAMESPACED_KEY = new NamespacedKey(MSItems.getInstance(), "renameable");
 
 	private MSItemUtils() {
 		throw new IllegalStateException("Utility class");
@@ -76,7 +77,8 @@ public final class MSItemUtils {
 	public static @Nullable CustomItem getCustomItem(@Nullable ItemStack itemStack) {
 		return isCustomItem(itemStack)
 				? getCustomItem(
-						itemStack.getItemMeta()
+						"msitem:"
+						+ itemStack.getItemMeta()
 						.getPersistentDataContainer()
 						.get(CUSTOM_ITEM_TYPE_NAMESPACED_KEY, PersistentDataType.STRING)
 				)

@@ -6,7 +6,6 @@ website: ${url}
 
 main: ${mainClass}
 api-version: ${apiVersion}
-load: STARTUP
 loadbefore:
   - msDecor
   - msUtils

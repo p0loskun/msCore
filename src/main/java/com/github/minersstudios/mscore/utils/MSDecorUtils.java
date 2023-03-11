@@ -113,7 +113,8 @@ public final class MSDecorUtils {
 	public static @Nullable CustomDecorData getCustomDecorData(@Nullable ItemStack itemStack) {
 		return isCustomDecor(itemStack)
 				? getCustomDecorData(
-						itemStack.getItemMeta()
+						"msdecor:"
+						+ itemStack.getItemMeta()
 						.getPersistentDataContainer()
 						.get(CUSTOM_DECOR_TYPE_NAMESPACED_KEY, PersistentDataType.STRING)
 				)

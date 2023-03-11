@@ -50,10 +50,11 @@ public final class MSBlockUtils {
 	 * @param itemStack {@link ItemStack}
 	 * @return {@link CustomBlockData}
 	 */
-	public static @Nullable CustomBlockData getCustomDecorData(@Nullable ItemStack itemStack) {
+	public static @Nullable CustomBlockData getCustomBlockData(@Nullable ItemStack itemStack) {
 		return isCustomBlock(itemStack)
 				? getCustomBlockData(
-						itemStack.getItemMeta()
+						"msblock:"
+						+ itemStack.getItemMeta()
 						.getPersistentDataContainer()
 						.get(CUSTOM_BLOCK_TYPE_NAMESPACED_KEY, PersistentDataType.STRING)
 				)
@@ -71,7 +72,7 @@ public final class MSBlockUtils {
 		Pattern pattern = Pattern.compile("msblock:(\\w+)");
 		Matcher matcher = pattern.matcher(namespacedKeyStr.toLowerCase(Locale.ROOT));
 		if (matcher.find()) {
-			return MSCore.getConfigCache().customBlockMap.getBySecondaryKey(matcher.group(1));
+			return MSCore.getConfigCache().customBlockMap.getByPrimaryKey(matcher.group(1));
 		}
 		return null;
 	}
