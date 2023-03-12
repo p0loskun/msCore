@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 public final class MSBlockUtils {
 	public static final NamespacedKey CUSTOM_BLOCK_TYPE_NAMESPACED_KEY = new NamespacedKey(MSBlock.getInstance(), "type");
 
+	@Contract(value = " -> fail")
 	private MSBlockUtils() {
 		throw new IllegalStateException("Utility class");
 	}
@@ -39,7 +40,9 @@ public final class MSBlockUtils {
 	 * @param namespacedKeyStr {@link CustomBlockData} namespaced key string, example - (msblock:example)
 	 * @return {@link CustomBlockData} item stack
 	 */
+	@Contract("null -> null")
 	public static @Nullable ItemStack getCustomBlockItem(@Nullable String namespacedKeyStr) {
+		if (namespacedKeyStr == null) return null;
 		CustomBlockData customBlockData = getCustomBlockData(namespacedKeyStr);
 		return customBlockData == null ? null : customBlockData.craftItemStack();
 	}
@@ -50,6 +53,7 @@ public final class MSBlockUtils {
 	 * @param itemStack {@link ItemStack}
 	 * @return {@link CustomBlockData}
 	 */
+	@Contract("null -> null")
 	public static @Nullable CustomBlockData getCustomBlockData(@Nullable ItemStack itemStack) {
 		return isCustomBlock(itemStack)
 				? getCustomBlockData(
@@ -67,6 +71,7 @@ public final class MSBlockUtils {
 	 * @param namespacedKeyStr {@link CustomBlockData} namespaced key string, example - (msblock:example)
 	 * @return {@link CustomBlockData}
 	 */
+	@Contract("null -> null")
 	public static @Nullable CustomBlockData getCustomBlockData(@Nullable String namespacedKeyStr) {
 		if (namespacedKeyStr == null) return null;
 		Pattern pattern = Pattern.compile("msblock:(\\w+)");

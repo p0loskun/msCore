@@ -1,5 +1,6 @@
 package com.github.minersstudios.mscore.utils;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
@@ -11,6 +12,7 @@ import java.util.List;
 @SuppressWarnings("unused")
 public final class CommandUtils {
 
+	@Contract(value = " -> fail")
 	private CommandUtils() {
 		throw new IllegalStateException("Utility class");
 	}

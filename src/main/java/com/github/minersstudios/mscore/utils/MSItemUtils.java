@@ -21,6 +21,7 @@ public final class MSItemUtils {
 	public static final NamespacedKey CUSTOM_ITEM_TYPE_NAMESPACED_KEY = new NamespacedKey(MSItems.getInstance(), "type");
 	public static final NamespacedKey CUSTOM_ITEM_RENAMEABLE_NAMESPACED_KEY = new NamespacedKey(MSItems.getInstance(), "renameable");
 
+	@Contract(value = " -> fail")
 	private MSItemUtils() {
 		throw new IllegalStateException("Utility class");
 	}
@@ -63,7 +64,9 @@ public final class MSItemUtils {
 	 * @param namespacedKeyStr {@link CustomItem} namespaced key string, example - (msitem:example)
 	 * @return {@link CustomItem} item stack
 	 */
+	@Contract("null -> null")
 	public static @Nullable ItemStack getCustomItemItemStack(@Nullable String namespacedKeyStr) {
+		if (namespacedKeyStr == null) return null;
 		CustomItem customItem = getCustomItem(namespacedKeyStr);
 		return customItem == null ? null : customItem.getItemStack();
 	}
@@ -74,6 +77,7 @@ public final class MSItemUtils {
 	 * @param itemStack {@link ItemStack}
 	 * @return {@link CustomItem}
 	 */
+	@Contract("null -> null")
 	public static @Nullable CustomItem getCustomItem(@Nullable ItemStack itemStack) {
 		return isCustomItem(itemStack)
 				? getCustomItem(

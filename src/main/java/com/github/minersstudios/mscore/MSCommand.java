@@ -13,5 +13,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface MSCommand {
+
+	/**
+	 * @return The command that the plugin will register
+	 */
 	String command();
 }

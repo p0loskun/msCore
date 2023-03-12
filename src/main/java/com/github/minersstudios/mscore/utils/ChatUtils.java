@@ -38,6 +38,7 @@ public final class ChatUtils {
 			TextDecoration.UNDERLINED.withState(false)
 	);
 
+	@Contract(value = " -> fail")
 	private ChatUtils() {
 		throw new IllegalStateException("Utility class");
 	}
@@ -122,6 +123,7 @@ public final class ChatUtils {
 		return true;
 	}
 
+	@Contract("_, _ -> new")
 	public static @NotNull String extractMessage(@NotNull String[] args, int start) {
 		return String.join(" ", Arrays.copyOfRange(args, start, args.length));
 	}
@@ -166,7 +168,8 @@ public final class ChatUtils {
 		for (String string : strings) {
 			Component component = Component.text(string);
 			components.add(
-					style == null ? component
+					style == null
+					? component
 					: component.style(style)
 			);
 		}

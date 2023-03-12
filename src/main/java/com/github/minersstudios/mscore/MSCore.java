@@ -27,20 +27,47 @@ public final class MSCore extends MSPlugin {
 		configCache = new ConfigCache();
 
 		if (configCache.updateItemsNBT) {
-			new BukkitRunnable() {
-				@Override
-				public void run() {
-					if (MSPluginUtils.isLoadedCustoms()) {
-						for (World world : Bukkit.getWorlds()) {
-							configCache.updateCustomDecors(world);
-							configCache.updateTileEntities(world);
-						}
-						configCache.updatePlayers();
-						this.cancel();
-					}
-				}
-			}.runTaskTimer(instance, 0L, 10L);
+			updateItemsNBT();
 		}
+	}
+
+	public static void updateItemsNBT() {
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				if (MSPluginUtils.isLoadedCustoms()) {
+					this.cancel();
+					Bukkit.getLogger().warning(
+							"""
+            
+									   ----===+===----
+									Adaptation started ☺
+									Don't stop the server
+									until it is completed
+									   ----===+===----
+							"""
+					);
+					for (World world : Bukkit.getWorlds()) {
+						configCache.updateCustomDecors(world);
+						configCache.updateTileEntities(world);
+					}
+					configCache.updatePlayers();
+					Bukkit.getLogger().warning(
+							"""
+            
+									   ----===+===----
+									Adaptation completed
+									The server will be
+									restarted
+									   ----===+===----
+							"""
+					);
+					instance.getConfig().set("update-items-nbt", false);
+					instance.saveConfig();
+					Bukkit.spigot().restart();
+				}
+			}
+		}.runTaskTimer(instance, 0L, 10L);
 	}
 
 	@Contract(pure = true)

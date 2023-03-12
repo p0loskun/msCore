@@ -11,6 +11,7 @@ import java.util.List;
 @SuppressWarnings("unused")
 public final class ItemUtils {
 
+	@Contract(value = " -> fail")
 	private ItemUtils() {
 		throw new IllegalStateException("Utility class");
 	}
@@ -22,7 +23,9 @@ public final class ItemUtils {
 	 * @return {@link ItemStack} of custom item/block/decor
 	 * @throws NullPointerException if it can't find custom item/block/decor with this namespaced key
 	 */
-	public static @Nullable ItemStack getMSItemStack(@NotNull String namespacedKeyStr) {
+	@Contract("null -> null")
+	public static @Nullable ItemStack getMSItemStack(@Nullable String namespacedKeyStr) {
+		if (namespacedKeyStr == null) return null;
 		if (namespacedKeyStr.matches("msitem:\\w+")) {
 			return MSItemUtils.getCustomItemItemStack(namespacedKeyStr);
 		} else if (namespacedKeyStr.matches("msblock:\\w+")) {

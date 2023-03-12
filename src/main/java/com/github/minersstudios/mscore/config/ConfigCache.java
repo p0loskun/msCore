@@ -4,7 +4,6 @@ import com.github.minersstudios.msblock.customblock.CustomBlockData;
 import com.github.minersstudios.msblock.utils.AdaptationUtils;
 import com.github.minersstudios.mscore.MSCore;
 import com.github.minersstudios.mscore.collections.DualMap;
-import com.github.minersstudios.mscore.utils.ItemUtils;
 import com.github.minersstudios.mscore.utils.MSBlockUtils;
 import com.github.minersstudios.mscore.utils.MSDecorUtils;
 import com.github.minersstudios.mscore.utils.MSItemUtils;
@@ -13,16 +12,11 @@ import com.github.minersstudios.msitems.items.CustomItem;
 import com.github.minersstudios.msitems.items.RenameableItem;
 import com.google.common.collect.Multimap;
 import org.bukkit.*;
-import org.bukkit.block.*;
-import org.bukkit.block.data.BlockData;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.v1_19_R2.inventory.CraftMetaBlockState;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.ItemFrame;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.BlockInventoryHolder;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.meta.BlockStateMeta;
@@ -62,7 +56,7 @@ public final class ConfigCache {
 	public final List<Recipe> customItemRecipes = new ArrayList<>();
 
 	public ConfigCache() {
-		this.dataFile = new File(MSCore.getInstance().getPluginFolder(), "config.yml");
+		this.dataFile = MSCore.getInstance().getConfigFile();
 		this.yamlConfiguration = YamlConfiguration.loadConfiguration(this.dataFile);
 
 		this.timeFormatter = DateTimeFormatter.ofPattern(this.yamlConfiguration.getString("date-format", "EEE, yyyy-MM-dd HH:mm z"));
@@ -86,10 +80,16 @@ public final class ConfigCache {
 						Entity entity = world.getEntity(chunkEntry.getValue());
 						if (entity instanceof ArmorStand armorStand) {
 							ItemStack itemStack = armorStand.getEquipment().getHelmet();
-							armorStand.getEquipment().setHelmet(this.updateCustomDecorEntityItem(itemStack, entity));
+							armorStand.getEquipment().setHelmet(this.updateEntityItem(itemStack, entity));
 						} else if (entity instanceof ItemFrame itemFrame) {
 							ItemStack itemStack = itemFrame.getItem();
-							itemFrame.setItem(this.updateCustomDecorEntityItem(itemStack, entity));
+							itemFrame.setItem(this.updateEntityItem(itemStack, entity));
+						} else if (entity instanceof Item item) {
+							ItemStack itemStack = item.getItemStack();
+							ItemStack newItem = this.updateEntityItem(itemStack, entity);
+							if (newItem != null) {
+								item.setItemStack(newItem);
+							}
 						}
 						chunk.unload();
 					}
@@ -102,21 +102,12 @@ public final class ConfigCache {
 		}
 	}
 
-	private @Nullable ItemStack updateCustomDecorEntityItem(@Nullable ItemStack itemStack, Entity entity) {
+	@Contract("null, _ -> null")
+	private @Nullable ItemStack updateEntityItem(@Nullable ItemStack itemStack, @NotNull Entity entity) {
 		if (itemStack == null || itemStack.getType().isAir()) return null;
 		ItemMeta itemMeta = itemStack.getItemMeta();
-		if (
-				itemMeta != null
-				&& !itemMeta.getPersistentDataContainer().has(MSDecorUtils.CUSTOM_DECOR_TYPE_NAMESPACED_KEY)
-		) {
-			CustomDecorData customDecorData = this.customDecorMap.getBySecondaryKey(itemMeta.getCustomModelData());
-			if (customDecorData != null) {
-				itemMeta.getPersistentDataContainer().set(
-						MSDecorUtils.CUSTOM_DECOR_TYPE_NAMESPACED_KEY,
-						PersistentDataType.STRING,
-						customDecorData.getNamespacedKey().getKey()
-				);
-				itemStack.setItemMeta(itemMeta);
+		if (itemMeta != null) {
+			if (this.updateItem(itemStack) != 0) {
 				Bukkit.getLogger().info(
 						"Updated " + entity.getType() + " at : \n"
 						+ entity.getLocation()
@@ -143,19 +134,18 @@ public final class ConfigCache {
 						Block block = world.getBlockAt(chunkEntry.getValue());
 						BlockState blockState = block.getState();
 
-						System.out.println(block.getType() + " " + (blockState instanceof BlockInventoryHolder));
 						if (blockState instanceof BlockInventoryHolder holder) {
-							int i = 0;
+							int c = 0;
 							ItemStack[] contents = holder.getInventory().getContents();
 							for (ItemStack itemStack : contents) {
-								if (this.updateItem(itemStack)) i++;
+								c += this.updateItem(itemStack);
 							}
 							holder.getInventory().setContents(contents);
-							if (i != 0) {
+							if (c != 0) {
 								Bukkit.getLogger().info(
 										"Updated " + block.getType() + " at : \n"
 										+ chunkEntry.getValue()
-										+ "\nWith : " + i + " customs"
+										+ "\nWith : " + c + " customs"
 								);
 							}
 						}
@@ -174,51 +164,53 @@ public final class ConfigCache {
 		for (OfflinePlayer offlinePlayer : Bukkit.getOfflinePlayers()) {
 			Player player = AdaptationUtils.loadPlayer(offlinePlayer);
 			if (player != null) {
-				int i = 0;
+				int c = 0;
 
 				ItemStack[] inventoryContents = player.getInventory().getContents();
 				for (ItemStack itemStack : inventoryContents) {
-					if (this.updateItem(itemStack)) i++;
+					c += this.updateItem(itemStack);
 				}
 				player.getInventory().setContents(inventoryContents);
 
 				ItemStack[] enderContents = player.getEnderChest().getContents();
 				for (ItemStack itemStack : enderContents) {
-					if (this.updateItem(itemStack)) i++;
+					c += this.updateItem(itemStack);
 				}
 				player.getEnderChest().setContents(enderContents);
 
-				if (i != 0) {
+				if (c != 0) {
 					Bukkit.getLogger().info(
 							"Updated " + player.getName() + " (" + player.getUniqueId() + ") "
-							+ "\nWith : " + i + " customs"
+							+ "\nWith : " + c + " customs"
 					);
+					player.saveData();
 				}
 			}
 		}
 	}
 
-	private boolean updateItem(@Nullable ItemStack itemStack) {
-		if (itemStack == null || !itemStack.hasItemMeta()) return false;
+	private int updateItem(@Nullable ItemStack itemStack) {
+		if (itemStack == null || !itemStack.hasItemMeta()) return 0;
 		ItemMeta itemMeta = itemStack.getItemMeta();
 
 		if (
 				itemMeta instanceof BlockStateMeta blockStateMeta
 				&& blockStateMeta.getBlockState() instanceof BlockInventoryHolder holder
 		) {
+			int i = 0;
 			ItemStack[] contents = holder.getInventory().getContents();
 			for (ItemStack item : contents) {
-				this.updateItem(item);
+				i += this.updateItem(item);
 			}
 			holder.getInventory().setContents(contents);
 			blockStateMeta.setBlockState((BlockState) holder);
-			return itemStack.setItemMeta(blockStateMeta);
+			itemStack.setItemMeta(itemMeta);
+			return i;
 		}
 
-		if (!itemStack.getItemMeta().hasCustomModelData()) return false;
+		if (!itemStack.getItemMeta().hasCustomModelData()) return 0;
 
 		Object custom = this.getCustom(itemStack);
-		System.out.println(custom);
 		if (
 				custom instanceof CustomDecorData data
 				&& !itemMeta.getPersistentDataContainer().has(MSDecorUtils.CUSTOM_DECOR_TYPE_NAMESPACED_KEY)
@@ -228,7 +220,8 @@ public final class ConfigCache {
 					PersistentDataType.STRING,
 					data.getNamespacedKey().getKey()
 			);
-			return itemStack.setItemMeta(itemMeta);
+			itemStack.setItemMeta(itemMeta);
+			return 1;
 		} else if (
 				custom instanceof CustomBlockData data
 				&& !itemMeta.getPersistentDataContainer().has(MSBlockUtils.CUSTOM_BLOCK_TYPE_NAMESPACED_KEY)
@@ -238,7 +231,8 @@ public final class ConfigCache {
 					PersistentDataType.STRING,
 					data.getNamespacedKey().getKey()
 			);
-			return itemStack.setItemMeta(itemMeta);
+			itemStack.setItemMeta(itemMeta);
+			return 1;
 		} else if (
 				custom instanceof CustomItem data
 				&& !itemMeta.getPersistentDataContainer().has(MSItemUtils.CUSTOM_ITEM_TYPE_NAMESPACED_KEY)
@@ -248,29 +242,17 @@ public final class ConfigCache {
 					PersistentDataType.STRING,
 					data.getNamespacedKey().getKey()
 			);
-			return itemStack.setItemMeta(itemMeta);
-		} else if (
-				custom instanceof RenameableItem data
-				&& !itemMeta.getPersistentDataContainer().has(MSItemUtils.CUSTOM_ITEM_RENAMEABLE_NAMESPACED_KEY)
-		) {
-			itemMeta.getPersistentDataContainer().set(
-					MSItemUtils.CUSTOM_ITEM_RENAMEABLE_NAMESPACED_KEY,
-					PersistentDataType.STRING,
-					data.getNamespacedKey().getKey()
-			);
-			return itemStack.setItemMeta(itemMeta);
+			itemStack.setItemMeta(itemMeta);
+			return 1;
 		}
 
-		return false;
+		return 0;
 	}
 
 	private @Nullable Object getCustom(@NotNull ItemStack itemStack) {
 		int cmd = itemStack.getItemMeta().getCustomModelData();
 
 		Object customBlock = this.customBlockMap.getBySecondaryKey(cmd);
-		System.out.println(
-				cmd + " " + (customBlock != null ? ((CustomBlockData) customBlock).craftItemStack().getItemMeta().getCustomModelData() : 0)
-		);
 		if (
 				customBlock instanceof CustomBlockData data
 				&& itemStack.getType() == data.craftItemStack().getType()
@@ -286,12 +268,6 @@ public final class ConfigCache {
 		if (
 				customItem instanceof CustomItem data
 				&& itemStack.getType() == data.getItemStack().getType()
-		) return data;
-
-		Object renameableItem = this.renameableItemMap.getBySecondaryKey(cmd);
-		if (
-				renameableItem instanceof RenameableItem data
-				&& itemStack.getType() == data.getResultItemStack().getType()
 		) return data;
 		return null;
 	}

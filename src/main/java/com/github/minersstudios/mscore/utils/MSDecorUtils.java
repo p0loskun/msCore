@@ -34,6 +34,7 @@ public final class MSDecorUtils {
 			Material.LIGHT
 	);
 
+	@Contract(value = " -> fail")
 	private MSDecorUtils() {
 		throw new IllegalStateException("Utility class");
 	}
@@ -99,7 +100,9 @@ public final class MSDecorUtils {
 	 * @param namespacedKeyStr {@link CustomDecorData} namespaced key string, example - (msdecor:example)
 	 * @return {@link CustomDecorData} item stack
 	 */
+	@Contract("null -> null")
 	public static @Nullable ItemStack getCustomDecorItem(@Nullable String namespacedKeyStr) {
+		if (namespacedKeyStr == null) return null;
 		CustomDecorData customDecorData = getCustomDecorData(namespacedKeyStr);
 		return customDecorData != null ? customDecorData.getItemStack() : null;
 	}
@@ -110,6 +113,7 @@ public final class MSDecorUtils {
 	 * @param itemStack {@link ItemStack}
 	 * @return {@link CustomDecorData}
 	 */
+	@Contract("null -> null")
 	public static @Nullable CustomDecorData getCustomDecorData(@Nullable ItemStack itemStack) {
 		return isCustomDecor(itemStack)
 				? getCustomDecorData(

@@ -11,10 +11,12 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.StringUtil;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
+import java.lang.reflect.Field;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
@@ -32,8 +34,15 @@ public abstract class MSPlugin extends JavaPlugin {
 	@Override
 	public final void onLoad() {
 		this.pluginFolder = new File("config/minersstudios/" + this.getName() + "/");
-		this.configFile = new File(pluginFolder, "config.yml");
+		this.configFile = new File(this.pluginFolder, "config.yml");
 		this.loadedCustoms = false;
+		try {
+			Field field = JavaPlugin.class.getDeclaredField("dataFolder");
+			field.setAccessible(true);
+			field.set(this, this.pluginFolder);
+		} catch (NoSuchFieldException | IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
 		this.load();
 	}
 
@@ -64,7 +73,7 @@ public abstract class MSPlugin extends JavaPlugin {
 	@Override
 	public @NotNull FileConfiguration getConfig() {
 		if (this.newConfig == null) {
-			reloadConfig();
+			this.reloadConfig();
 		}
 		return this.newConfig;
 	}
@@ -76,13 +85,15 @@ public abstract class MSPlugin extends JavaPlugin {
 		InputStream defConfigStream = this.getResource("config.yml");
 		if (defConfigStream == null) return;
 
-		this.newConfig.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream, Charsets.UTF_8)));
+		this.newConfig.setDefaults(
+				YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream, Charsets.UTF_8))
+		);
 	}
 
 	@Override
 	public void saveConfig() {
 		try {
-			getConfig().save(this.configFile);
+			this.getConfig().save(this.configFile);
 		} catch (IOException ex) {
 			this.getLogger().log(Level.SEVERE, "Could not save config to " + this.configFile, ex);
 		}
@@ -235,18 +246,22 @@ public abstract class MSPlugin extends JavaPlugin {
 
 	public void disable() {}
 
+	@Contract(pure = true)
 	public final @NotNull File getConfigFile() {
 		return this.configFile;
 	}
 
+	@Contract(pure = true)
 	public final @NotNull File getPluginFolder() {
 		return this.pluginFolder;
 	}
 
+	@Contract(pure = true)
 	public final boolean isLoadedCustoms() {
 		return this.loadedCustoms;
 	}
 
+	@Contract(mutates = "this")
 	public final void setLoadedCustoms(boolean loadedCustoms) {
 		this.loadedCustoms = loadedCustoms;
 	}

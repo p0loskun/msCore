@@ -3,10 +3,12 @@ package com.github.minersstudios.mscore.utils;
 import com.github.minersstudios.msblock.MSBlock;
 import com.github.minersstudios.msdecor.MSDecor;
 import com.github.minersstudios.msitems.MSItems;
+import org.jetbrains.annotations.Contract;
 
 @SuppressWarnings("unused")
 public final class MSPluginUtils {
 
+	@Contract(value = " -> fail")
 	private MSPluginUtils() {
 		throw new IllegalStateException("Utility class");
 	}

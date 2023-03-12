@@ -3,6 +3,7 @@ package com.github.minersstudios.mscore.utils;
 import com.google.common.collect.Lists;
 import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
+import org.jetbrains.annotations.Contract;
 
 import java.util.List;
 
@@ -21,6 +22,7 @@ public final class Badges {
 			SPEECH = Component.text(" ꀕ "),
 			DISCORD = Component.text(" ꀔ ");
 
+	@Contract(" -> fail")
 	private Badges() {
 		throw new IllegalStateException("Utility class");
 	}
