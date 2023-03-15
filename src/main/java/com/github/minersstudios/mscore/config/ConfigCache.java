@@ -1,9 +1,9 @@
 package com.github.minersstudios.mscore.config;
 
 import com.github.minersstudios.msblock.customblock.CustomBlockData;
-import com.github.minersstudios.msblock.utils.AdaptationUtils;
 import com.github.minersstudios.mscore.MSCore;
 import com.github.minersstudios.mscore.collections.DualMap;
+import com.github.minersstudios.mscore.utils.AdaptationUtils;
 import com.github.minersstudios.mscore.utils.MSBlockUtils;
 import com.github.minersstudios.mscore.utils.MSDecorUtils;
 import com.github.minersstudios.mscore.utils.MSItemUtils;

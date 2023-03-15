@@ -34,6 +34,13 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
+	<pluginRepositories>
+		<pluginRepository>
+			<id>bytecode.space</id>
+			<url>https://repo.bytecode.space/repository/maven-public/</url>
+		</pluginRepository>
+	</pluginRepositories>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -44,6 +51,19 @@
 					<source>${java.version}</source>
 					<target>${java.version}</target>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>ca.bkaw</groupId>
+				<artifactId>paper-nms-maven-plugin</artifactId>
+				<version>1.3.2</version>
+				<executions>
+					<execution>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>remap</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 		<resources>
@@ -73,6 +93,12 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>ca.bkaw</groupId>
+			<artifactId>paper-nms</artifactId>
+			<version>1.19.3-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
 			<groupId>com.github.MinersStudios</groupId>
 			<artifactId>msUtils</artifactId>
 			<version>1.0.0</version>
@@ -81,7 +107,7 @@
 		<dependency>
 			<groupId>com.github.MinersStudios</groupId>
 			<artifactId>msBlock</artifactId>
-			<version>release-f49b4d317e-1</version>
+			<version>1.5.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

@@ -1,7 +1,6 @@
 package com.github.minersstudios.mscore.utils;
 
 import com.github.minersstudios.mscore.MSCore;
-import com.github.minersstudios.msdecor.MSDecor;
 import com.github.minersstudios.msitems.MSItems;
 import com.github.minersstudios.msitems.items.CustomItem;
 import com.github.minersstudios.msitems.items.RenameableItem;

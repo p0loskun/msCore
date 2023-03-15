@@ -40,7 +40,7 @@ public final class CommandUtils {
 	/**
 	 * Gets a date with time added
 	 * <p>
-	 * Regex : [0-9]+[smhdMy]
+	 * Regex : [\d]+[smhdMy]
 	 *
 	 * @param string time
 	 * @return date with time added

@@ -1,6 +1,5 @@
 package com.github.minersstudios.mscore;
 
-import com.github.minersstudios.msblock.customblock.CustomBlockData;
 import com.github.minersstudios.mscore.config.ConfigCache;
 import com.github.minersstudios.mscore.utils.MSPluginUtils;
 import org.bukkit.Bukkit;
