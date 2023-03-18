@@ -26,21 +26,11 @@ public final class MSItemUtils {
 	}
 
 	/**
-	 * @param itemStack item
-	 * @return True if item is {@link CustomItem} or {@link RenameableItem}
+	 * @param itemStack              item
+	 * @return True if item is {@link CustomItem}
 	 */
 	@Contract("null -> false")
 	public static boolean isCustomItem(@Nullable ItemStack itemStack) {
-		return isCustomItem(itemStack, true);
-	}
-
-	/**
-	 * @param itemStack              item
-	 * @param checkForRenameableItem if true, the item stack will be checked if it is a {@link RenameableItem}
-	 * @return True if item is {@link CustomItem}
-	 */
-	@Contract("null, _ -> false")
-	public static boolean isCustomItem(@Nullable ItemStack itemStack, boolean checkForRenameableItem) {
 		if (itemStack == null) return false;
 		ItemMeta itemMeta = itemStack.getItemMeta();
 		return itemMeta != null && itemMeta.getPersistentDataContainer().has(CUSTOM_ITEM_TYPE_NAMESPACED_KEY);
