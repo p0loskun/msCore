@@ -1,8 +1,11 @@
 package com.github.minersstudios.mscore.utils;
 
+import org.bukkit.Bukkit;
 import org.bukkit.EntityEffect;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
@@ -66,40 +69,53 @@ public final class ItemUtils {
 		return false;
 	}
 
-	public static boolean damageItem(@Nullable ItemStack item) {
-		return damageItem(null, item, 1);
-	}
-
-	public static boolean damageItem(@Nullable Player holder, @Nullable ItemStack item) {
+	public static boolean damageItem(@NotNull Player holder, @Nullable ItemStack item) {
 		return damageItem(holder, item, 1);
 	}
 
-	public static boolean damageItem(@Nullable Player holder, @Nullable ItemStack item, int damage) {
+	public static boolean damageItem(@NotNull Player holder, @Nullable ItemStack item, int damage) {
 		return damageItem(holder, EquipmentSlot.HAND, item, damage);
 	}
 
-	public static boolean damageItem(@Nullable Player holder, @Nullable EquipmentSlot slot, @Nullable ItemStack item, int damage) {
+	public static boolean damageItem(@NotNull Player holder, @Nullable EquipmentSlot slot, @Nullable ItemStack item, int originalDamage) {
 		if (item == null) return false;
 		if (item.getItemMeta() instanceof Damageable damageable) {
-			damageable.setDamage(damageable.getDamage() + damage);
-			item.setItemMeta(damageable);
-			if (damageable.getDamage() >= item.getType().getMaxDurability()) {
-				item.setType(Material.AIR);
-				if (holder != null) {
-					if (item.getType() == Material.SHIELD) {
-						holder.playEffect(EntityEffect.SHIELD_BREAK);
-						return true;
-					}
-					switch (slot == null ? EquipmentSlot.HAND : slot) {
-						case HEAD -> holder.playEffect(EntityEffect.BREAK_EQUIPMENT_HELMET);
-						case CHEST -> holder.playEffect(EntityEffect.BREAK_EQUIPMENT_CHESTPLATE);
-						case LEGS -> holder.playEffect(EntityEffect.BREAK_EQUIPMENT_LEGGINGS);
-						case FEET -> holder.playEffect(EntityEffect.BREAK_EQUIPMENT_BOOTS);
-						case OFF_HAND -> holder.playEffect(EntityEffect.BREAK_EQUIPMENT_OFF_HAND);
-						default -> holder.playEffect(EntityEffect.BREAK_EQUIPMENT_MAIN_HAND);
-					}
-					holder.updateInventory();
+			int damage = 0;
+
+			if (damageable.hasEnchant(Enchantment.DURABILITY)) {
+				double percentage = 1.0d / (damageable.getEnchantLevel(Enchantment.DURABILITY) + 1.0d);
+				if (Math.random() < percentage) {
+					damage = originalDamage;
+					damageable.setDamage(damageable.getDamage() + originalDamage);
 				}
+			} else {
+				damage = originalDamage;
+				damageable.setDamage(damageable.getDamage() + originalDamage);
+			}
+
+			item.setItemMeta(damageable);
+
+			PlayerItemDamageEvent event = new PlayerItemDamageEvent(holder, item, damage, originalDamage);
+			Bukkit.getPluginManager().callEvent(event);
+
+			if (damageable.getDamage() >= item.getType().getMaxDurability()) {
+				item.setAmount(item.getAmount() - 1);
+
+				if (item.getType() == Material.SHIELD) {
+					holder.playEffect(EntityEffect.SHIELD_BREAK);
+					return true;
+				}
+
+				switch (slot == null ? EquipmentSlot.HAND : slot) {
+					case HEAD -> holder.playEffect(EntityEffect.BREAK_EQUIPMENT_HELMET);
+					case CHEST -> holder.playEffect(EntityEffect.BREAK_EQUIPMENT_CHESTPLATE);
+					case LEGS -> holder.playEffect(EntityEffect.BREAK_EQUIPMENT_LEGGINGS);
+					case FEET -> holder.playEffect(EntityEffect.BREAK_EQUIPMENT_BOOTS);
+					case OFF_HAND -> holder.playEffect(EntityEffect.BREAK_EQUIPMENT_OFF_HAND);
+					default -> holder.playEffect(EntityEffect.BREAK_EQUIPMENT_MAIN_HAND);
+				}
+
+				holder.updateInventory();
 			}
 			return true;
 		}
