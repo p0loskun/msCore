@@ -73,11 +73,23 @@ public final class ItemUtils {
 		return damageItem(holder, item, 1);
 	}
 
+	public static boolean damageItem(@NotNull Player holder, @Nullable ItemStack item, boolean callEvent) {
+		return damageItem(holder, item, 1, callEvent);
+	}
+
 	public static boolean damageItem(@NotNull Player holder, @Nullable ItemStack item, int damage) {
 		return damageItem(holder, EquipmentSlot.HAND, item, damage);
 	}
 
-	public static boolean damageItem(@NotNull Player holder, @Nullable EquipmentSlot slot, @Nullable ItemStack item, int originalDamage) {
+	public static boolean damageItem(@NotNull Player holder, @Nullable ItemStack item, int damage, boolean callEvent) {
+		return damageItem(holder, EquipmentSlot.HAND, item, damage, callEvent);
+	}
+
+	public static boolean damageItem(@NotNull Player holder, @Nullable EquipmentSlot slot, @Nullable ItemStack item, int damage) {
+		return damageItem(holder, slot, item, damage, true);
+	}
+
+	public static boolean damageItem(@NotNull Player holder, @Nullable EquipmentSlot slot, @Nullable ItemStack item, int originalDamage, boolean callEvent) {
 		if (item == null) return false;
 		if (item.getItemMeta() instanceof Damageable damageable) {
 			int damage = 0;
@@ -95,8 +107,10 @@ public final class ItemUtils {
 
 			item.setItemMeta(damageable);
 
-			PlayerItemDamageEvent event = new PlayerItemDamageEvent(holder, item, damage, originalDamage);
-			Bukkit.getPluginManager().callEvent(event);
+			if (callEvent) {
+				PlayerItemDamageEvent event = new PlayerItemDamageEvent(holder, item, damage, originalDamage);
+				Bukkit.getPluginManager().callEvent(event);
+			}
 
 			if (damageable.getDamage() >= item.getType().getMaxDurability()) {
 				item.setAmount(item.getAmount() - 1);
