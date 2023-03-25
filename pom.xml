@@ -119,7 +119,7 @@
 		<dependency>
 			<groupId>com.github.MinersStudios</groupId>
 			<artifactId>msItems</artifactId>
-			<version>release-0e64c870b6-1</version>
+			<version>release-c738cebdba-1</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

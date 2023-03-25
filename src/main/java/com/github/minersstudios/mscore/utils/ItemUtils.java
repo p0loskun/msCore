@@ -1,5 +1,6 @@
 package com.github.minersstudios.mscore.utils;
 
+import com.github.minersstudios.msitems.items.DamageableItem;
 import org.bukkit.Bukkit;
 import org.bukkit.EntityEffect;
 import org.bukkit.Material;
@@ -73,46 +74,44 @@ public final class ItemUtils {
 		return damageItem(holder, item, 1);
 	}
 
-	public static boolean damageItem(@NotNull Player holder, @Nullable ItemStack item, boolean callEvent) {
-		return damageItem(holder, item, 1, callEvent);
-	}
-
 	public static boolean damageItem(@NotNull Player holder, @Nullable ItemStack item, int damage) {
 		return damageItem(holder, EquipmentSlot.HAND, item, damage);
 	}
 
-	public static boolean damageItem(@NotNull Player holder, @Nullable ItemStack item, int damage, boolean callEvent) {
-		return damageItem(holder, EquipmentSlot.HAND, item, damage, callEvent);
-	}
-
-	public static boolean damageItem(@NotNull Player holder, @Nullable EquipmentSlot slot, @Nullable ItemStack item, int damage) {
-		return damageItem(holder, slot, item, damage, true);
-	}
-
-	public static boolean damageItem(@NotNull Player holder, @Nullable EquipmentSlot slot, @Nullable ItemStack item, int originalDamage, boolean callEvent) {
+	public static boolean damageItem(@NotNull Player holder, @Nullable EquipmentSlot slot, @Nullable ItemStack item, int originalDamage) {
 		if (item == null) return false;
 		if (item.getItemMeta() instanceof Damageable damageable) {
 			int damage = 0;
 
-			if (damageable.hasEnchant(Enchantment.DURABILITY)) {
-				double percentage = 1.0d / (damageable.getEnchantLevel(Enchantment.DURABILITY) + 1.0d);
-				if (Math.random() < percentage) {
+			DamageableItem damageableItem = DamageableItem.fromItemStack(item);
+			if (damageableItem != null) {
+				damageableItem.setRealDamage(damageableItem.getRealDamage() + originalDamage);
+				if (
+						!damageable.hasEnchant(Enchantment.DURABILITY)
+						|| Math.random() < 1.0d / (damageable.getEnchantLevel(Enchantment.DURABILITY) + 1.0d)
+				) {
 					damage = originalDamage;
-					damageable.setDamage(damageable.getDamage() + originalDamage);
+					damageableItem.saveForItemStack(item);
 				}
-			} else {
+			} else if (
+					!damageable.hasEnchant(Enchantment.DURABILITY)
+					|| Math.random() < 1.0d / (damageable.getEnchantLevel(Enchantment.DURABILITY) + 1.0d)
+			) {
 				damage = originalDamage;
 				damageable.setDamage(damageable.getDamage() + originalDamage);
+				item.setItemMeta(damageable);
 			}
 
-			item.setItemMeta(damageable);
-
-			if (callEvent) {
+			if (damageableItem == null) {
 				PlayerItemDamageEvent event = new PlayerItemDamageEvent(holder, item, damage, originalDamage);
 				Bukkit.getPluginManager().callEvent(event);
 			}
 
-			if (damageable.getDamage() >= item.getType().getMaxDurability()) {
+			if (
+					damageableItem != null
+					? damageableItem.getRealDamage() >= damageableItem.getMaxDamage()
+					: damageable.getDamage() >= item.getType().getMaxDurability()
+			) {
 				item.setAmount(item.getAmount() - 1);
 
 				if (item.getType() == Material.SHIELD) {
