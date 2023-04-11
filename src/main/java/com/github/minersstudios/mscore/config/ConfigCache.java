@@ -3,10 +3,7 @@ package com.github.minersstudios.mscore.config;
 import com.github.minersstudios.msblock.customblock.CustomBlockData;
 import com.github.minersstudios.mscore.MSCore;
 import com.github.minersstudios.mscore.collections.DualMap;
-import com.github.minersstudios.mscore.utils.AdaptationUtils;
-import com.github.minersstudios.mscore.utils.MSBlockUtils;
-import com.github.minersstudios.mscore.utils.MSDecorUtils;
-import com.github.minersstudios.mscore.utils.MSItemUtils;
+import com.github.minersstudios.mscore.utils.*;
 import com.github.minersstudios.msdecor.customdecor.CustomDecorData;
 import com.github.minersstudios.msitems.items.CustomItem;
 import com.github.minersstudios.msitems.items.RenameableItem;
@@ -37,23 +34,23 @@ import java.util.stream.Stream;
 
 @SuppressWarnings("unused")
 public final class ConfigCache {
-	public final File dataFile;
-	public final YamlConfiguration yamlConfiguration;
+	public final @NotNull File dataFile;
+	public final @NotNull YamlConfiguration yamlConfiguration;
 
 	public final @NotNull DateTimeFormatter timeFormatter;
 	public final boolean updateItemsNBT;
 
-	public final DualMap<String, Integer, CustomDecorData> customDecorMap = new DualMap<>();
-	public final List<Recipe> customDecorRecipes = new ArrayList<>();
+	public final @NotNull DualMap<String, Integer, CustomDecorData> customDecorMap = new DualMap<>();
+	public final @NotNull List<Recipe> customDecorRecipes = new ArrayList<>();
 
-	public final DualMap<String, Integer, CustomBlockData> customBlockMap = new DualMap<>();
-	public final Map<Integer, CustomBlockData> cachedNoteBlockData = new HashMap<>();
-	public final List<Recipe> customBlockRecipes = new ArrayList<>();
+	public final @NotNull DualMap<String, Integer, CustomBlockData> customBlockMap = new DualMap<>();
+	public final @NotNull Map<Integer, CustomBlockData> cachedNoteBlockData = new HashMap<>();
+	public final @NotNull List<Recipe> customBlockRecipes = new ArrayList<>();
 
-	public final DualMap<String, Integer, CustomItem> customItemMap = new DualMap<>();
-	public final DualMap<String, Integer, RenameableItem> renameableItemMap = new DualMap<>();
-	public final List<RenameableItem> renameableItemsMenu = new ArrayList<>();
-	public final List<Recipe> customItemRecipes = new ArrayList<>();
+	public final @NotNull DualMap<String, Integer, CustomItem> customItemMap = new DualMap<>();
+	public final @NotNull DualMap<String, Integer, RenameableItem> renameableItemMap = new DualMap<>();
+	public final @NotNull List<RenameableItem> renameableItemsMenu = new ArrayList<>();
+	public final @NotNull List<Recipe> customItemRecipes = new ArrayList<>();
 
 	public ConfigCache() {
 		this.dataFile = MSCore.getInstance().getConfigFile();
@@ -72,7 +69,7 @@ public final class ConfigCache {
 			.map(Path::toFile)
 			.forEach(file -> {
 				try {
-					Multimap<Map.Entry<Integer, Integer>, UUID> chunks = new AdaptationUtils.RegionFile(file.toPath()).getCustomDecors();
+					Multimap<Map.Entry<Integer, Integer>, UUID> chunks = new RegionFile(file.toPath()).getCustomDecors();
 					for (Map.Entry<Map.Entry<Integer, Integer>, UUID> chunkEntry : chunks.entries()) {
 						Map.Entry<Integer, Integer> loc = chunkEntry.getKey();
 						Chunk chunk = world.getChunkAt(loc.getKey(), loc.getValue());
@@ -126,7 +123,7 @@ public final class ConfigCache {
 			.map(Path::toFile)
 			.forEach(file -> {
 				try {
-					Multimap<Map.Entry<Integer, Integer>, Location> chunks = new AdaptationUtils.RegionFile(file.toPath()).getTileEntitiesWithCustoms(world);
+					Multimap<Map.Entry<Integer, Integer>, Location> chunks = new RegionFile(file.toPath()).getTileEntitiesWithCustoms(world);
 					for (Map.Entry<Map.Entry<Integer, Integer>, Location> chunkEntry : chunks.entries()) {
 						Map.Entry<Integer, Integer> loc = chunkEntry.getKey();
 						Chunk chunk = world.getChunkAt(loc.getKey(), loc.getValue());
@@ -162,7 +159,7 @@ public final class ConfigCache {
 
 	public void updatePlayers() {
 		for (OfflinePlayer offlinePlayer : Bukkit.getOfflinePlayers()) {
-			Player player = AdaptationUtils.loadPlayer(offlinePlayer);
+			Player player = PlayerUtils.loadPlayer(offlinePlayer);
 			if (player != null) {
 				int c = 0;
 

@@ -26,7 +26,7 @@ public final class MSItemUtils {
 	}
 
 	/**
-	 * @param itemStack              item
+	 * @param itemStack item
 	 * @return True if item is {@link CustomItem}
 	 */
 	@Contract("null -> false")

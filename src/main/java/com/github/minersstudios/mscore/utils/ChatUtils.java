@@ -47,7 +47,7 @@ public final class ChatUtils {
 	 * Sends info message to target
 	 *
 	 * @param target  target
-	 * @param message warning message
+	 * @param message info message
 	 */
 	public static boolean sendInfo(@Nullable Object target, @NotNull Component message) {
 		if (target instanceof Player player) {
@@ -67,7 +67,7 @@ public final class ChatUtils {
 	 * Sends fine message to target
 	 *
 	 * @param target  target
-	 * @param message warning message
+	 * @param message fine message
 	 */
 	public static boolean sendFine(@Nullable Object target, @NotNull Component message) {
 		if (target instanceof Player player) {
@@ -107,7 +107,7 @@ public final class ChatUtils {
 	 * Sends error message to target
 	 *
 	 * @param target  target
-	 * @param message warning message
+	 * @param message error message
 	 */
 	public static boolean sendError(@Nullable Object target, @NotNull Component message) {
 		if (target instanceof Player player) {

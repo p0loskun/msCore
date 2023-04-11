@@ -67,7 +67,7 @@ public final class BlockUtils {
 	}
 
 	/**
-	 * Breaks top/bottom block
+	 * Breaks top / bottom block
 	 *
 	 * @param centreBlock block around which the blocks break
 	 */
@@ -82,6 +82,10 @@ public final class BlockUtils {
 		}
 	}
 
+	/**
+	 * @param material material that will be used to get the {@link BlockData}
+	 * @return {@link BlockData} from {@link Material}
+	 */
 	public static @Nullable BlockData getBlockDataByMaterial(@NotNull Material material) {
 		return switch (material) {
 			case REDSTONE -> Material.REDSTONE_WIRE.createBlockData();
@@ -91,7 +95,7 @@ public final class BlockUtils {
 	}
 
 	/**
-	 * @param blockData block material
+	 * @param blockData block data from which sounds will be extracted
 	 * @return True if material has wood sound
 	 */
 	public static boolean isWoodenSound(@NotNull BlockData blockData) {

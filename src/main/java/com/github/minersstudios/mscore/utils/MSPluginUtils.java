@@ -13,6 +13,9 @@ public final class MSPluginUtils {
 		throw new IllegalStateException("Utility class");
 	}
 
+	/**
+	 * @return True if msDecor, msBlock, msItems have loaded custom decors / blocks / items
+	 */
 	public static boolean isLoadedCustoms() {
 		return MSDecor.getInstance().isLoadedCustoms()
 				&& MSBlock.getInstance().isLoadedCustoms()

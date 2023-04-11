@@ -2,7 +2,6 @@ package com.github.minersstudios.mscore;
 
 import com.github.minersstudios.mscore.tabcompleters.Empty;
 import com.google.common.base.Charsets;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabCompleter;
@@ -57,7 +56,7 @@ public abstract class MSPlugin extends JavaPlugin {
 		}
 		this.enable();
 		if (this.isEnabled()) {
-			this.getLogger().log(Level.INFO, ChatColor.GREEN + "Enabled in " + (System.currentTimeMillis() - time) + "ms");
+			this.getLogger().log(Level.INFO, "\033[0;92mEnabled in " + (System.currentTimeMillis() - time) + "ms");
 		}
 	}
 
@@ -66,7 +65,7 @@ public abstract class MSPlugin extends JavaPlugin {
 		long time = System.currentTimeMillis();
 		this.disable();
 		if (!this.isEnabled()) {
-			this.getLogger().log(Level.INFO, ChatColor.GREEN + "Disabled in " + (System.currentTimeMillis() - time) + "ms");
+			this.getLogger().log(Level.INFO, "\033[0;92mDisabled in " + (System.currentTimeMillis() - time) + "ms");
 		}
 	}
 

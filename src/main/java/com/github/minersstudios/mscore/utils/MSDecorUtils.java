@@ -4,8 +4,7 @@ import com.github.minersstudios.mscore.MSCore;
 import com.github.minersstudios.msdecor.MSDecor;
 import com.github.minersstudios.msdecor.customdecor.CustomDecor;
 import com.github.minersstudios.msdecor.customdecor.CustomDecorData;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
+import com.github.minersstudios.msdecor.events.CustomDecorPlaceEvent;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -28,37 +27,68 @@ import java.util.regex.Pattern;
 @SuppressWarnings("unused")
 public final class MSDecorUtils {
 	public static final NamespacedKey CUSTOM_DECOR_TYPE_NAMESPACED_KEY = new NamespacedKey(MSDecor.getInstance(), "type");
-	public static final ImmutableSet<Material> CUSTOM_DECOR_MATERIALS = Sets.immutableEnumSet(
-			Material.BARRIER,
-			Material.STRUCTURE_VOID,
-			Material.LIGHT
-	);
 
 	@Contract(value = " -> fail")
 	private MSDecorUtils() {
 		throw new IllegalStateException("Utility class");
 	}
 
-	public static void placeCustomDecor(
+	/**
+	 * Places custom decor
+	 * <p>
+	 * Calls {@link CustomDecorPlaceEvent} when returns true
+	 *
+	 * @param block      block instead of which decor will be installed
+	 * @param player     player who places decor
+	 * @param key        {@link CustomDecorData} namespaced key string, example - (msdecor:example)
+	 * @param blockFace  side on which decor will be placed
+	 * @return True if {@link CustomDecorData} is found
+	 */
+	public static boolean placeCustomDecor(
 			@NotNull Block block,
 			@NotNull Player player,
 			@NotNull String key,
 			@NotNull BlockFace blockFace
 	) {
-		placeCustomDecor(block, player, key, blockFace, null, null);
+		return placeCustomDecor(block, player, key, blockFace, null, null);
 	}
 
-	public static void placeCustomDecor(
+	/**
+	 * Places custom decor
+	 * <p>
+	 * Calls {@link CustomDecorPlaceEvent} when returns true
+	 *
+	 * @param block      block instead of which decor will be installed
+	 * @param player     player who places decor
+	 * @param key        {@link CustomDecorData} namespaced key string, example - (msdecor:example)
+	 * @param blockFace  side on which decor will be placed
+	 * @param hand       hand that was involved
+	 * @return True if {@link CustomDecorData} is found
+	 */
+	public static boolean placeCustomDecor(
 			@NotNull Block block,
 			@NotNull Player player,
 			@NotNull String key,
 			@NotNull BlockFace blockFace,
 			@Nullable EquipmentSlot hand
 	) {
-		placeCustomDecor(block, player, key, blockFace, hand, null);
+		return placeCustomDecor(block, player, key, blockFace, hand, null);
 	}
 
-	public static void placeCustomDecor(
+	/**
+	 * Places custom decor
+	 * <p>
+	 * Calls {@link CustomDecorPlaceEvent} when returns true
+	 *
+	 * @param block      block instead of which decor will be installed
+	 * @param player     player who places decor
+	 * @param key        {@link CustomDecorData} namespaced key string, example - (msdecor:example)
+	 * @param blockFace  side on which decor will be placed
+	 * @param hand       hand that was involved
+	 * @param customName custom name of decor
+	 * @return True if {@link CustomDecorData} is found
+	 */
+	public static boolean placeCustomDecor(
 			@NotNull Block block,
 			@NotNull Player player,
 			@NotNull String key,
@@ -67,20 +97,31 @@ public final class MSDecorUtils {
 			@Nullable Component customName
 	) {
 		CustomDecorData customDecorData = MSDecorUtils.getCustomDecorData(key);
-		if (customDecorData == null) throw new NullPointerException();
-		CustomDecor customDecor = new CustomDecor(block, player, customDecorData);
-		customDecor.setCustomDecor(blockFace, hand, customName);
+		if (customDecorData == null) return false;
+		new CustomDecor(block, player, customDecorData)
+		.setCustomDecor(blockFace, hand, customName);
+		return true;
 	}
 
+	/**
+	 * @param material material of block
+	 * @return True if the material is used as a decor HitBox
+	 */
 	@Contract("null -> false")
 	public static boolean isCustomDecorMaterial(@Nullable Material material) {
-		return CUSTOM_DECOR_MATERIALS.contains(material);
+		return material != null && switch (material) {
+			case BARRIER, STRUCTURE_VOID, LIGHT -> true;
+			default -> false;
+		};
 	}
 
+	/**
+	 * @param entity the entity
+	 * @return True if the entity has the "customDecor" tag
+	 */
 	@Contract("null -> false")
 	public static boolean isCustomDecorEntity(@Nullable Entity entity) {
-		if (entity == null) return false;
-		return entity.getScoreboardTags().contains("customDecor");
+		return entity != null && entity.getScoreboardTags().contains("customDecor");
 	}
 
 	/**
