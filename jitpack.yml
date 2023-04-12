@@ -1,5 +1,5 @@
 before_install:
-  - mvn install:install-file -Dfile=./.paper-nms/paper-nms-1.19.3-SNAPSHOT.jar -DpomFile=./.paper-nms/paper-nms-1.19.3-SNAPSHOT.pom
+  - mvn install:install-file -Dfile=./.paper-nms/paper-nms-1.19.4-SNAPSHOT.jar -DpomFile=./.paper-nms/paper-nms-1.19.4-SNAPSHOT.pom
   - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
   - source ./install-jdk.sh --feature 17 --license GPL
 jdk:
