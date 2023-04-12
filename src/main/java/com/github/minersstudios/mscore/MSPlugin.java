@@ -16,12 +16,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.lang.reflect.Field;
-import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 public abstract class MSPlugin extends JavaPlugin {
@@ -221,19 +220,12 @@ public abstract class MSPlugin extends JavaPlugin {
 	 * @return plugin class names
 	 */
 	public final @NotNull Set<String> getClassNames() {
-		Set<String> classNames = new HashSet<>();
 		try (JarFile jarFile = new JarFile(this.getFile())) {
-			Enumeration<JarEntry> entries = jarFile.entries();
-			while (entries.hasMoreElements()) {
-				String entryName = entries.nextElement().getName();
-				if (entryName.endsWith(".class")) {
-					classNames.add(entryName
-							.replace("/", ".")
-							.replace(".class", "")
-					);
-				}
-			}
-			return classNames;
+			return jarFile.stream()
+					.map(JarEntry::getName)
+					.filter(name -> name.endsWith(".class"))
+					.map(name -> name.replace("/", ".").replace(".class", ""))
+					.collect(Collectors.toSet());
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

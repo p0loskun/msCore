@@ -25,7 +25,6 @@
 		</developer>
 	</developers>
 
-
 	<properties>
 		<authors>[ Poloskun_ ]</authors>
 		<mainClass>com.github.minersstudios.mscore.MSCore</mainClass>
@@ -96,7 +95,7 @@
 			<groupId>ca.bkaw</groupId>
 			<artifactId>paper-nms</artifactId>
 			<version>1.19.4-SNAPSHOT</version>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.github.MinersStudios</groupId>
