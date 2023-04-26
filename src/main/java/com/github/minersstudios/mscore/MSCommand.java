@@ -1,5 +1,7 @@
 package com.github.minersstudios.mscore;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -17,5 +19,14 @@ public @interface MSCommand {
 	/**
 	 * @return The command that the plugin will register
 	 */
-	String command();
+	@NotNull String command();
+	@NotNull String usage() default "";
+
+	@NotNull String description() default "";
+
+	@NotNull String[] aliases() default {};
+
+	@NotNull String permission() default "";
+
+	@NotNull String permissionMessage() default "";
 }

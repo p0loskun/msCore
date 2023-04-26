@@ -167,7 +167,7 @@ public class RegionFile {
 
 		if (
 				!(this.compressionType[i] == COMPRESSION_TYPE_GZIP
-						|| this.compressionType[i] == COMPRESSION_TYPE_ZLIB)
+				|| this.compressionType[i] == COMPRESSION_TYPE_ZLIB)
 		) {
 			this.file.close();
 			throw new Exception("Unknown compression type");

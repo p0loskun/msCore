@@ -2,12 +2,13 @@ package com.github.minersstudios.mscore;
 
 import com.github.minersstudios.mscore.tabcompleters.Empty;
 import com.google.common.base.Charsets;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.command.TabCompleter;
+import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
+import org.bukkit.command.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.StringUtil;
 import org.jetbrains.annotations.Contract;
@@ -15,7 +16,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -156,7 +160,7 @@ public abstract class MSPlugin extends JavaPlugin {
 				if (msCommand != null) {
 					try {
 						if (clazz.getDeclaredConstructor().newInstance() instanceof MSCommandExecutor msCommandExecutor) {
-							this.registerCommand(msCommand.command(), msCommandExecutor, msCommandExecutor);
+							this.registerCommand(msCommand, msCommandExecutor, msCommandExecutor);
 						} else {
 							this.getLogger().log(Level.WARNING, "Registered command that is not instance of MSCommandExecutor (" + className + ")");
 						}
@@ -169,21 +173,36 @@ public abstract class MSPlugin extends JavaPlugin {
 	}
 
 	/**
-	 * @param command         command to be registered
+	 * @param msCommand       command to be registered
 	 * @param commandExecutor command executor
 	 * @param tabCompleter    command tab completer, {@link Empty} if null
 	 */
 	public final void registerCommand(
-			@NotNull String command,
+			@NotNull MSCommand msCommand,
 			@NotNull CommandExecutor commandExecutor,
 			@Nullable TabCompleter tabCompleter
 	) {
-		PluginCommand pluginCommand = this.getCommand(command);
-		if (pluginCommand == null) {
-			throw new NullPointerException("Command : \"" + command + "\" must to be registered in the plugin.yml");
-		}
+		PluginCommand pluginCommand = createCommand(msCommand.command());
+		pluginCommand.setAliases(List.of(msCommand.aliases()));
+		pluginCommand.setUsage(msCommand.usage());
+		pluginCommand.setDescription(msCommand.description());
+		pluginCommand.setPermission(msCommand.permission());
+		pluginCommand.permissionMessage(Component.text(msCommand.permissionMessage()));
 		pluginCommand.setExecutor(commandExecutor);
 		pluginCommand.setTabCompleter(tabCompleter);
+		Bukkit.getCommandMap().register(this.getName(), pluginCommand);
+	}
+
+	private @NotNull PluginCommand createCommand(String command) {
+		PluginCommand pluginCommand;
+		try {
+			Constructor<PluginCommand> constructor = PluginCommand.class.getDeclaredConstructor(String.class, Plugin.class);
+			constructor.setAccessible(true);
+			pluginCommand = constructor.newInstance(command, this);
+		} catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | InstantiationException e) {
+			throw new RuntimeException(e);
+		}
+		return pluginCommand;
 	}
 
 	/**
