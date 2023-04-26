@@ -19,6 +19,7 @@ import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.jar.JarEntry;
@@ -182,12 +183,35 @@ public abstract class MSPlugin extends JavaPlugin {
 			@NotNull CommandExecutor commandExecutor,
 			@Nullable TabCompleter tabCompleter
 	) {
-		PluginCommand pluginCommand = createCommand(msCommand.command());
-		pluginCommand.setAliases(List.of(msCommand.aliases()));
-		pluginCommand.setUsage(msCommand.usage());
-		pluginCommand.setDescription(msCommand.description());
-		pluginCommand.setPermission(msCommand.permission());
-		pluginCommand.permissionMessage(Component.text(msCommand.permissionMessage()));
+		PluginCommand bukkitCommand = this.getCommand(msCommand.command());
+		PluginCommand pluginCommand = bukkitCommand == null ? createCommand(msCommand.command()) : bukkitCommand;
+
+		List<String> aliases = Arrays.asList(msCommand.aliases());
+		if (!aliases.isEmpty()) {
+			pluginCommand.setAliases(aliases);
+		}
+
+		String usage = msCommand.usage();
+		if (usage.isEmpty()) {
+			pluginCommand.setUsage(usage);
+		}
+
+		String description = msCommand.description();
+		if (description.isEmpty()) {
+			pluginCommand.setDescription(description);
+		}
+
+		String permission = msCommand.permission();
+		if (permission.isEmpty()) {
+			pluginCommand.setPermission(permission);
+		}
+
+		String permissionMessageStr = msCommand.permissionMessage();
+		Component permissionMessage = Component.text(permissionMessageStr);
+		if (permissionMessageStr.isEmpty()) {
+			pluginCommand.permissionMessage(permissionMessage);
+		}
+
 		pluginCommand.setExecutor(commandExecutor);
 		pluginCommand.setTabCompleter(tabCompleter);
 		Bukkit.getCommandMap().register(this.getName(), pluginCommand);
@@ -271,7 +295,6 @@ public abstract class MSPlugin extends JavaPlugin {
 		return this.loadedCustoms;
 	}
 
-	@Contract(mutates = "this")
 	public final void setLoadedCustoms(boolean loadedCustoms) {
 		this.loadedCustoms = loadedCustoms;
 	}

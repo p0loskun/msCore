@@ -16,10 +16,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface MSCommand {
 
-	/**
-	 * @return The command that the plugin will register
-	 */
 	@NotNull String command();
+
 	@NotNull String usage() default "";
 
 	@NotNull String description() default "";
