@@ -2,12 +2,14 @@ package com.github.minersstudios.mscore;
 
 import com.github.minersstudios.mscore.tabcompleters.Empty;
 import com.google.common.base.Charsets;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
-import org.bukkit.command.*;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.PluginCommand;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
+import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.StringUtil;
@@ -19,9 +21,7 @@ import java.io.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
@@ -183,8 +183,9 @@ public abstract class MSPlugin extends JavaPlugin {
 			@NotNull CommandExecutor commandExecutor,
 			@Nullable TabCompleter tabCompleter
 	) {
-		PluginCommand bukkitCommand = this.getCommand(msCommand.command());
-		PluginCommand pluginCommand = bukkitCommand == null ? createCommand(msCommand.command()) : bukkitCommand;
+		String name = msCommand.command();
+		PluginCommand bukkitCommand = this.getCommand(name);
+		PluginCommand pluginCommand = bukkitCommand == null ? createCommand(name) : bukkitCommand;
 
 		List<String> aliases = Arrays.asList(msCommand.aliases());
 		if (!aliases.isEmpty()) {
@@ -192,24 +193,31 @@ public abstract class MSPlugin extends JavaPlugin {
 		}
 
 		String usage = msCommand.usage();
-		if (usage.isEmpty()) {
+		if (!usage.isEmpty()) {
 			pluginCommand.setUsage(usage);
 		}
 
 		String description = msCommand.description();
-		if (description.isEmpty()) {
+		if (!description.isEmpty()) {
 			pluginCommand.setDescription(description);
 		}
 
-		String permission = msCommand.permission();
-		if (permission.isEmpty()) {
-			pluginCommand.setPermission(permission);
-		}
+		String permissionStr = msCommand.permission();
+		if (!permissionStr.isEmpty()) {
+			Map<String, Boolean> children = new HashMap<>();
+			String[] keys = msCommand.permissionParentKeys();
+			boolean[] values = msCommand.permissionParentValues();
+			if (keys.length != values.length) {
+				throw new IllegalArgumentException("Permission and boolean array lengths do not match in command : " + name);
+			} else {
+				for (int i = 0; i < keys.length; i++) {
+					children.put(keys[i], values[i]);
+				}
+			}
 
-		String permissionMessageStr = msCommand.permissionMessage();
-		Component permissionMessage = Component.text(permissionMessageStr);
-		if (permissionMessageStr.isEmpty()) {
-			pluginCommand.permissionMessage(permissionMessage);
+			Permission permission = new Permission(permissionStr, msCommand.permissionDefault(), children);
+			Bukkit.getPluginManager().addPermission(permission);
+			pluginCommand.setPermission(permissionStr);
 		}
 
 		pluginCommand.setExecutor(commandExecutor);

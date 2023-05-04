@@ -10,7 +10,7 @@ import java.util.List;
 public interface MSCommandExecutor extends CommandExecutor, TabCompleter {
 
 	@Override
-	default @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+	default @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String @NotNull ... args) {
 		return new Empty().onTabComplete(sender, command, label, args);
 	}
 }

@@ -1,5 +1,6 @@
 package com.github.minersstudios.mscore;
 
+import org.bukkit.permissions.PermissionDefault;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.annotation.ElementType;
@@ -22,9 +23,13 @@ public @interface MSCommand {
 
 	@NotNull String description() default "";
 
-	@NotNull String[] aliases() default {};
+	String @NotNull [] aliases() default {};
 
 	@NotNull String permission() default "";
 
-	@NotNull String permissionMessage() default "";
+	@NotNull PermissionDefault permissionDefault() default PermissionDefault.NOT_OP;
+
+	String @NotNull [] permissionParentKeys() default {};
+
+	boolean[] permissionParentValues() default {};
 }
