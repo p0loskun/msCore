@@ -9,6 +9,7 @@ import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftInventoryCustom;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,7 +18,7 @@ import org.jetbrains.annotations.Range;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CustomInventory extends CraftInventoryCustom {
+public class CustomInventory extends CraftInventoryCustom implements Inventory {
 	private final int size;
 	private final @NotNull Map<Integer, InventoryButton> buttons;
 	private @Nullable InventoryOpenAction openAction;
