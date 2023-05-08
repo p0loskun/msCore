@@ -18,16 +18,17 @@ import org.jetbrains.annotations.Range;
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings("unused")
 public class CustomInventory extends CraftInventoryCustom implements Inventory {
-	private final int size;
-	private final @NotNull Map<Integer, InventoryButton> buttons;
-	private @Nullable InventoryOpenAction openAction;
-	private @Nullable InventoryCloseAction closeAction;
-	private @Nullable InventoryClickAction clickAction;
-	private @Nullable BottomInventoryClickAction bottomClickAction;
-	private Object[] args;
+	protected final int size;
+	protected final @NotNull Map<Integer, InventoryButton> buttons;
+	protected @Nullable InventoryOpenAction openAction;
+	protected @Nullable InventoryCloseAction closeAction;
+	protected @Nullable InventoryClickAction clickAction;
+	protected @Nullable BottomInventoryClickAction bottomClickAction;
+	protected Object[] args;
 
-	private static final int MAX_SIZE = 54;
+	protected static final int MAX_SIZE = 54;
 
 	public CustomInventory(
 			@NotNull String title,

@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@SuppressWarnings("unused")
 public class InventoryButton {
 	private @Nullable Player whoClicked;
 	private @Nullable ItemStack item;
