@@ -48,7 +48,7 @@ public class ListedInventory extends CustomInventory {
 			@Range(from = 0, to = MAX_SIZE) int slot,
 			@NotNull StaticInventoryButton button
 	) {
-		if (this.setStaticButtonAt(slot, button)) return false;
+		if (!this.setStaticButtonAt(slot, button)) return false;
 		this.updateStaticButtons();
 		return true;
 	}
@@ -84,9 +84,7 @@ public class ListedInventory extends CustomInventory {
 		listedInventory.setPageIndex(page);
 		this.pages.put(page, listedInventory);
 		this.updateStaticButtons(page);
-		if (page >= this.pagesSize) {
-			this.setPagesSize(this.pages.size());
-		}
+		this.setPagesSize(this.pages.size());
 		return listedInventory;
 	}
 
@@ -121,6 +119,8 @@ public class ListedInventory extends CustomInventory {
 	}
 
 	protected void setPagesSize(@Range(from = 0, to = Integer.MAX_VALUE) int pagesSize) {
-		this.pagesSize = pagesSize;
+		for (ListedInventory listedInventory : this.pages.values()) {
+			listedInventory.pagesSize = pagesSize;
+		}
 	}
 }

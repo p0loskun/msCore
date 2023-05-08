@@ -65,7 +65,6 @@ public class ElementListedInventory extends ListedInventory {
 		return this.elementSlots.clone();
 	}
 
-	@Override
 	public @Nullable ListedInventory createPage(@Range(from = 0, to = Integer.MAX_VALUE) int page) {
 		if (page >= this.pagesSize) return null;
 		ListedInventory listedInventory = (ListedInventory) this.clone();
@@ -80,5 +79,10 @@ public class ElementListedInventory extends ListedInventory {
 			this.pages.put(page, this.createPage(page));
 		}
 		this.updateStaticButtons();
+	}
+
+	@Override
+	protected void setPagesSize(@Range(from = 0, to = Integer.MAX_VALUE) int pagesSize) {
+		this.pagesSize = pagesSize;
 	}
 }

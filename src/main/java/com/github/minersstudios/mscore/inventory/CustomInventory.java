@@ -25,7 +25,7 @@ import java.util.Map;
 @SuppressWarnings("unused")
 public class CustomInventory extends CraftInventoryCustom implements Inventory, Cloneable {
 	protected final int size;
-	protected final @NotNull Map<Integer, InventoryButton> buttons;
+	protected @NotNull Map<Integer, InventoryButton> buttons;
 	protected @Nullable InventoryOpenAction openAction;
 	protected @Nullable InventoryCloseAction closeAction;
 	protected @Nullable InventoryClickAction clickAction;
@@ -73,7 +73,7 @@ public class CustomInventory extends CraftInventoryCustom implements Inventory, 
 			@Range(from = 0, to = MAX_SIZE) int slot,
 			@NotNull InventoryButton button
 	) {
-		if (this.setButtonAt(slot, button)) return false;
+		if (!this.setButtonAt(slot, button)) return false;
 		this.updateButtons();
 		return true;
 	}
@@ -176,6 +176,7 @@ public class CustomInventory extends CraftInventoryCustom implements Inventory, 
 			Unsafe unsafe = (Unsafe) unsafeField.get(null);
 			unsafe.putObject(clone, unsafe.objectFieldOffset(inventoryField), newContainer);
 
+			clone.buttons = new HashMap<>(this.buttons);
 			clone.setContents(this.getContents());
 			return clone;
 		} catch (CloneNotSupportedException | IllegalAccessException | NoSuchFieldException e) {
