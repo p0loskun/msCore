@@ -1,44 +1,27 @@
 package com.github.minersstudios.mscore.inventory;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
-import net.minecraft.world.Container;
-import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftInventory;
-import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftInventoryCustom;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
-import sun.misc.Unsafe;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings("unused")
-public class ListedInventory extends CustomInventory implements Cloneable {
-	protected final @NotNull Multimap<Integer, InventoryButton> elements = ArrayListMultimap.create();
+public class ListedInventory extends CustomInventory {
 	protected final @NotNull Map<Integer, ListedInventory> pages = new HashMap<>();
 	protected final @NotNull Map<Integer, StaticInventoryButton> staticButtons;
-	protected final int[] elementSlots;
 	protected int page;
 	protected int pagesSize;
 
 	public ListedInventory(
 			@NotNull String title,
 			@Range(from = 1, to = 6) int verticalSize,
-			@NotNull List<InventoryButton> elements,
-			int @Range(from = 0, to = Integer.MAX_VALUE) [] elementSlots,
 			Object... args
 	) {
 		super(title, verticalSize, args);
-		this.elementSlots = elementSlots;
 		this.page = 0;
 		this.staticButtons = new HashMap<>(this.size);
-		this.setElements(elements);
-		this.updatePages();
-		this.setButtons(this.getPageContents(this.page));
 	}
 
 	public boolean hasStaticButtons() {
@@ -70,10 +53,6 @@ public class ListedInventory extends CustomInventory implements Cloneable {
 		return true;
 	}
 
-	public boolean removeStaticButtonAt(@Range(from = 0, to = MAX_SIZE) int slot) {
-		return slot + 1 <= this.size && this.staticButtons.remove(slot) != null;
-	}
-
 	@Override
 	public @Nullable InventoryButton getClickedButton(int slot) {
 		StaticInventoryButton staticInventoryButton = this.staticButtons.getOrDefault(slot, null);
@@ -87,43 +66,27 @@ public class ListedInventory extends CustomInventory implements Cloneable {
 		if (!this.hasStaticButtons()) return;
 		for (Map.Entry<Integer, StaticInventoryButton> entry : this.staticButtons.entrySet()) {
 			for (ListedInventory listedInventory : this.pages.values()) {
-				listedInventory.setItem(entry.getKey(), entry.getValue().getButton(this).getItem());
+				listedInventory.setItem(entry.getKey(), entry.getValue().getButton(listedInventory).getItem());
 			}
 		}
 	}
 
-	@Contract("-> new")
-	public @NotNull Multimap<Integer, InventoryButton> getElements() {
-		return ArrayListMultimap.create(this.elements);
-	}
-
-	public void setElements(@NotNull List<InventoryButton> elements) {
-		this.elements.clear();
-		this.setPagesSize((int) Math.ceil((double) elements.size() / this.elementSlots.length));
-		for (int page = 0; page < this.pagesSize; page++) {
-			for (int element = 0; element < this.elementSlots.length; element++) {
-				int index = element + (page * this.elementSlots.length);
-				if (index >= elements.size()) break;
-				this.elements.put(page, elements.get(index));
-			}
+	public void updateStaticButtons(int page) {
+		ListedInventory listedInventory = this.pages.get(page);
+		if (!this.hasStaticButtons()) return;
+		for (Map.Entry<Integer, StaticInventoryButton> entry : this.staticButtons.entrySet()) {
+			listedInventory.setItem(entry.getKey(), entry.getValue().getButton(listedInventory).getItem());
 		}
-	}
-
-	public @NotNull Map<Integer, InventoryButton> getPageContents(int page) {
-		Map<Integer, InventoryButton> content = new HashMap<>();
-		int i = 0;
-		for (InventoryButton inventoryButton : this.elements.get(page)) {
-			content.put(this.elementSlots[i], inventoryButton);
-			i++;
-		}
-		return content;
 	}
 
 	public @Nullable ListedInventory createPage(@Range(from = 0, to = Integer.MAX_VALUE) int page) {
-		if (page >= this.pagesSize) return null;
-		ListedInventory listedInventory = this.clone();
+		ListedInventory listedInventory = (ListedInventory) this.clone();
 		listedInventory.setPageIndex(page);
-		listedInventory.setButtons(this.getPageContents(page));
+		this.pages.put(page, listedInventory);
+		this.updateStaticButtons(page);
+		if (page >= this.pagesSize) {
+			this.setPagesSize(this.pages.size());
+		}
 		return listedInventory;
 	}
 
@@ -131,27 +94,15 @@ public class ListedInventory extends CustomInventory implements Cloneable {
 		return this.pages;
 	}
 
-	public void updatePages() {
-		this.pages.clear();
-		for (int page = 0; page < this.pagesSize; page++) {
-			this.pages.put(page, this.createPage(page));
-		}
-	}
-
 	public @Nullable ListedInventory getPage(@Range(from = 0, to = Integer.MAX_VALUE) int page) {
 		return this.pages.getOrDefault(page, null);
-	}
-
-	@Contract("-> new")
-	public int[] getElementSlots() {
-		return this.elementSlots.clone();
 	}
 
 	public int getPageIndex() {
 		return this.page;
 	}
 
-	private void setPageIndex(@Range(from = 0, to = Integer.MAX_VALUE) int page) {
+	protected void setPageIndex(@Range(from = 0, to = Integer.MAX_VALUE) int page) {
 		this.page = page;
 	}
 
@@ -169,26 +120,7 @@ public class ListedInventory extends CustomInventory implements Cloneable {
 		return this.pagesSize;
 	}
 
-	private void setPagesSize(@Range(from = 0, to = Integer.MAX_VALUE) int pagesSize) {
+	protected void setPagesSize(@Range(from = 0, to = Integer.MAX_VALUE) int pagesSize) {
 		this.pagesSize = pagesSize;
-	}
-
-	@Override
-	public @NotNull ListedInventory clone() {
-		try {
-			ListedInventory clone = (ListedInventory) super.clone();
-			Container newContainer = new CraftInventoryCustom(null, this.getSize(), this.title()).getInventory();
-			Field inventoryField = CraftInventory.class.getDeclaredField("inventory");
-
-			Field unsafeField = Unsafe.class.getDeclaredField("theUnsafe");
-			unsafeField.setAccessible(true);
-			Unsafe unsafe = (Unsafe) unsafeField.get(null);
-			unsafe.putObject(clone, unsafe.objectFieldOffset(inventoryField), newContainer);
-
-			clone.setContents(this.getContents());
-			return clone;
-		} catch (CloneNotSupportedException | IllegalAccessException | NoSuchFieldException e) {
-			throw new RuntimeException(e);
-		}
 	}
 }

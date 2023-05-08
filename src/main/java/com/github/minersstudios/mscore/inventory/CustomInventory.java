@@ -5,6 +5,8 @@ import com.github.minersstudios.mscore.inventory.actions.InventoryClickAction;
 import com.github.minersstudios.mscore.inventory.actions.InventoryCloseAction;
 import com.github.minersstudios.mscore.inventory.actions.InventoryOpenAction;
 import com.github.minersstudios.mscore.utils.ChatUtils;
+import net.minecraft.world.Container;
+import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftInventory;
 import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftInventoryCustom;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -14,12 +16,14 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
+import sun.misc.Unsafe;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
 @SuppressWarnings("unused")
-public class CustomInventory extends CraftInventoryCustom implements Inventory {
+public class CustomInventory extends CraftInventoryCustom implements Inventory, Cloneable {
 	protected final int size;
 	protected final @NotNull Map<Integer, InventoryButton> buttons;
 	protected @Nullable InventoryOpenAction openAction;
@@ -72,10 +76,6 @@ public class CustomInventory extends CraftInventoryCustom implements Inventory {
 		if (this.setButtonAt(slot, button)) return false;
 		this.updateButtons();
 		return true;
-	}
-
-	public boolean removeButtonAt(@Range(from = 0, to = MAX_SIZE) int slot) {
-		return slot + 1 <= this.size && this.buttons.remove(slot) != null;
 	}
 
 	public @Nullable InventoryButton getClickedButton(int slot) {
@@ -162,5 +162,24 @@ public class CustomInventory extends CraftInventoryCustom implements Inventory {
 
 	public void setArgs(Object[] args) {
 		this.args = args;
+	}
+
+	@Override
+	public @NotNull CustomInventory clone() {
+		try {
+			CustomInventory clone = (CustomInventory) super.clone();
+			Container newContainer = new CraftInventoryCustom(null, this.getSize(), this.title()).getInventory();
+			Field inventoryField = CraftInventory.class.getDeclaredField("inventory");
+
+			Field unsafeField = Unsafe.class.getDeclaredField("theUnsafe");
+			unsafeField.setAccessible(true);
+			Unsafe unsafe = (Unsafe) unsafeField.get(null);
+			unsafe.putObject(clone, unsafe.objectFieldOffset(inventoryField), newContainer);
+
+			clone.setContents(this.getContents());
+			return clone;
+		} catch (CloneNotSupportedException | IllegalAccessException | NoSuchFieldException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }
