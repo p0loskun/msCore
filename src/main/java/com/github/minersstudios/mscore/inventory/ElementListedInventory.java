@@ -47,6 +47,11 @@ public class ElementListedInventory extends ListedInventory {
 		}
 	}
 
+	@Contract("-> new")
+	public int[] getElementSlots() {
+		return this.elementSlots.clone();
+	}
+
 	public @NotNull Map<Integer, InventoryButton> getPageContents(int page) {
 		Map<Integer, InventoryButton> content = new HashMap<>(this.elementSlots.length);
 		int i = 0;
@@ -58,11 +63,6 @@ public class ElementListedInventory extends ListedInventory {
 			content.putIfAbsent(slot, new InventoryButton());
 		}
 		return content;
-	}
-
-	@Contract("-> new")
-	public int[] getElementSlots() {
-		return this.elementSlots.clone();
 	}
 
 	public @Nullable ListedInventory createPage(@Range(from = 0, to = Integer.MAX_VALUE) int page) {

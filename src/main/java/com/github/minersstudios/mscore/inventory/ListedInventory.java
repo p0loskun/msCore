@@ -9,8 +9,8 @@ import java.util.Map;
 
 @SuppressWarnings("unused")
 public class ListedInventory extends CustomInventory {
+	protected final @NotNull Map<Integer, StaticInventoryButton> staticButtons = new HashMap<>();
 	protected final @NotNull Map<Integer, ListedInventory> pages = new HashMap<>();
-	protected final @NotNull Map<Integer, StaticInventoryButton> staticButtons;
 	protected int page;
 	protected int pagesSize;
 
@@ -20,8 +20,6 @@ public class ListedInventory extends CustomInventory {
 			Object... args
 	) {
 		super(title, verticalSize, args);
-		this.page = 0;
-		this.staticButtons = new HashMap<>(this.size);
 	}
 
 	public boolean hasStaticButtons() {
@@ -79,21 +77,22 @@ public class ListedInventory extends CustomInventory {
 		}
 	}
 
-	public @Nullable ListedInventory createPage(@Range(from = 0, to = Integer.MAX_VALUE) int page) {
-		ListedInventory listedInventory = (ListedInventory) this.clone();
-		listedInventory.setPageIndex(page);
-		this.pages.put(page, listedInventory);
-		this.updateStaticButtons(page);
-		this.setPagesSize(this.pages.size());
-		return listedInventory;
-	}
-
 	public @NotNull Map<Integer, ListedInventory> getPages() {
 		return this.pages;
 	}
 
 	public @Nullable ListedInventory getPage(@Range(from = 0, to = Integer.MAX_VALUE) int page) {
 		return this.pages.getOrDefault(page, null);
+	}
+
+	public @NotNull ListedInventory addPage() {
+		int page = this.pagesSize;
+		ListedInventory listedInventory = (ListedInventory) this.clone();
+		listedInventory.setPageIndex(page);
+		this.pages.put(page, listedInventory);
+		this.updateStaticButtons(page);
+		this.setPagesSize(this.pages.size());
+		return listedInventory;
 	}
 
 	public int getPageIndex() {

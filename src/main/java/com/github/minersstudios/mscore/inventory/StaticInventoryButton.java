@@ -1,6 +1,8 @@
 package com.github.minersstudios.mscore.inventory;
 
+import org.jetbrains.annotations.NotNull;
+
 @FunctionalInterface
 public interface StaticInventoryButton {
-	InventoryButton getButton(ListedInventory listedInventory);
+	@NotNull InventoryButton getButton(ListedInventory listedInventory);
 }

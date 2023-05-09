@@ -15,35 +15,27 @@ public class InventoryButton {
 	private @Nullable ButtonClickAction clickAction;
 
 	public InventoryButton() {
-		this.whoClicked = null;
-		this.item = null;
-		this.clickAction = null;
+		this(null, null, null);
 	}
 
 	public InventoryButton(
 			@Nullable ItemStack item
 	) {
-		this.whoClicked = null;
-		this.item = item;
-		this.clickAction = null;
+		this(null, item, null);
 	}
 
 	public InventoryButton(
 			@Nullable ItemStack item,
 			@Nullable ButtonClickAction clickAction
 	) {
-		this.whoClicked = null;
-		this.item = item;
-		this.clickAction = clickAction;
+		this(null, item, clickAction);
 	}
 
 	public InventoryButton(
 			@Nullable Player whoClicked,
 			@Nullable ItemStack item
 	) {
-		this.whoClicked = whoClicked;
-		this.item = item;
-		this.clickAction = null;
+		this(whoClicked, item, null);
 	}
 
 	public InventoryButton(

@@ -57,7 +57,6 @@ public class CustomInventory extends CraftInventoryCustom implements Inventory, 
 		for (Map.Entry<Integer, InventoryButton> entry : buttons.entrySet()) {
 			this.setButtonAt(entry.getKey(), entry.getValue());
 		}
-		this.updateButtons();
 	}
 
 	public boolean setButtonAt(
@@ -66,27 +65,12 @@ public class CustomInventory extends CraftInventoryCustom implements Inventory, 
 	) {
 		if (slot + 1 > this.size) return false;
 		this.buttons.put(slot, button);
-		return true;
-	}
-
-	public boolean setButtonAndUpdate(
-			@Range(from = 0, to = MAX_SIZE) int slot,
-			@NotNull InventoryButton button
-	) {
-		if (!this.setButtonAt(slot, button)) return false;
-		this.updateButtons();
+		this.setItem(slot, button.getItem());
 		return true;
 	}
 
 	public @Nullable InventoryButton getClickedButton(int slot) {
 		return this.buttons.getOrDefault(slot, null);
-	}
-
-	public void updateButtons() {
-		if (!this.hasButtons()) return;
-		for (Map.Entry<Integer, InventoryButton> entry : this.buttons.entrySet()) {
-			this.setItem(entry.getKey(), entry.getValue().getItem());
-		}
 	}
 
 	public @Nullable InventoryOpenAction getOpenAction() {
