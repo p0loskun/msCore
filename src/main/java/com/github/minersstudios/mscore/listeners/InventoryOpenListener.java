@@ -2,7 +2,6 @@ package com.github.minersstudios.mscore.listeners;
 
 import com.github.minersstudios.mscore.MSListener;
 import com.github.minersstudios.mscore.inventory.CustomInventory;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryOpenEvent;
@@ -14,7 +13,7 @@ public class InventoryOpenListener implements Listener {
 	@EventHandler
 	public void onInventoryOpen(@NotNull InventoryOpenEvent event) {
 		if (event.getInventory() instanceof CustomInventory customInventory) {
-			customInventory.doOpenAction((Player) event.getPlayer());
+			customInventory.doOpenAction(event);
 		}
 	}
 }

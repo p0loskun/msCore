@@ -1,18 +1,14 @@
 package com.github.minersstudios.mscore.inventory;
 
-import com.github.minersstudios.mscore.inventory.actions.BottomInventoryClickAction;
-import com.github.minersstudios.mscore.inventory.actions.InventoryClickAction;
-import com.github.minersstudios.mscore.inventory.actions.InventoryCloseAction;
-import com.github.minersstudios.mscore.inventory.actions.InventoryOpenAction;
+import com.github.minersstudios.mscore.inventory.actions.InventoryAction;
 import com.github.minersstudios.mscore.utils.ChatUtils;
 import net.minecraft.world.Container;
 import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftInventory;
 import org.bukkit.craftbukkit.v1_19_R3.inventory.CraftInventoryCustom;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
@@ -26,10 +22,10 @@ import java.util.Map;
 public class CustomInventory extends CraftInventoryCustom implements Inventory, Cloneable {
 	protected final int size;
 	protected @NotNull Map<Integer, InventoryButton> buttons;
-	protected @Nullable InventoryOpenAction openAction;
-	protected @Nullable InventoryCloseAction closeAction;
-	protected @Nullable InventoryClickAction clickAction;
-	protected @Nullable BottomInventoryClickAction bottomClickAction;
+	protected @Nullable InventoryAction<InventoryOpenEvent> openAction;
+	protected @Nullable InventoryAction<InventoryCloseEvent> closeAction;
+	protected @Nullable InventoryAction<InventoryClickEvent> clickAction;
+	protected @Nullable InventoryAction<InventoryClickEvent> bottomClickAction;
 	protected Object[] args;
 
 	protected static final int MAX_SIZE = 54;
@@ -73,70 +69,59 @@ public class CustomInventory extends CraftInventoryCustom implements Inventory, 
 		return this.buttons.getOrDefault(slot, null);
 	}
 
-	public @Nullable InventoryOpenAction getOpenAction() {
+	public @Nullable InventoryAction<InventoryOpenEvent> getOpenAction() {
 		return this.openAction;
 	}
 
-	public void setOpenAction(@Nullable InventoryOpenAction openAction) {
+	public void setOpenAction(@Nullable InventoryAction<InventoryOpenEvent> openAction) {
 		this.openAction = openAction;
 	}
 
-	public void doOpenAction(@NotNull Player player) {
+	public void doOpenAction(@NotNull InventoryOpenEvent event) {
 		if (this.openAction != null) {
-			this.openAction.doAction(player, this);
+			this.openAction.doAction(event, this.clone());
 		}
 	}
 
-	public @Nullable InventoryCloseAction getCloseAction() {
+	public @Nullable InventoryAction<InventoryCloseEvent> getCloseAction() {
 		return this.closeAction;
 	}
 
-	public void setCloseAction(@Nullable InventoryCloseAction closeAction) {
+	public void setCloseAction(@Nullable InventoryAction<InventoryCloseEvent> closeAction) {
 		this.closeAction = closeAction;
 	}
 
-	public void doCloseAction(@NotNull Player player) {
+	public void doCloseAction(@NotNull InventoryCloseEvent event) {
 		if (this.closeAction != null) {
-			this.closeAction.doAction(player, this);
+			this.closeAction.doAction(event, this.clone());
 		}
 	}
 
-	public @Nullable InventoryClickAction getClickAction() {
+	public @Nullable InventoryAction<InventoryClickEvent> getClickAction() {
 		return this.clickAction;
 	}
 
-	public void setClickAction(@Nullable InventoryClickAction clickAction) {
+	public void setClickAction(@Nullable InventoryAction<InventoryClickEvent> clickAction) {
 		this.clickAction = clickAction;
 	}
 
-	public void doClickAction(
-			@NotNull Player player,
-			@NotNull InventoryAction action,
-			@NotNull ClickType clickType,
-			@Nullable ItemStack currentItem,
-			@Nullable ItemStack cursorItem
-	) {
+	public void doClickAction(@NotNull InventoryClickEvent event) {
 		if (this.clickAction != null) {
-			this.clickAction.doAction(player, this, action, clickType, currentItem, cursorItem);
+			this.clickAction.doAction(event, this.clone());
 		}
 	}
 
-	public @Nullable BottomInventoryClickAction getBottomInventoryClickAction() {
+	public @Nullable InventoryAction<InventoryClickEvent> getBottomInventoryClickAction() {
 		return this.bottomClickAction;
 	}
 
-	public void setBottomInventoryClickAction(@Nullable BottomInventoryClickAction bottomInventoryClickAction) {
+	public void setBottomInventoryClickAction(@Nullable InventoryAction<InventoryClickEvent> bottomInventoryClickAction) {
 		this.bottomClickAction = bottomInventoryClickAction;
 	}
 
-	public void doBottomClickAction(
-			@NotNull Player player,
-			@NotNull InventoryAction action,
-			@NotNull ClickType clickType,
-			@Nullable ItemStack currentItem
-	) {
+	public void doBottomClickAction(@NotNull InventoryClickEvent event) {
 		if (this.bottomClickAction != null) {
-			this.bottomClickAction.doAction(player, this, action, clickType, currentItem);
+			this.bottomClickAction.doAction(event, this.clone());
 		}
 	}
 

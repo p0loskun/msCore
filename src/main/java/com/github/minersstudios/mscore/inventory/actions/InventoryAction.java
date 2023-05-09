@@ -1,13 +1,18 @@
 package com.github.minersstudios.mscore.inventory.actions;
 
 import com.github.minersstudios.mscore.inventory.CustomInventory;
-import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 
 @FunctionalInterface
-public interface InventoryOpenAction {
+public interface InventoryAction<E extends Event> {
+
+	/**
+	 * @param event           the event that triggered the action
+	 * @param customInventory custom inventory that is involved in this event
+	 */
 	void doAction(
-			@NotNull Player player,
+			@NotNull E event,
 			@NotNull CustomInventory customInventory
 	);
 }

@@ -4,6 +4,7 @@ import com.github.minersstudios.mscore.inventory.actions.ButtonClickAction;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -76,9 +77,9 @@ public class InventoryButton {
 		this.clickAction = clickAction;
 	}
 
-	public void doAction(@NotNull Player player, @NotNull CustomInventory customInventory) {
+	public void doAction(@NotNull InventoryClickEvent event, @NotNull CustomInventory customInventory) {
 		if (this.clickAction != null) {
-			this.clickAction.doAction(player, customInventory, this);
+			this.clickAction.doAction(event, customInventory.clone(), this);
 		}
 	}
 }
