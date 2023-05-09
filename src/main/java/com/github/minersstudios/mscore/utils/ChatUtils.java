@@ -49,7 +49,7 @@ public final class ChatUtils {
 	 * @param target  target
 	 * @param message info message
 	 */
-	public static boolean sendInfo(@Nullable Object target, @NotNull Component message) {
+	public static void sendInfo(@Nullable Object target, @NotNull Component message) {
 		if (target instanceof Player player) {
 			player.sendMessage(Component.text(" ").append(message));
 		} else if (
@@ -60,7 +60,6 @@ public final class ChatUtils {
 		} else {
 			Bukkit.getLogger().info(serializeLegacyComponent(message));
 		}
-		return true;
 	}
 
 	/**
@@ -69,7 +68,7 @@ public final class ChatUtils {
 	 * @param target  target
 	 * @param message fine message
 	 */
-	public static boolean sendFine(@Nullable Object target, @NotNull Component message) {
+	public static void sendFine(@Nullable Object target, @NotNull Component message) {
 		if (target instanceof Player player) {
 			player.sendMessage(Badges.GREEN_EXCLAMATION_MARK.append(message.color(NamedTextColor.GREEN)));
 		} else if (
@@ -80,7 +79,6 @@ public final class ChatUtils {
 		} else {
 			Bukkit.getLogger().info(serializeLegacyComponent(message.color(NamedTextColor.GREEN)));
 		}
-		return true;
 	}
 
 	/**
@@ -89,7 +87,7 @@ public final class ChatUtils {
 	 * @param target  target
 	 * @param message warning message
 	 */
-	public static boolean sendWarning(@Nullable Object target, @NotNull Component message) {
+	public static void sendWarning(@Nullable Object target, @NotNull Component message) {
 		if (target instanceof Player player) {
 			player.sendMessage(Badges.YELLOW_EXCLAMATION_MARK.append(message.color(NamedTextColor.GOLD)));
 		} else if (
@@ -100,7 +98,6 @@ public final class ChatUtils {
 		} else {
 			Bukkit.getLogger().warning(serializeLegacyComponent(message.color(NamedTextColor.GOLD)));
 		}
-		return true;
 	}
 
 	/**
@@ -109,7 +106,7 @@ public final class ChatUtils {
 	 * @param target  target
 	 * @param message error message
 	 */
-	public static boolean sendError(@Nullable Object target, @NotNull Component message) {
+	public static void sendError(@Nullable Object target, @NotNull Component message) {
 		if (target instanceof Player player) {
 			player.sendMessage(Badges.RED_EXCLAMATION_MARK.append(message.color(NamedTextColor.RED)));
 		} else if (
@@ -120,7 +117,6 @@ public final class ChatUtils {
 		} else {
 			Bukkit.getLogger().severe(serializeLegacyComponent(message.color(NamedTextColor.RED)));
 		}
-		return true;
 	}
 
 	@Contract("_, _ -> new")

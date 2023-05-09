@@ -61,19 +61,21 @@ public class ListedInventory extends CustomInventory {
 	}
 
 	public void updateStaticButtons() {
-		if (!this.hasStaticButtons()) return;
-		for (Map.Entry<Integer, StaticInventoryButton> entry : this.staticButtons.entrySet()) {
-			for (ListedInventory listedInventory : this.pages.values()) {
-				listedInventory.setItem(entry.getKey(), entry.getValue().getButton(listedInventory).getItem());
+		if (this.hasStaticButtons()) {
+			for (Map.Entry<Integer, StaticInventoryButton> entry : this.staticButtons.entrySet()) {
+				for (ListedInventory listedInventory : this.pages.values()) {
+					listedInventory.setItem(entry.getKey(), entry.getValue().getButton(listedInventory).getItem());
+				}
 			}
 		}
 	}
 
 	public void updateStaticButtons(int page) {
 		ListedInventory listedInventory = this.pages.get(page);
-		if (!this.hasStaticButtons()) return;
-		for (Map.Entry<Integer, StaticInventoryButton> entry : this.staticButtons.entrySet()) {
-			listedInventory.setItem(entry.getKey(), entry.getValue().getButton(listedInventory).getItem());
+		if (this.hasStaticButtons()) {
+			for (Map.Entry<Integer, StaticInventoryButton> entry : this.staticButtons.entrySet()) {
+				listedInventory.setItem(entry.getKey(), entry.getValue().getButton(listedInventory).getItem());
+			}
 		}
 	}
 

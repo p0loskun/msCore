@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 public interface MSCommandExecutor extends CommandExecutor, TabCompleter {
 
 	@Override

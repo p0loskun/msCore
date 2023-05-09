@@ -27,7 +27,7 @@ import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "EmptyMethod"})
 public abstract class MSPlugin extends JavaPlugin {
 	protected File pluginFolder;
 	protected File configFile;
@@ -133,9 +133,11 @@ public abstract class MSPlugin extends JavaPlugin {
 				}
 				out.close();
 				in.close();
+			} else {
+				this.getLogger().log(Level.WARNING, "Could not save " + outFile.getName() + " to " + outFile + " because " + outFile.getName() + " already exists.");
 			}
-		} catch (IOException e) {
-			throw new SecurityException(e);
+		} catch (IOException ex) {
+			this.getLogger().log(Level.SEVERE, "Could not save " + outFile.getName() + " to " + outFile, ex);
 		}
 	}
 
