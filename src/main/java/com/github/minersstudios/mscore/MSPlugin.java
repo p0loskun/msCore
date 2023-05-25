@@ -217,8 +217,10 @@ public abstract class MSPlugin extends JavaPlugin {
 				}
 			}
 
-			Permission permission = new Permission(permissionStr, msCommand.permissionDefault(), children);
-			Bukkit.getPluginManager().addPermission(permission);
+			if (Bukkit.getPluginManager().getPermission(permissionStr) == null) {
+				Permission permission = new Permission(permissionStr, msCommand.permissionDefault(), children);
+				Bukkit.getPluginManager().addPermission(permission);
+			}
 			pluginCommand.setPermission(permissionStr);
 		}
 
