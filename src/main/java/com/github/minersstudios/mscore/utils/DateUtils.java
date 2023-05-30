@@ -1,8 +1,6 @@
 package com.github.minersstudios.mscore.utils;
 
 import com.github.minersstudios.mscore.MSCore;
-import com.github.minersstudios.msutils.MSUtils;
-import com.github.minersstudios.msutils.utils.PlayerUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Contract;
@@ -41,7 +39,7 @@ public final class DateUtils {
 		if (address == null) {
 			return milli.atZone(zoneId).format(MSCore.getConfigCache().timeFormatter);
 		}
-		String timeZone = PlayerUtils.getTimezone(address);
+		String timeZone = getTimezone(address);
 		return milli.atZone(
 				ZoneId.of(timeZone.equalsIgnoreCase("Europe/Kyiv")
 						? "Europe/Kiev"
@@ -83,7 +81,7 @@ public final class DateUtils {
 					? entirePage.toString().split("\"timezone\":\"")[1].split("\",")[0]
 					: ZoneId.systemDefault().toString();
 		} catch (IOException e) {
-			MSUtils.getInstance().getLogger().log(Level.WARNING, e.getMessage());
+			MSCore.getInstance().getLogger().log(Level.WARNING, e.getMessage());
 			return ZoneId.systemDefault().toString();
 		}
 	}
