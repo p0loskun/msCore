@@ -12,11 +12,11 @@ import org.bukkit.inventory.Recipe;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @SuppressWarnings("unused")
 public final class ConfigCache {
@@ -39,10 +39,24 @@ public final class ConfigCache {
 
 	public final @NotNull HashMap<String, CustomInventory> customInventories = new HashMap<>();
 
+	public boolean onlineMode;
+
 	public ConfigCache() {
 		this.dataFile = MSCore.getInstance().getConfigFile();
 		this.yamlConfiguration = YamlConfiguration.loadConfiguration(this.dataFile);
 
 		this.timeFormatter = DateTimeFormatter.ofPattern(this.yamlConfiguration.getString("date-format", "EEE, yyyy-MM-dd HH:mm z"));
+		this.onlineMode = getOnlineMode();
+	}
+
+	private static boolean getOnlineMode() {
+		try (InputStream input = new FileInputStream("server.properties")) {
+			Properties properties = new Properties();
+			properties.load(input);
+			input.close();
+			return Boolean.parseBoolean(properties.getProperty("online-mode"));
+		} catch (IOException e) {
+			throw new SecurityException(e);
+		}
 	}
 }
