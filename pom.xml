@@ -114,7 +114,7 @@
 		<dependency>
 			<groupId>com.github.MinersStudios</groupId>
 			<artifactId>msUtils</artifactId>
-			<version>release-ba25224744-1</version>
+			<version>release-a20f880e09-1</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

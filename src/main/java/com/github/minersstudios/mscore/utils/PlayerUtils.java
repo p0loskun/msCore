@@ -1,6 +1,7 @@
 package com.github.minersstudios.mscore.utils;
 
 import com.github.minersstudios.mscore.MSCore;
+import com.github.minersstudios.msutils.utils.MSPlayerUtils;
 import com.google.common.base.Charsets;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.server.MinecraftServer;
@@ -47,18 +48,20 @@ public final class PlayerUtils {
 	 *
 	 * @param player   player
 	 * @param location location where the player will sit
+	 * @param args     message
 	 */
-	public static void setSitting(@NotNull Player player, @NotNull Location location) {
-		com.github.minersstudios.msutils.utils.PlayerUtils.setSitting(player, location, null);
+	public static void setSitting(@NotNull Player player, @NotNull Location location, String @Nullable ... args) {
+		MSPlayerUtils.getPlayerInfo(player).setSitting(location, args);
 	}
 
 	/**
 	 * Unsets the sitting position of the player
 	 *
 	 * @param player player who is currently sitting
+	 * @param args   message
 	 */
-	public static void unsetSitting(@NotNull Player player) {
-		com.github.minersstudios.msutils.utils.PlayerUtils.setSitting(player, null, null);
+	public static void unsetSitting(@NotNull Player player, String @Nullable ... args) {
+		MSPlayerUtils.getPlayerInfo(player).unsetSitting(args);
 	}
 
 	/**
