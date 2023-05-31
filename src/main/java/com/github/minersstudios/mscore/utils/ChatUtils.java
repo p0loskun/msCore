@@ -46,8 +46,8 @@ public final class ChatUtils {
 	/**
 	 * Sends info message to target
 	 *
-	 * @param target  target
-	 * @param message info message
+	 * @param target  target, if null sends to console
+	 * @param message info message {@link Component}
 	 */
 	public static void sendInfo(@Nullable Object target, @NotNull Component message) {
 		if (target instanceof Player player) {
@@ -63,10 +63,39 @@ public final class ChatUtils {
 	}
 
 	/**
+	 * Sends info message to console
+	 *
+	 * @param message info message {@link Component}
+	 */
+	public static void sendInfo(@NotNull Component message) {
+		sendInfo(null, message);
+	}
+
+
+	/**
+	 * Sends info message to target
+	 *
+	 * @param target  target, if null sends to console
+	 * @param message info message {@link String}
+	 */
+	public static void sendInfo(@Nullable Object target, @NotNull String message) {
+		sendInfo(target, Component.text(message));
+	}
+
+	/**
+	 * Sends info message to console
+	 *
+	 * @param message info message {@link String}
+	 */
+	public static void sendInfo(@NotNull String message) {
+		sendInfo(null, message);
+	}
+
+	/**
 	 * Sends fine message to target
 	 *
-	 * @param target  target
-	 * @param message fine message
+	 * @param target  target, if null sends to console
+	 * @param message fine message {@link Component}
 	 */
 	public static void sendFine(@Nullable Object target, @NotNull Component message) {
 		if (target instanceof Player player) {
@@ -82,10 +111,38 @@ public final class ChatUtils {
 	}
 
 	/**
+	 * Sends fine message to console
+	 *
+	 * @param message fine message {@link Component}
+	 */
+	public static void sendFine(@NotNull Component message) {
+		sendFine(null, message);
+	}
+
+	/**
+	 * Sends fine message to target
+	 *
+	 * @param target  target, if null sends to console
+	 * @param message fine message {@link String}
+	 */
+	public static void sendFine(@Nullable Object target, @NotNull String message) {
+		sendFine(target, Component.text(message));
+	}
+
+	/**
+	 * Sends fine message to console
+	 *
+	 * @param message fine message {@link String}
+	 */
+	public static void sendFine(@NotNull String message) {
+		sendFine(null, message);
+	}
+
+	/**
 	 * Sends warning message to target
 	 *
-	 * @param target  target
-	 * @param message warning message
+	 * @param target  target, if null sends to console
+	 * @param message warning message {@link Component}
 	 */
 	public static void sendWarning(@Nullable Object target, @NotNull Component message) {
 		if (target instanceof Player player) {
@@ -101,10 +158,38 @@ public final class ChatUtils {
 	}
 
 	/**
+	 * Sends warning message to console
+	 *
+	 * @param message warning message {@link Component}
+	 */
+	public static void sendWarning(@NotNull Component message) {
+		sendWarning(null, message);
+	}
+
+	/**
+	 * Sends warning message to target
+	 *
+	 * @param target  target, if null sends to console
+	 * @param message warning message {@link String}
+	 */
+	public static void sendWarning(@Nullable Object target, @NotNull String message) {
+		sendWarning(target, Component.text(message));
+	}
+
+	/**
+	 * Sends warning message to console
+	 *
+	 * @param message warning message {@link String}
+	 */
+	public static void sendWarning(@NotNull String message) {
+		sendWarning(null, message);
+	}
+
+	/**
 	 * Sends error message to target
 	 *
-	 * @param target  target
-	 * @param message error message
+	 * @param target  target, if null sends to console
+	 * @param message error message {@link Component}
 	 */
 	public static void sendError(@Nullable Object target, @NotNull Component message) {
 		if (target instanceof Player player) {
@@ -117,6 +202,34 @@ public final class ChatUtils {
 		} else {
 			Bukkit.getLogger().severe(serializeLegacyComponent(message.color(NamedTextColor.RED)));
 		}
+	}
+
+	/**
+	 * Sends error message to console
+	 *
+	 * @param message error message {@link Component}
+	 */
+	public static void sendError(@NotNull Component message) {
+		sendError(null, message);
+	}
+
+	/**
+	 * Sends error message to target
+	 *
+	 * @param target  target, if null sends to console
+	 * @param message error message {@link String}
+	 */
+	public static void sendError(@Nullable Object target, @NotNull String message) {
+		sendError(target, Component.text(message));
+	}
+
+	/**
+	 * Sends error message to console
+	 *
+	 * @param message error message {@link String}
+	 */
+	public static void sendError(@NotNull String message) {
+		sendError(null, message);
 	}
 
 	@Contract("_, _ -> new")
