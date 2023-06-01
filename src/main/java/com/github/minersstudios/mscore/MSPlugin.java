@@ -33,12 +33,24 @@ public abstract class MSPlugin extends JavaPlugin {
 	protected File configFile;
 	protected FileConfiguration newConfig;
 	protected boolean loadedCustoms;
+	protected Set<String> classNames;
 
 	@Override
 	public final void onLoad() {
 		this.pluginFolder = new File("config/minersstudios/" + this.getName() + "/");
 		this.configFile = new File(this.pluginFolder, "config.yml");
 		this.loadedCustoms = false;
+
+		try (JarFile jarFile = new JarFile(this.getFile())) {
+			this.classNames = jarFile.stream()
+					.map(JarEntry::getName)
+					.filter(name -> name.endsWith(".class"))
+					.map(name -> name.replace("/", ".").replace(".class", ""))
+					.collect(Collectors.toSet());
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
 		try {
 			Field field = JavaPlugin.class.getDeclaredField("dataFolder");
 			field.setAccessible(true);
@@ -46,6 +58,7 @@ public abstract class MSPlugin extends JavaPlugin {
 		} catch (NoSuchFieldException | IllegalAccessException e) {
 			throw new RuntimeException(e);
 		}
+
 		this.load();
 	}
 
@@ -156,7 +169,7 @@ public abstract class MSPlugin extends JavaPlugin {
 	 * @throws ClassNotFoundException If the class was not found
 	 */
 	public void registerCommands() throws ClassNotFoundException {
-		for (String className : this.getClassNames()) {
+		for (String className : this.classNames) {
 			if (StringUtil.startsWithIgnoreCase(className, "com.github.minersstudios." + this.getName() + ".commands")) {
 				Class<?> clazz = this.getClassLoader().loadClass(className);
 				MSCommand msCommand = clazz.getAnnotation(MSCommand.class);
@@ -275,15 +288,7 @@ public abstract class MSPlugin extends JavaPlugin {
 	 * @return plugin class names
 	 */
 	public final @NotNull Set<String> getClassNames() {
-		try (JarFile jarFile = new JarFile(this.getFile())) {
-			return jarFile.stream()
-					.map(JarEntry::getName)
-					.filter(name -> name.endsWith(".class"))
-					.map(name -> name.replace("/", ".").replace(".class", ""))
-					.collect(Collectors.toSet());
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		return this.classNames;
 	}
 
 	public void load() {}
