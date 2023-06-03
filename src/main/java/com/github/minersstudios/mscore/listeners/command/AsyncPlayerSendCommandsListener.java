@@ -11,6 +11,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 @SuppressWarnings({"UnstableApiUsage", "rawtypes", "unchecked"})
 @MSListener
 public final class AsyncPlayerSendCommandsListener implements Listener {
@@ -24,7 +27,13 @@ public final class AsyncPlayerSendCommandsListener implements Listener {
                 String permission = command.getValue();
                 if (permission != null && !player.hasPermission(permission)) return;
                 RootCommandNode<?> root = event.getCommandNode();
-                root.removeCommand(literalCommandNode.getName());
+                try {
+                    Method method = RootCommandNode.class.getDeclaredMethod("removeCommand");
+                    method.setAccessible(true);
+                    method.invoke(root, literalCommandNode.getName());
+                } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
                 root.addChild((CommandNode) literalCommandNode);
             }
         }
