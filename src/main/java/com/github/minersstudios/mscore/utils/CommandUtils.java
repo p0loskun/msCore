@@ -1,6 +1,5 @@
 package com.github.minersstudios.mscore.utils;
 
-import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,7 +22,7 @@ public final class CommandUtils {
 	 * @param input number of time
 	 * @return time suggestions
 	 */
-	public static @NotNull List<String> getTimeSuggestions(@Pattern("\\d+") @NotNull String input) {
+	public static @NotNull List<String> getTimeSuggestions(@NotNull String input) {
 		List<String> suggestions = new ArrayList<>();
 		if (!input.matches("\\d+")) return suggestions;
 		suggestions.add(input + "s");

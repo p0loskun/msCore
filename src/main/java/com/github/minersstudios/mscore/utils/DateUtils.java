@@ -3,7 +3,6 @@ package com.github.minersstudios.mscore.utils;
 import com.github.minersstudios.mscore.MSCore;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -96,7 +95,7 @@ public final class DateUtils {
 	 * @param string time
 	 * @return date with time added
 	 */
-	public static @NotNull Date getDateFromString(@Pattern("\\d+[smhdMy]") @NotNull String string) throws NumberFormatException {
+	public static @NotNull Date getDateFromString(@NotNull String string) throws NumberFormatException {
 		long number = Long.parseLong(string.replaceAll("[smhdMy]", ""));
 		String chronoUnit = string.replaceAll("\\d+", "");
 		Instant instant = Instant.now();
