@@ -1,4 +1,4 @@
-package com.github.minersstudios.mscore;
+package com.github.minersstudios.mscore.listener;
 
 import org.bukkit.event.Listener;
 

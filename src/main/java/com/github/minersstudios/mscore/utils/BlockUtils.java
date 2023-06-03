@@ -1,6 +1,5 @@
 package com.github.minersstudios.mscore.utils;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import org.bukkit.Material;
 import org.bukkit.SoundGroup;
@@ -13,9 +12,11 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Set;
+
 @SuppressWarnings("unused")
 public final class BlockUtils {
-	public static final ImmutableSet<Material> REPLACE = Sets.immutableEnumSet(
+	public static final Set<Material> REPLACE = Sets.newHashSet(
 			//<editor-fold desc="Replace materials">
 			Material.AIR,
 			Material.CAVE_AIR,
@@ -34,7 +35,7 @@ public final class BlockUtils {
 			//</editor-fold>
 	);
 
-	public static final ImmutableSet<InventoryType> IGNORABLE_INVENTORY_TYPES = Sets.immutableEnumSet(
+	public static final Set<InventoryType> IGNORABLE_INVENTORY_TYPES = Sets.newHashSet(
 			//<editor-fold desc="Ignorable inventory types">
 			InventoryType.CARTOGRAPHY,
 			InventoryType.BREWING,
@@ -51,7 +52,7 @@ public final class BlockUtils {
 			//</editor-fold>
 	);
 
-	public static final ImmutableSet<Material> BREAK_ON_BLOCK_PLACE = Sets.immutableEnumSet(
+	public static final Set<Material> BREAK_ON_BLOCK_PLACE = Sets.newHashSet(
 			//<editor-fold desc="Materials that will break on block place">
 			Material.TALL_GRASS,
 			Material.LARGE_FERN,

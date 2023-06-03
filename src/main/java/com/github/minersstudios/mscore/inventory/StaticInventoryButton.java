@@ -4,5 +4,5 @@ import org.jetbrains.annotations.NotNull;
 
 @FunctionalInterface
 public interface StaticInventoryButton {
-	@NotNull InventoryButton getButton(ListedInventory listedInventory);
+	@NotNull InventoryButton getButton(@NotNull ListedInventory listedInventory);
 }

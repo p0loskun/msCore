@@ -88,7 +88,7 @@ public final class MSItemUtils {
 	public static @Nullable CustomItem getCustomItem(@Nullable String namespacedKeyStr) {
 		if (namespacedKeyStr == null) return null;
 		Pattern pattern = Pattern.compile("msitem:(\\w+)");
-		Matcher matcher = pattern.matcher(namespacedKeyStr.toLowerCase(Locale.ROOT));
+		Matcher matcher = pattern.matcher(namespacedKeyStr.toLowerCase(Locale.ENGLISH));
 		if (matcher.find()) {
 			return MSCore.getConfigCache().customItemMap.getByPrimaryKey(matcher.group(1));
 		}

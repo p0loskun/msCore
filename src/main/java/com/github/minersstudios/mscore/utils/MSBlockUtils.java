@@ -75,7 +75,7 @@ public final class MSBlockUtils {
 	public static @Nullable CustomBlockData getCustomBlockData(@Nullable String namespacedKeyStr) {
 		if (namespacedKeyStr == null) return null;
 		Pattern pattern = Pattern.compile("msblock:(\\w+)");
-		Matcher matcher = pattern.matcher(namespacedKeyStr.toLowerCase(Locale.ROOT));
+		Matcher matcher = pattern.matcher(namespacedKeyStr.toLowerCase(Locale.ENGLISH));
 		if (matcher.find()) {
 			return MSCore.getConfigCache().customBlockMap.getByPrimaryKey(matcher.group(1));
 		}

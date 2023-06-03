@@ -1,4 +1,4 @@
-package com.github.minersstudios.mscore;
+package com.github.minersstudios.mscore.command;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -14,7 +14,12 @@ import java.util.List;
 public interface MSCommandExecutor extends CommandExecutor, TabCompleter {
 
 	@Override
-	default @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String @NotNull ... args) {
+	default @Nullable List<String> onTabComplete(
+			@NotNull CommandSender sender,
+			@NotNull Command command,
+			@NotNull String label,
+			String @NotNull ... args
+	) {
 		return new ArrayList<>();
 	}
 }

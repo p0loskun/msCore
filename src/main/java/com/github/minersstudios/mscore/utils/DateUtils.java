@@ -3,6 +3,7 @@ package com.github.minersstudios.mscore.utils;
 import com.github.minersstudios.mscore.MSCore;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.intellij.lang.annotations.Pattern;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,6 +16,7 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.logging.Level;
 
@@ -84,5 +86,29 @@ public final class DateUtils {
 			MSCore.getInstance().getLogger().log(Level.WARNING, e.getMessage());
 			return ZoneId.systemDefault().toString();
 		}
+	}
+
+	/**
+	 * Gets a date with time added
+	 * <p>
+	 * Regex : [\d]+[smhdMy]
+	 *
+	 * @param string time
+	 * @return date with time added
+	 */
+	public static @NotNull Date getDateFromString(@Pattern("\\d+[smhdMy]") @NotNull String string) throws NumberFormatException {
+		long number = Long.parseLong(string.replaceAll("[smhdMy]", ""));
+		String chronoUnit = string.replaceAll("\\d+", "");
+		Instant instant = Instant.now();
+		return Date.from(
+				switch (chronoUnit) {
+					case "s" -> instant.plus(number, ChronoUnit.SECONDS);
+					case "m" -> instant.plus(number, ChronoUnit.MINUTES);
+					case "h" -> instant.plus(number, ChronoUnit.HOURS);
+					case "M" -> instant.plus(Math.multiplyExact(number, ChronoUnit.MONTHS.getDuration().toDays()), ChronoUnit.DAYS);
+					case "y" -> instant.plus(Math.multiplyExact(number, ChronoUnit.YEARS.getDuration().toDays()), ChronoUnit.DAYS);
+					default -> instant.plus(number, ChronoUnit.DAYS);
+				}
+		);
 	}
 }

@@ -1,4 +1,4 @@
-package com.github.minersstudios.mscore;
+package com.github.minersstudios.mscore.command;
 
 import org.bukkit.permissions.PermissionDefault;
 import org.jetbrains.annotations.NotNull;

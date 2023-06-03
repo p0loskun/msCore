@@ -77,7 +77,10 @@ public class InventoryButton {
 		this.clickAction = clickAction;
 	}
 
-	public void doAction(@NotNull InventoryClickEvent event, @NotNull CustomInventory customInventory) {
+	public void doAction(
+			@NotNull InventoryClickEvent event,
+			@NotNull CustomInventory customInventory
+	) {
 		if (this.clickAction != null) {
 			this.clickAction.doAction(event, customInventory.clone(), this);
 		}

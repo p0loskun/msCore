@@ -50,7 +50,11 @@ public final class PlayerUtils {
 	 * @param location location where the player will sit
 	 * @param args     message
 	 */
-	public static void setSitting(@NotNull Player player, @NotNull Location location, String @Nullable ... args) {
+	public static void setSitting(
+			@NotNull Player player,
+			@NotNull Location location,
+			String @Nullable ... args
+	) {
 		MSPlayerUtils.getPlayerInfo(player).setSitting(location, args);
 	}
 
@@ -60,7 +64,10 @@ public final class PlayerUtils {
 	 * @param player player who is currently sitting
 	 * @param args   message
 	 */
-	public static void unsetSitting(@NotNull Player player, String @Nullable ... args) {
+	public static void unsetSitting(
+			@NotNull Player player,
+			String @Nullable ... args
+	) {
 		MSPlayerUtils.getPlayerInfo(player).unsetSitting(args);
 	}
 

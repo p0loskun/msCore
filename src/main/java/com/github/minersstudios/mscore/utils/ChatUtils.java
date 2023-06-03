@@ -49,7 +49,10 @@ public final class ChatUtils {
 	 * @param target  target, if null sends to console
 	 * @param message info message {@link Component}
 	 */
-	public static void sendInfo(@Nullable Object target, @NotNull Component message) {
+	public static void sendInfo(
+			@Nullable Object target,
+			@NotNull Component message
+	) {
 		if (target instanceof Player player) {
 			player.sendMessage(Component.text(" ").append(message));
 		} else if (
@@ -78,7 +81,10 @@ public final class ChatUtils {
 	 * @param target  target, if null sends to console
 	 * @param message info message {@link String}
 	 */
-	public static void sendInfo(@Nullable Object target, @NotNull String message) {
+	public static void sendInfo(
+			@Nullable Object target,
+			@NotNull String message
+	) {
 		sendInfo(target, Component.text(message));
 	}
 
@@ -97,7 +103,10 @@ public final class ChatUtils {
 	 * @param target  target, if null sends to console
 	 * @param message fine message {@link Component}
 	 */
-	public static void sendFine(@Nullable Object target, @NotNull Component message) {
+	public static void sendFine(
+			@Nullable Object target,
+			@NotNull Component message
+	) {
 		if (target instanceof Player player) {
 			player.sendMessage(Badges.GREEN_EXCLAMATION_MARK.append(message.color(NamedTextColor.GREEN)));
 		} else if (
@@ -125,7 +134,10 @@ public final class ChatUtils {
 	 * @param target  target, if null sends to console
 	 * @param message fine message {@link String}
 	 */
-	public static void sendFine(@Nullable Object target, @NotNull String message) {
+	public static void sendFine(
+			@Nullable Object target,
+			@NotNull String message
+	) {
 		sendFine(target, Component.text(message));
 	}
 
@@ -144,7 +156,10 @@ public final class ChatUtils {
 	 * @param target  target, if null sends to console
 	 * @param message warning message {@link Component}
 	 */
-	public static void sendWarning(@Nullable Object target, @NotNull Component message) {
+	public static void sendWarning(
+			@Nullable Object target,
+			@NotNull Component message
+	) {
 		if (target instanceof Player player) {
 			player.sendMessage(Badges.YELLOW_EXCLAMATION_MARK.append(message.color(NamedTextColor.GOLD)));
 		} else if (
@@ -172,7 +187,10 @@ public final class ChatUtils {
 	 * @param target  target, if null sends to console
 	 * @param message warning message {@link String}
 	 */
-	public static void sendWarning(@Nullable Object target, @NotNull String message) {
+	public static void sendWarning(
+			@Nullable Object target,
+			@NotNull String message
+	) {
 		sendWarning(target, Component.text(message));
 	}
 
@@ -191,7 +209,10 @@ public final class ChatUtils {
 	 * @param target  target, if null sends to console
 	 * @param message error message {@link Component}
 	 */
-	public static void sendError(@Nullable Object target, @NotNull Component message) {
+	public static void sendError(
+			@Nullable Object target,
+			@NotNull Component message
+	) {
 		if (target instanceof Player player) {
 			player.sendMessage(Badges.RED_EXCLAMATION_MARK.append(message.color(NamedTextColor.RED)));
 		} else if (
@@ -219,7 +240,10 @@ public final class ChatUtils {
 	 * @param target  target, if null sends to console
 	 * @param message error message {@link String}
 	 */
-	public static void sendError(@Nullable Object target, @NotNull String message) {
+	public static void sendError(
+			@Nullable Object target,
+			@NotNull String message
+	) {
 		sendError(target, Component.text(message));
 	}
 
@@ -233,7 +257,10 @@ public final class ChatUtils {
 	}
 
 	@Contract("_, _ -> new")
-	public static @NotNull String extractMessage(@NotNull String[] args, int start) {
+	public static @NotNull String extractMessage(
+			@NotNull String[] args,
+			int start
+	) {
 		return String.join(" ", Arrays.copyOfRange(args, start, args.length));
 	}
 
@@ -272,7 +299,10 @@ public final class ChatUtils {
 		return PlainTextComponentSerializer.plainText().deserialize(text);
 	}
 
-	public static @Nullable List<Component> convertStringsToComponents(@Nullable Style style, String @NotNull ... strings) {
+	public static @Nullable List<Component> convertStringsToComponents(
+			@Nullable Style style,
+			String @NotNull [] strings
+	) {
 		List<Component> components = new ArrayList<>();
 		for (String string : strings) {
 			Component component = Component.text(string);
@@ -283,5 +313,27 @@ public final class ChatUtils {
 			);
 		}
 		return components.isEmpty() ? null : components;
+	}
+
+	public static @Nullable List<Component> convertStringsToComponents(
+			@Nullable Style style,
+			@NotNull String first,
+			String @NotNull ... other
+	) {
+		String[] strings = new String[other.length + 1];
+		strings[0] = first;
+		System.arraycopy(other, 0, strings, 1, other.length);
+		return convertStringsToComponents(style, strings);
+	}
+
+	public static @Nullable List<Component> convertStringsToComponents(String @NotNull [] strings) {
+		return convertStringsToComponents(DEFAULT_STYLE, strings);
+	}
+
+	public static @Nullable List<Component> convertStringsToComponents(
+			@NotNull String first,
+			String @NotNull ... other
+	) {
+		return convertStringsToComponents(DEFAULT_STYLE, first, other);
 	}
 }

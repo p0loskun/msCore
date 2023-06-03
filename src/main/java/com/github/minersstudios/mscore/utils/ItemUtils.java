@@ -51,7 +51,10 @@ public final class ItemUtils {
 	 * @return True if the CustomModelData and {@link Material} of the two items are the same
 	 */
 	@Contract("null, null -> false")
-	public static boolean isSimilarItemStacks(@Nullable ItemStack first, @Nullable ItemStack second) {
+	public static boolean isSimilarItemStacks(
+			@Nullable ItemStack first,
+			@Nullable ItemStack second
+	) {
 		if (
 				first == null
 				|| second == null
@@ -74,7 +77,10 @@ public final class ItemUtils {
 	 * Uses the {@link #isSimilarItemStacks(ItemStack, ItemStack)} method for this
 	 */
 	@Contract("_, null -> false")
-	public static boolean isListContainsItem(@NotNull List<ItemStack> list, @Nullable ItemStack item) {
+	public static boolean isListContainsItem(
+			@NotNull List<ItemStack> list,
+			@Nullable ItemStack item
+	) {
 		if (list.isEmpty() || item == null) return false;
 		for (ItemStack listItem : list) {
 			if (isSimilarItemStacks(listItem, item)) return true;
@@ -90,7 +96,10 @@ public final class ItemUtils {
 	 * @return False if the {@link ItemMeta} of the item is not an instance of {@link Damageable}
 	 */
 	@Contract("_, null -> false")
-	public static boolean damageItem(@NotNull Player holder, @Nullable ItemStack item) {
+	public static boolean damageItem(
+			@NotNull Player holder,
+			@Nullable ItemStack item
+	) {
 		return damageItem(holder, item, 1);
 	}
 
@@ -103,7 +112,11 @@ public final class ItemUtils {
 	 * @return False if the {@link ItemMeta} of the item is not an instance of {@link Damageable}
 	 */
 	@Contract("_, null, _ -> false")
-	public static boolean damageItem(@NotNull Player holder, @Nullable ItemStack item, int originalDamage) {
+	public static boolean damageItem(
+			@NotNull Player holder,
+			@Nullable ItemStack item,
+			int originalDamage
+	) {
 		return damageItem(holder, null, item, originalDamage);
 	}
 
@@ -117,7 +130,12 @@ public final class ItemUtils {
 	 * @return False if the {@link ItemMeta} of the item is not an instance of {@link Damageable}
 	 */
 	@Contract("_, _, null, _ -> false")
-	public static boolean damageItem(@NotNull Player holder, @Nullable EquipmentSlot slot, @Nullable ItemStack item, int originalDamage) {
+	public static boolean damageItem(
+			@NotNull Player holder,
+			@Nullable EquipmentSlot slot,
+			@Nullable ItemStack item,
+			int originalDamage
+	) {
 		if (item == null || !(item.getItemMeta() instanceof Damageable damageable)) return false;
 		int damage = 0;
 		DamageableItem damageableItem = DamageableItem.fromItemStack(item);

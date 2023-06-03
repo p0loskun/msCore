@@ -31,8 +31,11 @@ public final class InventoryUtils {
 	 * @param customInventory the custom inventory
 	 * @return the previous custom inventory associated with key, or null if there was no custom inventory for key
 	 */
-	public static @Nullable CustomInventory registerCustomInventory(@NotNull String key, @NotNull CustomInventory customInventory) {
-		return MSCore.getConfigCache().customInventories.put(key.toLowerCase(Locale.ROOT), customInventory);
+	public static @Nullable CustomInventory registerCustomInventory(
+			@NotNull String key,
+			@NotNull CustomInventory customInventory
+	) {
+		return MSCore.getConfigCache().customInventories.put(key.toLowerCase(Locale.ENGLISH), customInventory);
 	}
 
 	/**
@@ -40,6 +43,6 @@ public final class InventoryUtils {
 	 * @return the previous custom inventory associated with key, or null if there was no custom inventory for key
 	 */
 	public static @Nullable CustomInventory unregisterCustomInventory(@NotNull String key) {
-		return MSCore.getConfigCache().customInventories.remove(key.toLowerCase(Locale.ROOT));
+		return MSCore.getConfigCache().customInventories.remove(key.toLowerCase(Locale.ENGLISH));
 	}
 }

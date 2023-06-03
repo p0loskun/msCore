@@ -1,5 +1,8 @@
 package com.github.minersstudios.mscore;
 
+import com.github.minersstudios.mscore.command.MSCommand;
+import com.github.minersstudios.mscore.command.MSCommandExecutor;
+import com.github.minersstudios.mscore.listener.MSListener;
 import com.github.minersstudios.mscore.tabcompleters.Empty;
 import com.google.common.base.Charsets;
 import org.bukkit.Bukkit;
@@ -110,13 +113,16 @@ public abstract class MSPlugin extends JavaPlugin {
 	public void saveConfig() {
 		try {
 			this.getConfig().save(this.configFile);
-		} catch (IOException ex) {
-			this.getLogger().log(Level.SEVERE, "Could not save config to " + this.configFile, ex);
+		} catch (IOException e) {
+			this.getLogger().log(Level.SEVERE, "Could not save config to " + this.configFile, e);
 		}
 	}
 
 	@Override
-	public void saveResource(@NotNull String resourcePath, boolean replace) {
+	public void saveResource(
+			@NotNull String resourcePath,
+			boolean replace
+	) {
 		if (resourcePath.isEmpty()) {
 			throw new IllegalArgumentException("ResourcePath cannot be null or empty");
 		}

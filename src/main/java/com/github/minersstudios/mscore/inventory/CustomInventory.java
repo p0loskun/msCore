@@ -115,8 +115,8 @@ public class CustomInventory extends CraftInventoryCustom implements Inventory, 
 		return this.bottomClickAction;
 	}
 
-	public void setBottomInventoryClickAction(@Nullable InventoryAction<InventoryClickEvent> bottomInventoryClickAction) {
-		this.bottomClickAction = bottomInventoryClickAction;
+	public void setBottomInventoryClickAction(@Nullable InventoryAction<InventoryClickEvent> bottomClickAction) {
+		this.bottomClickAction = bottomClickAction;
 	}
 
 	public void doBottomClickAction(@NotNull InventoryClickEvent event) {

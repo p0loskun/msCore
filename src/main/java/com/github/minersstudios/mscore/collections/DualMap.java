@@ -12,7 +12,11 @@ public final class DualMap<K1, K2, V> {
 	private final @NotNull HashMap<K1, Map.Entry<K2, V>> map = new HashMap<>();
 	private final @NotNull HashMap<K2, K1> keyMap = new HashMap<>();
 
-	public @Nullable V put(@NotNull K1 key1, @NotNull K2 key2, @NotNull V value) {
+	public @Nullable V put(
+			@NotNull K1 key1,
+			@NotNull K2 key2,
+			@NotNull V value
+	) {
 		this.keyMap.put(key2, key1);
 		Map.Entry<K2, V> entry = new AbstractMap.SimpleEntry<>(key2, value);
 		return this.map.put(key1, entry) != null ? value : null;
