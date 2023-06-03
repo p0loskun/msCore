@@ -2,8 +2,12 @@ package com.github.minersstudios.mscore.utils;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @SuppressWarnings("unused")
@@ -32,5 +36,30 @@ public final class CommandUtils {
 		suggestions.add(input + "M");
 		suggestions.add(input + "y");
 		return suggestions;
+	}
+
+	/**
+	 * Gets a date with time added
+	 * <p>
+	 * Regex : \d+[smhdMy]
+	 *
+	 * @param string time
+	 * @return date with time added
+	 */
+	public static @Nullable Date getDateFromString(@NotNull String string) throws NumberFormatException {
+		if (!string.matches("\\d+[smhdMy]")) return null;
+		long number = Long.parseLong(string.replaceAll("[smhdMy]", ""));
+		String chronoUnit = string.replaceAll("\\d+", "");
+		Instant instant = Instant.now();
+		return Date.from(
+				switch (chronoUnit) {
+					case "s" -> instant.plus(number, ChronoUnit.SECONDS);
+					case "m" -> instant.plus(number, ChronoUnit.MINUTES);
+					case "h" -> instant.plus(number, ChronoUnit.HOURS);
+					case "M" -> instant.plus(Math.multiplyExact(number, ChronoUnit.MONTHS.getDuration().toDays()), ChronoUnit.DAYS);
+					case "y" -> instant.plus(Math.multiplyExact(number, ChronoUnit.YEARS.getDuration().toDays()), ChronoUnit.DAYS);
+					default -> instant.plus(number, ChronoUnit.DAYS);
+				}
+		);
 	}
 }

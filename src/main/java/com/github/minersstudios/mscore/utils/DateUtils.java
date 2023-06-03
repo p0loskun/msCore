@@ -15,7 +15,6 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.time.Instant;
 import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.logging.Level;
 
@@ -85,29 +84,5 @@ public final class DateUtils {
 			MSCore.getInstance().getLogger().log(Level.WARNING, e.getMessage());
 			return ZoneId.systemDefault().toString();
 		}
-	}
-
-	/**
-	 * Gets a date with time added
-	 * <p>
-	 * Regex : [\d]+[smhdMy]
-	 *
-	 * @param string time
-	 * @return date with time added
-	 */
-	public static @NotNull Date getDateFromString(@NotNull String string) throws NumberFormatException {
-		long number = Long.parseLong(string.replaceAll("[smhdMy]", ""));
-		String chronoUnit = string.replaceAll("\\d+", "");
-		Instant instant = Instant.now();
-		return Date.from(
-				switch (chronoUnit) {
-					case "s" -> instant.plus(number, ChronoUnit.SECONDS);
-					case "m" -> instant.plus(number, ChronoUnit.MINUTES);
-					case "h" -> instant.plus(number, ChronoUnit.HOURS);
-					case "M" -> instant.plus(Math.multiplyExact(number, ChronoUnit.MONTHS.getDuration().toDays()), ChronoUnit.DAYS);
-					case "y" -> instant.plus(Math.multiplyExact(number, ChronoUnit.YEARS.getDuration().toDays()), ChronoUnit.DAYS);
-					default -> instant.plus(number, ChronoUnit.DAYS);
-				}
-		);
 	}
 }
