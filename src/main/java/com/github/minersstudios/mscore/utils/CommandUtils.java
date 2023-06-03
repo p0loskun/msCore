@@ -44,10 +44,17 @@ public final class CommandUtils {
 	 * <p>
 	 * Regex : \d+[smhdMy]
 	 *
-	 * @param string time
+	 * @param string         time
+	 * @param throwException if true, an exception will be thrown
 	 * @return date with time added
+	 * @throws NumberFormatException if the string does not contain a parsable long
+	 * @throws DateTimeException     if the chrono unit value is too big and the addition cannot be made
+	 * @throws ArithmeticException   if numeric overflow occurs
 	 */
-	public static @Nullable Date getDateFromString(@NotNull String string) throws NumberFormatException, DateTimeException, ArithmeticException {
+	public static @Nullable Date getDateFromString(
+			@NotNull String string,
+			boolean throwException
+	) throws NumberFormatException, DateTimeException, ArithmeticException {
 		if (!string.matches("\\d+[smhdMy]")) return null;
 		String chronoUnit = string.replaceAll("\\d+", "");
 		Instant instant = Instant.now();
@@ -63,8 +70,24 @@ public final class CommandUtils {
 						default -> instant.plus(number, ChronoUnit.DAYS);
 					}
 			);
-		} catch (DateTimeException | NumberFormatException | ArithmeticException ignored) {
+		} catch (DateTimeException | NumberFormatException | ArithmeticException e) {
+			if (throwException) throw e;
 			return null;
 		}
+	}
+
+	/**
+	 * Gets a date with time added
+	 * <p>
+	 * Regex : \d+[smhdMy]
+	 *
+	 * @param string time
+	 * @return date with time added
+	 * @throws NumberFormatException if the string does not contain a parsable long
+	 * @throws DateTimeException     if the chrono unit value is too big and the addition cannot be made
+	 * @throws ArithmeticException   if numeric overflow occurs
+	 */
+	public static @Nullable Date getDateFromString(@NotNull String string) throws NumberFormatException, DateTimeException, ArithmeticException {
+		return getDateFromString(string, true);
 	}
 }
