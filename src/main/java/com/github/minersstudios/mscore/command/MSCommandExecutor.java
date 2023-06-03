@@ -14,7 +14,9 @@ import java.util.List;
 @SuppressWarnings("unused")
 public interface MSCommandExecutor extends CommandExecutor, TabCompleter {
 
-	@NotNull LiteralCommandNode<?> getCommandNode();
+	default @Nullable LiteralCommandNode<?> getCommandNode() {
+		return null;
+	}
 
 	@Override
 	default @Nullable List<String> onTabComplete(
