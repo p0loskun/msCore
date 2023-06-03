@@ -1,4 +1,4 @@
-package com.github.minersstudios.mscore.listeners;
+package com.github.minersstudios.mscore.listeners.inventory;
 
 import com.github.minersstudios.mscore.listener.MSListener;
 import com.github.minersstudios.mscore.inventory.CustomInventory;

@@ -1,5 +1,6 @@
 package com.github.minersstudios.mscore.command;
 
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -12,6 +13,8 @@ import java.util.List;
 
 @SuppressWarnings("unused")
 public interface MSCommandExecutor extends CommandExecutor, TabCompleter {
+
+	@NotNull LiteralCommandNode<?> getCommandNode();
 
 	@Override
 	default @Nullable List<String> onTabComplete(

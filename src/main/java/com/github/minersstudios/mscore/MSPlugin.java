@@ -2,13 +2,11 @@ package com.github.minersstudios.mscore;
 
 import com.github.minersstudios.mscore.command.MSCommand;
 import com.github.minersstudios.mscore.command.MSCommandExecutor;
+import com.github.minersstudios.mscore.config.ConfigCache;
 import com.github.minersstudios.mscore.listener.MSListener;
-import com.github.minersstudios.mscore.tabcompleters.Empty;
 import com.google.common.base.Charsets;
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.PluginCommand;
-import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
@@ -18,7 +16,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.StringUtil;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.lang.reflect.Constructor;
@@ -182,7 +179,7 @@ public abstract class MSPlugin extends JavaPlugin {
 				if (msCommand != null) {
 					try {
 						if (clazz.getDeclaredConstructor().newInstance() instanceof MSCommandExecutor msCommandExecutor) {
-							this.registerCommand(msCommand, msCommandExecutor, msCommandExecutor);
+							this.registerCommand(msCommand, msCommandExecutor);
 						} else {
 							this.getLogger().log(Level.WARNING, "Registered command that is not instance of MSCommandExecutor (" + className + ")");
 						}
@@ -195,14 +192,12 @@ public abstract class MSPlugin extends JavaPlugin {
 	}
 
 	/**
-	 * @param msCommand       command to be registered
-	 * @param commandExecutor command executor
-	 * @param tabCompleter    command tab completer, {@link Empty} if null
+	 * @param msCommand command to be registered
+	 * @param executor  command executor
 	 */
 	public final void registerCommand(
 			@NotNull MSCommand msCommand,
-			@NotNull CommandExecutor commandExecutor,
-			@Nullable TabCompleter tabCompleter
+			@NotNull MSCommandExecutor executor
 	) {
 		String name = msCommand.command();
 		PluginCommand bukkitCommand = this.getCommand(name);
@@ -243,8 +238,9 @@ public abstract class MSPlugin extends JavaPlugin {
 			pluginCommand.setPermission(permissionStr);
 		}
 
-		pluginCommand.setExecutor(commandExecutor);
-		pluginCommand.setTabCompleter(tabCompleter);
+		pluginCommand.setExecutor(executor);
+		pluginCommand.setTabCompleter(executor);
+		ConfigCache.COMMANDS.put(executor.getCommandNode(), permissionStr.isEmpty() ? null : permissionStr);
 		Bukkit.getCommandMap().register(this.getName(), pluginCommand);
 	}
 
