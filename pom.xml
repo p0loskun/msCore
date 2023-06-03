@@ -106,6 +106,12 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.mojang</groupId>
+			<artifactId>authlib</artifactId>
+			<version>3.18.38</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>ca.bkaw</groupId>
 			<artifactId>paper-nms</artifactId>
 			<version>1.19.4-SNAPSHOT</version>
