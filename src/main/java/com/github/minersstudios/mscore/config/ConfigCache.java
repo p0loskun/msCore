@@ -1,5 +1,6 @@
 package com.github.minersstudios.mscore.config;
 
+import com.destroystokyo.paper.brigadier.BukkitBrigadierCommandSource;
 import com.github.minersstudios.msblock.customblock.CustomBlockData;
 import com.github.minersstudios.mscore.MSCore;
 import com.github.minersstudios.mscore.collections.DualMap;
@@ -7,8 +8,7 @@ import com.github.minersstudios.mscore.inventory.CustomInventory;
 import com.github.minersstudios.msdecor.customdecor.CustomDecorData;
 import com.github.minersstudios.msitems.items.CustomItem;
 import com.github.minersstudios.msitems.items.RenameableItem;
-import com.mojang.brigadier.tree.LiteralCommandNode;
-import net.minecraft.commands.CommandSourceStack;
+import com.mojang.brigadier.tree.CommandNode;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.Recipe;
 import org.jetbrains.annotations.NotNull;
@@ -41,7 +41,7 @@ public final class ConfigCache {
 
 	public final @NotNull HashMap<String, CustomInventory> customInventories = new HashMap<>();
 
-	public static final Map<LiteralCommandNode<CommandSourceStack>, String> COMMANDS = new HashMap<>();
+	public static final Map<CommandNode<? extends BukkitBrigadierCommandSource>, String> COMMANDS = new HashMap<>();
 
 	public boolean onlineMode;
 

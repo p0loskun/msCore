@@ -1,7 +1,7 @@
 package com.github.minersstudios.mscore.command;
 
-import com.mojang.brigadier.tree.LiteralCommandNode;
-import net.minecraft.commands.CommandSourceStack;
+import com.destroystokyo.paper.brigadier.BukkitBrigadierCommandSource;
+import com.mojang.brigadier.tree.CommandNode;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -15,7 +15,7 @@ import java.util.List;
 @SuppressWarnings("unused")
 public interface MSCommandExecutor extends CommandExecutor, TabCompleter {
 
-	default @Nullable LiteralCommandNode<CommandSourceStack> getCommandNode() {
+	default @Nullable CommandNode<? extends BukkitBrigadierCommandSource> getCommandNode() {
 		return null;
 	}
 
