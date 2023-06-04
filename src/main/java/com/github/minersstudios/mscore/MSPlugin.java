@@ -1,6 +1,5 @@
 package com.github.minersstudios.mscore;
 
-import com.destroystokyo.paper.brigadier.BukkitBrigadierCommandSource;
 import com.github.minersstudios.mscore.command.MSCommand;
 import com.github.minersstudios.mscore.command.MSCommandExecutor;
 import com.github.minersstudios.mscore.config.ConfigCache;
@@ -204,7 +203,7 @@ public abstract class MSPlugin extends JavaPlugin {
 		String name = msCommand.command();
 		PluginCommand bukkitCommand = this.getCommand(name);
 		PluginCommand pluginCommand = bukkitCommand == null ? createCommand(name) : bukkitCommand;
-		CommandNode<? extends BukkitBrigadierCommandSource> commandNode = executor.getCommandNode();
+		CommandNode<?> commandNode = executor.getCommandNode();
 
 		List<String> aliases = Arrays.asList(msCommand.aliases());
 		if (!aliases.isEmpty()) {

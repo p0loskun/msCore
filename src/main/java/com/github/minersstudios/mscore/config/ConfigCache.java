@@ -1,6 +1,5 @@
 package com.github.minersstudios.mscore.config;
 
-import com.destroystokyo.paper.brigadier.BukkitBrigadierCommandSource;
 import com.github.minersstudios.msblock.customblock.CustomBlockData;
 import com.github.minersstudios.mscore.MSCore;
 import com.github.minersstudios.mscore.collections.DualMap;
@@ -41,7 +40,7 @@ public final class ConfigCache {
 
 	public final @NotNull HashMap<String, CustomInventory> customInventories = new HashMap<>();
 
-	public static final Map<CommandNode<? extends BukkitBrigadierCommandSource>, String> COMMANDS = new HashMap<>();
+	public static final Map<CommandNode<?>, String> COMMANDS = new HashMap<>();
 
 	public boolean onlineMode;
 
