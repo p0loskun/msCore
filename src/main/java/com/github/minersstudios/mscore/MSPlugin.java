@@ -6,6 +6,7 @@ import com.github.minersstudios.mscore.config.ConfigCache;
 import com.github.minersstudios.mscore.listener.MSListener;
 import com.google.common.base.Charsets;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import net.minecraft.commands.CommandSourceStack;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -203,7 +204,7 @@ public abstract class MSPlugin extends JavaPlugin {
 		String name = msCommand.command();
 		PluginCommand bukkitCommand = this.getCommand(name);
 		PluginCommand pluginCommand = bukkitCommand == null ? createCommand(name) : bukkitCommand;
-		LiteralCommandNode<?> commandNode = executor.getCommandNode();
+		LiteralCommandNode<CommandSourceStack> commandNode = executor.getCommandNode();
 
 		List<String> aliases = Arrays.asList(msCommand.aliases());
 		if (!aliases.isEmpty()) {

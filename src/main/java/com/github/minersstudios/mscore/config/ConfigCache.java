@@ -8,6 +8,7 @@ import com.github.minersstudios.msdecor.customdecor.CustomDecorData;
 import com.github.minersstudios.msitems.items.CustomItem;
 import com.github.minersstudios.msitems.items.RenameableItem;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import net.minecraft.commands.CommandSourceStack;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.Recipe;
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +41,7 @@ public final class ConfigCache {
 
 	public final @NotNull HashMap<String, CustomInventory> customInventories = new HashMap<>();
 
-	public static final Map<LiteralCommandNode<?>, String> COMMANDS = new HashMap<>();
+	public static final Map<LiteralCommandNode<CommandSourceStack>, String> COMMANDS = new HashMap<>();
 
 	public boolean onlineMode;
 

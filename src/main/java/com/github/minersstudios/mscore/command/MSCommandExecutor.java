@@ -1,6 +1,7 @@
 package com.github.minersstudios.mscore.command;
 
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import net.minecraft.commands.CommandSourceStack;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -14,7 +15,7 @@ import java.util.List;
 @SuppressWarnings("unused")
 public interface MSCommandExecutor extends CommandExecutor, TabCompleter {
 
-	default @Nullable LiteralCommandNode<?> getCommandNode() {
+	default @Nullable LiteralCommandNode<CommandSourceStack> getCommandNode() {
 		return null;
 	}
 
