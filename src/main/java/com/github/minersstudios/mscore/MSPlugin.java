@@ -2,10 +2,11 @@ package com.github.minersstudios.mscore;
 
 import com.github.minersstudios.mscore.command.MSCommand;
 import com.github.minersstudios.mscore.command.MSCommandExecutor;
-import com.github.minersstudios.mscore.config.ConfigCache;
 import com.github.minersstudios.mscore.listener.MSListener;
 import com.google.common.base.Charsets;
 import com.mojang.brigadier.tree.CommandNode;
+import com.mojang.brigadier.tree.LiteralCommandNode;
+import com.github.minersstudios.mscore.command.Commodore;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -35,6 +36,7 @@ public abstract class MSPlugin extends JavaPlugin {
 	protected FileConfiguration newConfig;
 	protected boolean loadedCustoms;
 	protected Set<String> classNames;
+	protected Commodore commodore;
 
 	@Override
 	public final void onLoad() {
@@ -66,6 +68,7 @@ public abstract class MSPlugin extends JavaPlugin {
 	@Override
 	public final void onEnable() {
 		long time = System.currentTimeMillis();
+		this.commodore = new Commodore(this);
 		try {
 			this.loadListeners();
 			this.registerCommands();
@@ -243,7 +246,7 @@ public abstract class MSPlugin extends JavaPlugin {
 		pluginCommand.setExecutor(executor);
 		pluginCommand.setTabCompleter(executor);
 		if (commandNode != null) {
-			ConfigCache.COMMANDS.put(commandNode, permissionStr.isEmpty() ? null : permissionStr);
+			this.commodore.register(pluginCommand, (LiteralCommandNode<?>) commandNode);
 		}
 		Bukkit.getCommandMap().register(this.getName(), pluginCommand);
 	}

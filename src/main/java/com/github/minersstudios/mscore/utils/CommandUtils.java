@@ -1,37 +1,18 @@
 package com.github.minersstudios.mscore.utils;
 
-import com.mojang.brigadier.tree.CommandNode;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Field;
 import java.time.DateTimeException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @SuppressWarnings("unused")
 public final class CommandUtils {
-	private static final Field CHILDREN;
-	private static final Field LITERALS;
-	private static final Field ARGUMENTS;
-
-	static {
-		try {
-			CHILDREN = CommandNode.class.getDeclaredField("children");
-			LITERALS = CommandNode.class.getDeclaredField("literals");
-			ARGUMENTS = CommandNode.class.getDeclaredField("arguments");
-		} catch (NoSuchFieldException e) {
-			throw new RuntimeException(e);
-		}
-		CHILDREN.setAccessible(true);
-		LITERALS.setAccessible(true);
-		ARGUMENTS.setAccessible(true);
-	}
 
 	@Contract(value = " -> fail")
 	private CommandUtils() {
@@ -108,15 +89,5 @@ public final class CommandUtils {
 	 */
 	public static @Nullable Date getDateFromString(@NotNull String string) throws NumberFormatException, DateTimeException, ArithmeticException {
 		return getDateFromString(string, true);
-	}
-
-	public static void removeCommand(@NotNull CommandNode<?> root, @NotNull String name) {
-		try {
-			((Map<?, ?>) CHILDREN.get(root)).remove(name);
-			((Map<?, ?>) LITERALS.get(root)).remove(name);
-			((Map<?, ?>) ARGUMENTS.get(root)).remove(name);
-		} catch (IllegalAccessException e) {
-			throw new RuntimeException(e);
-		}
 	}
 }
