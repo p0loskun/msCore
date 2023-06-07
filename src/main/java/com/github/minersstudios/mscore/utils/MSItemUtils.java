@@ -20,6 +20,8 @@ public final class MSItemUtils {
 	public static final NamespacedKey CUSTOM_ITEM_TYPE_NAMESPACED_KEY = new NamespacedKey(MSItems.getInstance(), "type");
 	public static final NamespacedKey CUSTOM_ITEM_RENAMEABLE_NAMESPACED_KEY = new NamespacedKey(MSItems.getInstance(), "renameable");
 
+	public static final String NAMESPACED_KEY_REGEX = "msitem:(\\w+)";
+
 	@Contract(value = " -> fail")
 	private MSItemUtils() {
 		throw new IllegalStateException("Utility class");
@@ -87,11 +89,16 @@ public final class MSItemUtils {
 	@Contract("null -> null")
 	public static @Nullable CustomItem getCustomItem(@Nullable String namespacedKeyStr) {
 		if (namespacedKeyStr == null) return null;
-		Pattern pattern = Pattern.compile("msitem:(\\w+)");
+		Pattern pattern = Pattern.compile(NAMESPACED_KEY_REGEX);
 		Matcher matcher = pattern.matcher(namespacedKeyStr.toLowerCase(Locale.ENGLISH));
 		if (matcher.find()) {
 			return MSCore.getConfigCache().customItemMap.getByPrimaryKey(matcher.group(1));
 		}
 		return null;
+	}
+
+	@Contract(value = "null -> false", pure = true)
+	public static boolean matchesNamespacedKey(@Nullable String string) {
+		return string != null && string.matches(NAMESPACED_KEY_REGEX);
 	}
 }

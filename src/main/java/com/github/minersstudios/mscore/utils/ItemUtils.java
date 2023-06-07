@@ -35,14 +35,13 @@ public final class ItemUtils {
 	@Contract("null -> null")
 	public static @Nullable ItemStack getMSItemStack(@Nullable String namespacedKeyStr) {
 		if (namespacedKeyStr == null) return null;
-		if (namespacedKeyStr.matches("msitem:\\w+")) {
-			return MSItemUtils.getCustomItemItemStack(namespacedKeyStr);
-		} else if (namespacedKeyStr.matches("msblock:\\w+")) {
-			return MSBlockUtils.getCustomBlockItem(namespacedKeyStr);
-		} else if (namespacedKeyStr.matches("msdecor:\\w+")) {
-			return MSDecorUtils.getCustomDecorItem(namespacedKeyStr);
-		}
-		return null;
+		return MSItemUtils.matchesNamespacedKey(namespacedKeyStr)
+				? MSItemUtils.getCustomItemItemStack(namespacedKeyStr)
+				: MSBlockUtils.matchesNamespacedKey(namespacedKeyStr)
+				? MSBlockUtils.getCustomBlockItem(namespacedKeyStr)
+				: MSDecorUtils.matchesNamespacedKey(namespacedKeyStr)
+				? MSDecorUtils.getCustomDecorItem(namespacedKeyStr)
+				: null;
 	}
 
 	/**
@@ -62,11 +61,9 @@ public final class ItemUtils {
 		) return false;
 		ItemMeta firstMeta = first.getItemMeta();
 		ItemMeta secondMeta = second.getItemMeta();
-		if (
-				!firstMeta.hasCustomModelData()
-				|| !secondMeta.hasCustomModelData()
-		) return false;
-		return firstMeta.getCustomModelData() == secondMeta.getCustomModelData();
+		return firstMeta.hasCustomModelData()
+				&& secondMeta.hasCustomModelData()
+				&& firstMeta.getCustomModelData() == secondMeta.getCustomModelData();
 	}
 
 	/**

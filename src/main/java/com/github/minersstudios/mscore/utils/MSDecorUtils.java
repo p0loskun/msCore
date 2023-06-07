@@ -28,6 +28,8 @@ import java.util.regex.Pattern;
 public final class MSDecorUtils {
 	public static final NamespacedKey CUSTOM_DECOR_TYPE_NAMESPACED_KEY = new NamespacedKey(MSDecor.getInstance(), "type");
 
+	public static final String NAMESPACED_KEY_REGEX = "msdecor:(\\w+)";
+
 	@Contract(value = " -> fail")
 	private MSDecorUtils() {
 		throw new IllegalStateException("Utility class");
@@ -175,11 +177,16 @@ public final class MSDecorUtils {
 	@Contract("null -> null")
 	public static @Nullable CustomDecorData getCustomDecorData(@Nullable String namespacedKeyStr) {
 		if (namespacedKeyStr == null) return null;
-		Pattern pattern = Pattern.compile("msdecor:(\\w+)");
+		Pattern pattern = Pattern.compile(NAMESPACED_KEY_REGEX);
 		Matcher matcher = pattern.matcher(namespacedKeyStr.toLowerCase(Locale.ENGLISH));
 		if (matcher.find()) {
 			return MSCore.getConfigCache().customDecorMap.getByPrimaryKey(matcher.group(1));
 		}
 		return null;
+	}
+
+	@Contract(value = "null -> false", pure = true)
+	public static boolean matchesNamespacedKey(@Nullable String string) {
+		return string != null && string.matches(NAMESPACED_KEY_REGEX);
 	}
 }

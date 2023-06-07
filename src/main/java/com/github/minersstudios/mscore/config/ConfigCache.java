@@ -7,15 +7,11 @@ import com.github.minersstudios.mscore.inventory.CustomInventory;
 import com.github.minersstudios.msdecor.customdecor.CustomDecorData;
 import com.github.minersstudios.msitems.items.CustomItem;
 import com.github.minersstudios.msitems.items.RenameableItem;
-import com.mojang.brigadier.tree.CommandNode;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.Recipe;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -40,26 +36,12 @@ public final class ConfigCache {
 
 	public final @NotNull HashMap<String, CustomInventory> customInventories = new HashMap<>();
 
-	public static final Map<CommandNode<?>, String> COMMANDS = new HashMap<>();
-
-	public boolean onlineMode;
+	public final Map<String, UUID> playerUUIDs = new HashMap<>();
 
 	public ConfigCache() {
 		this.dataFile = MSCore.getInstance().getConfigFile();
 		this.yamlConfiguration = YamlConfiguration.loadConfiguration(this.dataFile);
 
 		this.timeFormatter = DateTimeFormatter.ofPattern(this.yamlConfiguration.getString("date-format", "EEE, yyyy-MM-dd HH:mm z"));
-		this.onlineMode = getOnlineMode();
-	}
-
-	private static boolean getOnlineMode() {
-		try (InputStream input = new FileInputStream("server.properties")) {
-			Properties properties = new Properties();
-			properties.load(input);
-			input.close();
-			return Boolean.parseBoolean(properties.getProperty("online-mode"));
-		} catch (IOException e) {
-			throw new SecurityException(e);
-		}
 	}
 }

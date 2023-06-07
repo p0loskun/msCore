@@ -24,10 +24,12 @@ import org.json.simple.parser.ParseException;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.Map;
 import java.util.UUID;
 
 @SuppressWarnings("unused")
 public final class PlayerUtils {
+	public static final @NotNull String UUID_URL = "https://api.mojang.com/users/profiles/minecraft/";
 
 	@Contract(value = " -> fail")
 	private PlayerUtils() {
@@ -99,22 +101,34 @@ public final class PlayerUtils {
 	 * @param nickname player nickname
 	 * @return player UUID
 	 */
-	@Nullable
-	public static UUID getUUID(@NotNull String nickname) {
-		if (MSCore.getConfigCache().onlineMode) {
+	public static @Nullable UUID getUUID(@NotNull String nickname) {
+		Map<String, UUID> map = MSCore.getConfigCache().playerUUIDs;
+		UUID uuid = map.get(nickname);
+
+		if (uuid != null) return uuid;
+		if (Bukkit.getOnlineMode()) {
 			try {
-				String UUIDJson = IOUtils.toString(new URL("https://api.mojang.com/users/profiles/minecraft/" + nickname), Charset.defaultCharset());
-				if (UUIDJson.isEmpty()) return null;
-				return UUID.fromString(((JSONObject) JSONValue.parseWithException(UUIDJson)).get("id").toString().replaceFirst(
-						"(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)",
-						"$1-$2-$3-$4-$5"
-				));
+				URL url = new URL(UUID_URL + nickname);
+				String jsonString = IOUtils.toString(url, Charset.defaultCharset());
+				if (jsonString.isEmpty()) return null;
+				JSONObject jsonObject = (JSONObject) JSONValue.parseWithException(jsonString);
+				String uuidString = jsonObject.get("id").toString();
+				uuid = UUID.fromString(
+						uuidString
+						.replaceFirst(
+								"(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)",
+								"$1-$2-$3-$4-$5"
+						)
+				);
 			} catch (IOException | ParseException e) {
 				throw new RuntimeException(e);
 			}
 		} else {
-			return UUID.nameUUIDFromBytes(("OfflinePlayer:" + nickname).getBytes(Charsets.UTF_8));
+			byte[] bytes = ("OfflinePlayer:" + nickname).getBytes(Charsets.UTF_8);
+			uuid = UUID.nameUUIDFromBytes(bytes);
 		}
+		map.put(nickname, uuid);
+		return uuid;
 	}
 
 	/**
@@ -125,7 +139,9 @@ public final class PlayerUtils {
 	 */
 	public static @Nullable OfflinePlayer getOfflinePlayerByNick(@NotNull String nickname) {
 		UUID uuid = getUUID(nickname);
-		return uuid != null ? getOfflinePlayer(uuid, nickname) : null;
+		return uuid != null
+				? getOfflinePlayer(uuid, nickname)
+				: null;
 	}
 
 	/**
@@ -139,10 +155,11 @@ public final class PlayerUtils {
 			@NotNull UUID uuid,
 			@NotNull String name
 	) {
-		CraftServer craftServer = (CraftServer) Bukkit.getServer();
 		OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
 		if (offlinePlayer.getName() == null) {
-			offlinePlayer = craftServer.getOfflinePlayer(new GameProfile(uuid, name));
+			CraftServer craftServer = (CraftServer) Bukkit.getServer();
+			GameProfile gameProfile = new GameProfile(uuid, name);
+			return craftServer.getOfflinePlayer(gameProfile);
 		}
 		return offlinePlayer;
 	}

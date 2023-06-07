@@ -93,7 +93,7 @@ public final class CommandUtils {
 	}
 
 	@Contract(value = "null -> false", pure = true)
-	public static boolean matchesChronoRegex(@Nullable String string) {
+	public static boolean matchesChrono(@Nullable String string) {
 		return string != null && string.matches(CHRONO_REGEX);
 	}
 }

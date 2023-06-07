@@ -4,7 +4,6 @@ import com.github.minersstudios.mscore.config.ConfigCache;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-@SuppressWarnings("unused")
 public final class MSCore extends MSPlugin {
 	private static MSCore instance;
 	private static ConfigCache configCache;

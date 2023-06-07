@@ -18,6 +18,8 @@ import java.util.regex.Pattern;
 public final class MSBlockUtils {
 	public static final NamespacedKey CUSTOM_BLOCK_TYPE_NAMESPACED_KEY = new NamespacedKey(MSBlock.getInstance(), "type");
 
+	public static final String NAMESPACED_KEY_REGEX = "msblock:(\\w+)";
+
 	@Contract(value = " -> fail")
 	private MSBlockUtils() {
 		throw new IllegalStateException("Utility class");
@@ -74,11 +76,16 @@ public final class MSBlockUtils {
 	@Contract("null -> null")
 	public static @Nullable CustomBlockData getCustomBlockData(@Nullable String namespacedKeyStr) {
 		if (namespacedKeyStr == null) return null;
-		Pattern pattern = Pattern.compile("msblock:(\\w+)");
+		Pattern pattern = Pattern.compile(NAMESPACED_KEY_REGEX);
 		Matcher matcher = pattern.matcher(namespacedKeyStr.toLowerCase(Locale.ENGLISH));
 		if (matcher.find()) {
 			return MSCore.getConfigCache().customBlockMap.getByPrimaryKey(matcher.group(1));
 		}
 		return null;
+	}
+
+	@Contract(value = "null -> false", pure = true)
+	public static boolean matchesNamespacedKey(@Nullable String string) {
+		return string != null && string.matches(NAMESPACED_KEY_REGEX);
 	}
 }
