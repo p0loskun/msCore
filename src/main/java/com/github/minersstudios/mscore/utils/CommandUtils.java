@@ -57,8 +57,10 @@ public final class CommandUtils {
 			boolean throwException
 	) throws NumberFormatException, DateTimeException, ArithmeticException {
 		if (!string.matches(CHRONO_REGEX)) return null;
+
 		String chronoUnit = string.replaceAll("\\d+", "");
 		Instant instant = Instant.now();
+
 		try {
 			long number = Long.parseLong(string.replaceAll("[smhdMy]", ""));
 			return Date.from(

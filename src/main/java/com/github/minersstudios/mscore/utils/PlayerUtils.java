@@ -79,6 +79,7 @@ public final class PlayerUtils {
 	 */
 	public static @Nullable Player loadPlayer(@NotNull OfflinePlayer offlinePlayer) {
 		if (!offlinePlayer.hasPlayedBefore()) return null;
+
 		GameProfile profile = new GameProfile(
 				offlinePlayer.getUniqueId(),
 				offlinePlayer.getName() != null
@@ -91,6 +92,7 @@ public final class PlayerUtils {
 		if (worldServer == null) return null;
 
 		Player online = new ServerPlayer(server, worldServer, profile).getBukkitEntity();
+
 		online.loadData();
 		return online;
 	}
@@ -106,11 +108,14 @@ public final class PlayerUtils {
 		UUID uuid = map.get(nickname);
 
 		if (uuid != null) return uuid;
+
 		if (Bukkit.getOnlineMode()) {
 			try {
 				URL url = new URL(UUID_URL + nickname);
 				String jsonString = IOUtils.toString(url, Charset.defaultCharset());
+
 				if (jsonString.isEmpty()) return null;
+
 				JSONObject jsonObject = (JSONObject) JSONValue.parseWithException(jsonString);
 				String uuidString = jsonObject.get("id").toString();
 				uuid = UUID.fromString(
@@ -121,12 +126,13 @@ public final class PlayerUtils {
 						)
 				);
 			} catch (IOException | ParseException e) {
-				throw new RuntimeException(e);
+				return null;
 			}
 		} else {
 			byte[] bytes = ("OfflinePlayer:" + nickname).getBytes(Charsets.UTF_8);
 			uuid = UUID.nameUUIDFromBytes(bytes);
 		}
+
 		map.put(nickname, uuid);
 		return uuid;
 	}

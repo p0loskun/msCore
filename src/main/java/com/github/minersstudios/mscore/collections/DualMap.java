@@ -17,8 +17,8 @@ public final class DualMap<K1, K2, V> {
 			@NotNull K2 key2,
 			@NotNull V value
 	) {
-		this.keyMap.put(key2, key1);
 		Map.Entry<K2, V> entry = new AbstractMap.SimpleEntry<>(key2, value);
+		this.keyMap.put(key2, key1);
 		return this.map.put(key1, entry) != null ? value : null;
 	}
 

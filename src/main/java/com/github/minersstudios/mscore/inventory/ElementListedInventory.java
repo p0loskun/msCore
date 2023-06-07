@@ -25,6 +25,7 @@ public class ElementListedInventory extends ListedInventory {
 	) {
 		super(title, verticalSize, args);
 		this.elementSlots = elementSlots;
+
 		this.setElements(elements);
 		this.updatePages();
 		this.setButtons(this.getPageContents(this.page));
@@ -38,6 +39,7 @@ public class ElementListedInventory extends ListedInventory {
 	public void setElements(@NotNull List<InventoryButton> elements) {
 		this.elements.clear();
 		this.setPagesSize((int) Math.ceil((double) elements.size() / this.elementSlots.length));
+
 		for (int page = 0; page < this.pagesSize; page++) {
 			for (int element = 0; element < this.elementSlots.length; element++) {
 				int index = element + (page * this.elementSlots.length);
@@ -55,10 +57,12 @@ public class ElementListedInventory extends ListedInventory {
 	public @NotNull Map<Integer, InventoryButton> getPageContents(int page) {
 		Map<Integer, InventoryButton> content = new HashMap<>(this.elementSlots.length);
 		int i = 0;
+
 		for (InventoryButton inventoryButton : this.elements.get(page)) {
 			content.put(this.elementSlots[i], inventoryButton);
 			i++;
 		}
+
 		for (int slot : this.elementSlots) {
 			content.putIfAbsent(slot, new InventoryButton());
 		}

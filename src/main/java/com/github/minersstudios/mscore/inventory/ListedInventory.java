@@ -53,9 +53,9 @@ public class ListedInventory extends CustomInventory {
 
 	@Override
 	public @Nullable InventoryButton getClickedButton(int slot) {
-		StaticInventoryButton staticInventoryButton = this.staticButtons.getOrDefault(slot, null);
-		if (staticInventoryButton != null) {
-			return staticInventoryButton.getButton(this);
+		StaticInventoryButton staticButton = this.staticButtons.getOrDefault(slot, null);
+		if (staticButton != null) {
+			return staticButton.getButton(this);
 		}
 		return this.buttons.getOrDefault(slot, null);
 	}
@@ -90,6 +90,7 @@ public class ListedInventory extends CustomInventory {
 	public @NotNull ListedInventory addPage() {
 		int page = this.pagesSize;
 		ListedInventory listedInventory = (ListedInventory) this.clone();
+
 		listedInventory.setPageIndex(page);
 		this.pages.put(page, listedInventory);
 		this.updateStaticButtons(page);

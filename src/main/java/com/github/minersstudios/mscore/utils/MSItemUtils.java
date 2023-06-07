@@ -89,8 +89,10 @@ public final class MSItemUtils {
 	@Contract("null -> null")
 	public static @Nullable CustomItem getCustomItem(@Nullable String namespacedKeyStr) {
 		if (namespacedKeyStr == null) return null;
+
 		Pattern pattern = Pattern.compile(NAMESPACED_KEY_REGEX);
 		Matcher matcher = pattern.matcher(namespacedKeyStr.toLowerCase(Locale.ENGLISH));
+
 		if (matcher.find()) {
 			return MSCore.getConfigCache().customItemMap.getByPrimaryKey(matcher.group(1));
 		}

@@ -134,16 +134,19 @@ public final class ItemUtils {
 			int originalDamage
 	) {
 		if (item == null || !(item.getItemMeta() instanceof Damageable damageable)) return false;
+
 		int damage = 0;
 		DamageableItem damageableItem = DamageableItem.fromItemStack(item);
 
 		if (damageableItem != null) {
 			damageableItem.setRealDamage(damageableItem.getRealDamage() + originalDamage);
+
 			if (
 					!damageable.hasEnchant(Enchantment.DURABILITY)
 					|| Math.random() < 1.0d / (damageable.getEnchantLevel(Enchantment.DURABILITY) + 1.0d)
 			) {
 				damage = originalDamage;
+
 				damageableItem.saveForItemStack(item);
 			}
 		} else if (
@@ -151,6 +154,7 @@ public final class ItemUtils {
 				|| Math.random() < 1.0d / (damageable.getEnchantLevel(Enchantment.DURABILITY) + 1.0d)
 		) {
 			damage = originalDamage;
+
 			damageable.setDamage(damageable.getDamage() + originalDamage);
 			item.setItemMeta(damageable);
 		}

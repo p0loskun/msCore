@@ -14,6 +14,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.StringUtil;
 import org.jetbrains.annotations.Contract;
@@ -69,25 +70,24 @@ public abstract class MSPlugin extends JavaPlugin {
 	public final void onEnable() {
 		long time = System.currentTimeMillis();
 		this.commodore = new Commodore(this);
+
 		try {
 			this.loadListeners();
 			this.registerCommands();
 		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
+
 		this.enable();
-		if (this.isEnabled()) {
-			this.getLogger().log(Level.INFO, "\033[0;92mEnabled in " + (System.currentTimeMillis() - time) + "ms");
-		}
+		this.getLogger().log(Level.INFO, "\033[0;92mEnabled in " + (System.currentTimeMillis() - time) + "ms");
 	}
 
 	@Override
 	public final void onDisable() {
 		long time = System.currentTimeMillis();
+
 		this.disable();
-		if (!this.isEnabled()) {
-			this.getLogger().log(Level.INFO, "\033[0;92mDisabled in " + (System.currentTimeMillis() - time) + "ms");
-		}
+		this.getLogger().log(Level.INFO, "\033[0;92mDisabled in " + (System.currentTimeMillis() - time) + "ms");
 	}
 
 	@Override
@@ -101,8 +101,8 @@ public abstract class MSPlugin extends JavaPlugin {
 	@Override
 	public void reloadConfig() {
 		this.newConfig = YamlConfiguration.loadConfiguration(this.configFile);
-
 		InputStream defConfigStream = this.getResource("config.yml");
+
 		if (defConfigStream == null) return;
 
 		this.newConfig.setDefaults(
@@ -137,8 +137,7 @@ public abstract class MSPlugin extends JavaPlugin {
 		File outDir = new File(this.pluginFolder, resourcePath.substring(0, Math.max(resourcePath.lastIndexOf('/'), 0)));
 
 		if (!outDir.exists()) {
-			boolean mkdir = outDir.mkdirs();
-			if (!mkdir) {
+			if (!outDir.mkdirs()) {
 				throw new SecurityException("Directory creation failed");
 			}
 		}
@@ -148,9 +147,11 @@ public abstract class MSPlugin extends JavaPlugin {
 				OutputStream out = new FileOutputStream(outFile);
 				byte[] buf = new byte[1024];
 				int len;
+
 				while ((len = in.read(buf)) > 0) {
 					out.write(buf, 0, len);
 				}
+
 				out.close();
 				in.close();
 			} else {
@@ -180,6 +181,7 @@ public abstract class MSPlugin extends JavaPlugin {
 			if (StringUtil.startsWithIgnoreCase(className, "com.github.minersstudios." + this.getName() + ".commands")) {
 				Class<?> clazz = this.getClassLoader().loadClass(className);
 				MSCommand msCommand = clazz.getAnnotation(MSCommand.class);
+
 				if (msCommand != null) {
 					try {
 						if (clazz.getDeclaredConstructor().newInstance() instanceof MSCommandExecutor msCommandExecutor) {
@@ -207,27 +209,28 @@ public abstract class MSPlugin extends JavaPlugin {
 		PluginCommand bukkitCommand = this.getCommand(name);
 		PluginCommand pluginCommand = bukkitCommand == null ? createCommand(name) : bukkitCommand;
 		CommandNode<?> commandNode = executor.getCommandNode();
-
 		List<String> aliases = Arrays.asList(msCommand.aliases());
+		String usage = msCommand.usage();
+		String description = msCommand.description();
+		String permissionStr = msCommand.permission();
+
 		if (!aliases.isEmpty()) {
 			pluginCommand.setAliases(aliases);
 		}
 
-		String usage = msCommand.usage();
 		if (!usage.isEmpty()) {
 			pluginCommand.setUsage(usage);
 		}
 
-		String description = msCommand.description();
 		if (!description.isEmpty()) {
 			pluginCommand.setDescription(description);
 		}
 
-		String permissionStr = msCommand.permission();
 		if (!permissionStr.isEmpty()) {
 			Map<String, Boolean> children = new HashMap<>();
 			String[] keys = msCommand.permissionParentKeys();
 			boolean[] values = msCommand.permissionParentValues();
+
 			if (keys.length != values.length) {
 				throw new IllegalArgumentException("Permission and boolean array lengths do not match in command : " + name);
 			} else {
@@ -240,14 +243,17 @@ public abstract class MSPlugin extends JavaPlugin {
 				Permission permission = new Permission(permissionStr, msCommand.permissionDefault(), children);
 				Bukkit.getPluginManager().addPermission(permission);
 			}
+
 			pluginCommand.setPermission(permissionStr);
 		}
 
 		pluginCommand.setExecutor(executor);
 		pluginCommand.setTabCompleter(executor);
+
 		if (commandNode != null) {
 			this.commodore.register(pluginCommand, (LiteralCommandNode<?>) commandNode);
 		}
+
 		Bukkit.getCommandMap().register(this.getName(), pluginCommand);
 	}
 
@@ -271,13 +277,16 @@ public abstract class MSPlugin extends JavaPlugin {
 	 * @throws ClassNotFoundException If the class was not found
 	 */
 	public void loadListeners() throws ClassNotFoundException {
+		PluginManager pluginManager = this.getServer().getPluginManager();
+
 		for (String className : this.getClassNames()) {
 			if (StringUtil.startsWithIgnoreCase(className, "com.github.minersstudios." + this.getName() + ".listeners")) {
 				Class<?> clazz = this.getClassLoader().loadClass(className);
+
 				if (clazz.isAnnotationPresent(MSListener.class)) {
 					try {
 						if (clazz.getDeclaredConstructor().newInstance() instanceof Listener listener) {
-							this.getServer().getPluginManager().registerEvents(listener, this);
+							pluginManager.registerEvents(listener, this);
 						} else {
 							this.getLogger().log(Level.WARNING, "Registered listener that is not instance of Listener (" + className + ")");
 						}

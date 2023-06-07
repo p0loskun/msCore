@@ -36,9 +36,11 @@ public final class DateUtils {
 	public static @NotNull String getDate(@NotNull Date date, @Nullable InetAddress address) {
 		Instant milli = Instant.ofEpochMilli(date.getTime());
 		ZoneId zoneId = ZoneId.systemDefault();
+
 		if (address == null) {
 			return milli.atZone(zoneId).format(MSCore.getConfigCache().timeFormatter);
 		}
+
 		String timeZone = getTimezone(address);
 		return milli.atZone(
 				ZoneId.of(timeZone.equalsIgnoreCase("Europe/Kyiv")
@@ -71,12 +73,15 @@ public final class DateUtils {
 		try (InputStream input = new URL("http://ip-api.com/json/" + ip.getHostAddress()).openStream()) {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(input));
 			StringBuilder entirePage = new StringBuilder();
+
 			String inputLine;
 			while ((inputLine = reader.readLine()) != null) {
 				entirePage.append(inputLine);
 			}
+
 			reader.close();
 			input.close();
+
 			return entirePage.toString().contains("\"timezone\":\"")
 					? entirePage.toString().split("\"timezone\":\"")[1].split("\",")[0]
 					: ZoneId.systemDefault().toString();

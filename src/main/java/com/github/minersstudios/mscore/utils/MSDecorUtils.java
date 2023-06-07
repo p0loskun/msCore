@@ -177,8 +177,10 @@ public final class MSDecorUtils {
 	@Contract("null -> null")
 	public static @Nullable CustomDecorData getCustomDecorData(@Nullable String namespacedKeyStr) {
 		if (namespacedKeyStr == null) return null;
+
 		Pattern pattern = Pattern.compile(NAMESPACED_KEY_REGEX);
 		Matcher matcher = pattern.matcher(namespacedKeyStr.toLowerCase(Locale.ENGLISH));
+
 		if (matcher.find()) {
 			return MSCore.getConfigCache().customDecorMap.getByPrimaryKey(matcher.group(1));
 		}

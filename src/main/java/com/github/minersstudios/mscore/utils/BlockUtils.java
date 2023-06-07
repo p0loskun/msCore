@@ -75,9 +75,11 @@ public final class BlockUtils {
 	public static void removeBlocksAround(@NotNull Block centreBlock) {
 		CraftBlock topBlock = (CraftBlock) centreBlock.getRelative(BlockFace.UP);
 		CraftBlock bottomBlock = (CraftBlock) centreBlock.getRelative(BlockFace.DOWN);
+
 		if (BREAK_ON_BLOCK_PLACE.contains(topBlock.getType())) {
 			topBlock.getHandle().destroyBlock(topBlock.getPosition(), true);
 		}
+
 		if (BREAK_ON_BLOCK_PLACE.contains(bottomBlock.getType())) {
 			bottomBlock.getHandle().destroyBlock(bottomBlock.getPosition(), true);
 		}

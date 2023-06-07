@@ -85,6 +85,7 @@ public final class Commodore {
         }
 
         Collection<String> aliases = getAliases(command);
+
         if (!aliases.contains(node.getLiteral())) {
             node = renameLiteralNode(node, command.getName());
         }
@@ -93,10 +94,10 @@ public final class Commodore {
             if (node.getLiteral().equals(alias)) {
                 this.commands.add(new CommodoreCommand(node, permissionTest));
             } else {
-                LiteralCommandNode<Object> redirectNode = LiteralArgumentBuilder.literal(alias)
-                        .redirect((CommandNode<Object>) node)
-                        .build();
-                this.commands.add(new CommodoreCommand(redirectNode, permissionTest));
+                this.commands.add(new CommodoreCommand(
+                        LiteralArgumentBuilder.literal(alias).redirect((CommandNode<Object>) node).build(),
+                        permissionTest
+                ));
             }
         }
     }
@@ -148,6 +149,7 @@ public final class Commodore {
                 node.getRedirectModifier(),
                 node.isFork()
         );
+
         for (CommandNode<S> child : node.getChildren()) {
             clone.addChild(child);
         }

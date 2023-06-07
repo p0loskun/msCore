@@ -146,6 +146,7 @@ public class CustomInventory extends CraftInventoryCustom implements Inventory, 
 			unsafe.putObject(clone, unsafe.objectFieldOffset(inventoryField), newContainer);
 
 			clone.buttons = new HashMap<>(this.buttons);
+
 			clone.setContents(this.getContents());
 			return clone;
 		} catch (CloneNotSupportedException | IllegalAccessException | NoSuchFieldException e) {
