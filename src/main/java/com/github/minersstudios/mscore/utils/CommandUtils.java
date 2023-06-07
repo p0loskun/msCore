@@ -13,6 +13,7 @@ import java.util.List;
 
 @SuppressWarnings("unused")
 public final class CommandUtils {
+	public static final String CHRONO_REGEX = "\\d+[smhdMy]";
 
 	@Contract(value = " -> fail")
 	private CommandUtils() {
@@ -55,7 +56,7 @@ public final class CommandUtils {
 			@NotNull String string,
 			boolean throwException
 	) throws NumberFormatException, DateTimeException, ArithmeticException {
-		if (!string.matches("\\d+[smhdMy]")) return null;
+		if (!string.matches(CHRONO_REGEX)) return null;
 		String chronoUnit = string.replaceAll("\\d+", "");
 		Instant instant = Instant.now();
 		try {
@@ -89,5 +90,10 @@ public final class CommandUtils {
 	 */
 	public static @Nullable Date getDateFromString(@NotNull String string) throws NumberFormatException, DateTimeException, ArithmeticException {
 		return getDateFromString(string, true);
+	}
+
+	@Contract(value = "null -> false", pure = true)
+	public static boolean matchesChronoRegex(@Nullable String string) {
+		return string != null && string.matches(CHRONO_REGEX);
 	}
 }
