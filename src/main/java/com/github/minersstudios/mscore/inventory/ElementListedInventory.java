@@ -13,25 +13,25 @@ import java.util.Map;
 
 @SuppressWarnings("unused")
 public class ElementListedInventory extends ListedInventory {
-	protected final @NotNull Multimap<Integer, InventoryButton> elements = ArrayListMultimap.create();
+	protected final @NotNull Multimap<Integer, InventoryButton> elements;
 	protected final int[] elementSlots;
 
 	public ElementListedInventory(
 			@NotNull String title,
 			@Range(from = 1, to = 6) int verticalSize,
 			@NotNull List<InventoryButton> elements,
-			int @Range(from = 0, to = Integer.MAX_VALUE) [] elementSlots,
-			Object... args
+			int @Range(from = 0, to = Integer.MAX_VALUE) [] elementSlots
 	) {
-		super(title, verticalSize, args);
+		super(title, verticalSize);
 		this.elementSlots = elementSlots;
+		this.elements = ArrayListMultimap.create();
 
 		this.setElements(elements);
 		this.updatePages();
 		this.setButtons(this.getPageContents(this.page));
 	}
 
-	@Contract("-> new")
+	@Contract(" -> new")
 	public @NotNull Multimap<Integer, InventoryButton> getElements() {
 		return ArrayListMultimap.create(this.elements);
 	}
@@ -49,7 +49,7 @@ public class ElementListedInventory extends ListedInventory {
 		}
 	}
 
-	@Contract("-> new")
+	@Contract(" -> new")
 	public int[] getElementSlots() {
 		return this.elementSlots.clone();
 	}
@@ -71,6 +71,7 @@ public class ElementListedInventory extends ListedInventory {
 
 	public @Nullable ListedInventory createPage(@Range(from = 0, to = Integer.MAX_VALUE) int page) {
 		if (page >= this.pagesSize) return null;
+
 		ListedInventory listedInventory = (ListedInventory) this.clone();
 		listedInventory.setPageIndex(page);
 		listedInventory.setButtons(this.getPageContents(page));
@@ -79,9 +80,11 @@ public class ElementListedInventory extends ListedInventory {
 
 	public void updatePages() {
 		this.pages.clear();
+
 		for (int page = 0; page < this.pagesSize; page++) {
 			this.pages.put(page, this.createPage(page));
 		}
+
 		this.updateStaticButtons();
 	}
 

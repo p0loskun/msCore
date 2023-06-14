@@ -16,43 +16,44 @@ public class ListedInventory extends CustomInventory {
 
 	public ListedInventory(
 			@NotNull String title,
-			@Range(from = 1, to = 6) int verticalSize,
-			Object... args
+			@Range(from = 1, to = 6) int verticalSize
 	) {
-		super(title, verticalSize, args);
+		super(title, verticalSize);
 	}
 
 	public boolean hasStaticButtons() {
 		return !this.staticButtons.isEmpty();
 	}
 
-	public void setStaticButtons(@NotNull Map<Integer, StaticInventoryButton> buttons) {
+	public void setStaticButtons(@NotNull Map<Integer, StaticInventoryButton> buttons) throws IllegalArgumentException {
 		for (Map.Entry<Integer, StaticInventoryButton> entry : buttons.entrySet()) {
 			this.setStaticButtonAt(entry.getKey(), entry.getValue());
 		}
+
 		this.updateStaticButtons();
 	}
 
-	public boolean setStaticButtonAt(
+	public void setStaticButtonAt(
 			@Range(from = 0, to = MAX_SIZE) int slot,
 			@NotNull StaticInventoryButton button
-	) {
-		if (slot + 1 > this.size) return false;
+	) throws IllegalArgumentException {
+		if (slot >= this.size) {
+			throw new IllegalArgumentException();
+		}
+
 		this.staticButtons.put(slot, button);
-		return true;
 	}
 
-	public boolean setStaticButtonAndUpdate(
+	public void setStaticButtonAndUpdate(
 			@Range(from = 0, to = MAX_SIZE) int slot,
 			@NotNull StaticInventoryButton button
-	) {
-		if (!this.setStaticButtonAt(slot, button)) return false;
+	) throws IllegalArgumentException {
+		this.setStaticButtonAt(slot, button);
 		this.updateStaticButtons();
-		return true;
 	}
 
 	@Override
-	public @Nullable InventoryButton getClickedButton(int slot) {
+	public @Nullable InventoryButton getClickedButton(@Range(from = 0, to = Integer.MAX_VALUE) int slot) {
 		StaticInventoryButton staticButton = this.staticButtons.getOrDefault(slot, null);
 		if (staticButton != null) {
 			return staticButton.getButton(this);
@@ -70,7 +71,7 @@ public class ListedInventory extends CustomInventory {
 		}
 	}
 
-	public void updateStaticButtons(int page) {
+	public void updateStaticButtons(@Range(from = 0, to = Integer.MAX_VALUE) int page) {
 		ListedInventory listedInventory = this.pages.get(page);
 		if (this.hasStaticButtons()) {
 			for (Map.Entry<Integer, StaticInventoryButton> entry : this.staticButtons.entrySet()) {

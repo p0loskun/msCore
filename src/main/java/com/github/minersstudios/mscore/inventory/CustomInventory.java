@@ -26,19 +26,16 @@ public class CustomInventory extends CraftInventoryCustom implements Inventory, 
 	protected @Nullable InventoryAction<InventoryCloseEvent> closeAction;
 	protected @Nullable InventoryAction<InventoryClickEvent> clickAction;
 	protected @Nullable InventoryAction<InventoryClickEvent> bottomClickAction;
-	protected Object[] args;
 
 	protected static final int MAX_SIZE = 54;
 
 	public CustomInventory(
 			@NotNull String title,
-			@Range(from = 1, to = 6) int verticalSize,
-			Object... args
+			@Range(from = 1, to = 6) int verticalSize
 	) {
 		super(null, verticalSize * 9, ChatUtils.createDefaultStyledText(title));
 		this.size = verticalSize * 9;
 		this.buttons = new HashMap<>(this.size);
-		this.args = args;
 	}
 
 	public @NotNull Map<Integer, InventoryButton> getButtons() {
@@ -49,23 +46,25 @@ public class CustomInventory extends CraftInventoryCustom implements Inventory, 
 		return !this.buttons.isEmpty();
 	}
 
-	public void setButtons(@NotNull Map<Integer, InventoryButton> buttons) {
+	public void setButtons(@NotNull Map<Integer, InventoryButton> buttons) throws IllegalArgumentException {
 		for (Map.Entry<Integer, InventoryButton> entry : buttons.entrySet()) {
 			this.setButtonAt(entry.getKey(), entry.getValue());
 		}
 	}
 
-	public boolean setButtonAt(
+	public void setButtonAt(
 			@Range(from = 0, to = MAX_SIZE) int slot,
 			@NotNull InventoryButton button
-	) {
-		if (slot + 1 > this.size) return false;
+	) throws IllegalArgumentException {
+		if (slot >= this.size) {
+			throw new IllegalArgumentException();
+		}
+
 		this.buttons.put(slot, button);
 		this.setItem(slot, button.getItem());
-		return true;
 	}
 
-	public @Nullable InventoryButton getClickedButton(int slot) {
+	public @Nullable InventoryButton getClickedButton(@Range(from = 0, to = MAX_SIZE) int slot) {
 		return this.buttons.getOrDefault(slot, null);
 	}
 
@@ -123,14 +122,6 @@ public class CustomInventory extends CraftInventoryCustom implements Inventory, 
 		if (this.bottomClickAction != null) {
 			this.bottomClickAction.doAction(event, this.clone());
 		}
-	}
-
-	public Object[] getArgs() {
-		return this.args;
-	}
-
-	public void setArgs(Object[] args) {
-		this.args = args;
 	}
 
 	@Override

@@ -26,25 +26,6 @@ public final class ItemUtils {
 	}
 
 	/**
-	 * Gets an {@link ItemStack} of custom item / block / decor
-	 *
-	 * @param namespacedKeyStr   namespaced key string, example - (msitem:example)
-	 * @return {@link ItemStack} of custom item / block / decor
-	 * @throws NullPointerException if it can't find custom item / block / decor with this namespaced key
-	 */
-	@Contract("null -> null")
-	public static @Nullable ItemStack getMSItemStack(@Nullable String namespacedKeyStr) {
-		if (namespacedKeyStr == null) return null;
-		return MSItemUtils.matchesNamespacedKey(namespacedKeyStr)
-				? MSItemUtils.getCustomItemItemStack(namespacedKeyStr)
-				: MSBlockUtils.matchesNamespacedKey(namespacedKeyStr)
-				? MSBlockUtils.getCustomBlockItem(namespacedKeyStr)
-				: MSDecorUtils.matchesNamespacedKey(namespacedKeyStr)
-				? MSDecorUtils.getCustomDecorItem(namespacedKeyStr)
-				: null;
-	}
-
-	/**
 	 * @param first  first {@link ItemStack}
 	 * @param second second {@link ItemStack}
 	 * @return True if the CustomModelData and {@link Material} of the two items are the same

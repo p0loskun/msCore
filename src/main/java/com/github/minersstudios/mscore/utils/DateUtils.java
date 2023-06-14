@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.URL;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -33,7 +34,10 @@ public final class DateUtils {
 	 * @param address address
 	 * @return string date format
 	 */
-	public static @NotNull String getDate(@NotNull Date date, @Nullable InetAddress address) {
+	public static @NotNull String getDate(
+			@NotNull Date date,
+			@Nullable InetAddress address
+	) {
 		Instant milli = Instant.ofEpochMilli(date.getTime());
 		ZoneId zoneId = ZoneId.systemDefault();
 
@@ -56,11 +60,15 @@ public final class DateUtils {
 	 * @param sender sender (can be player)
 	 * @return string date format
 	 */
-	public static @NotNull String getDate(@NotNull Date date, CommandSender sender) {
+	public static @NotNull String getSenderDate(
+			@NotNull Date date,
+			@NotNull CommandSender sender
+	) {
 		if (sender instanceof Player player) {
-			return getDate(date, player.getAddress() != null ? player.getAddress().getAddress() : null);
+			InetSocketAddress socketAddress = player.getAddress();
+			return getDate(date, socketAddress != null ? socketAddress.getAddress() : null);
 		}
-		return getDate(date, (InetAddress) null);
+		return getDate(date, null);
 	}
 
 	/**
@@ -82,8 +90,9 @@ public final class DateUtils {
 			reader.close();
 			input.close();
 
-			return entirePage.toString().contains("\"timezone\":\"")
-					? entirePage.toString().split("\"timezone\":\"")[1].split("\",")[0]
+			String pageString = entirePage.toString();
+			return pageString.contains("\"timezone\":\"")
+					? pageString.split("\"timezone\":\"")[1].split("\",")[0]
 					: ZoneId.systemDefault().toString();
 		} catch (IOException e) {
 			MSCore.getInstance().getLogger().log(Level.WARNING, e.getMessage());

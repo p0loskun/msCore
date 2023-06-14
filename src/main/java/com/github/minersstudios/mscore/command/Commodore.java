@@ -1,13 +1,11 @@
 package com.github.minersstudios.mscore.command;
 
 import com.destroystokyo.paper.event.brigadier.AsyncPlayerSendCommandsEvent;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
-import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -24,6 +22,8 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 
 public final class Commodore {
     public final List<CommodoreCommand> commands = new ArrayList<>();
@@ -54,18 +54,25 @@ public final class Commodore {
             throw new ExceptionInInitializerError(e);
         }
 
-        COMMAND = (ctx) -> { throw new UnsupportedOperationException(); };
-        SUGGESTION_PROVIDER = (context, builder) -> { throw new UnsupportedOperationException(); };
+        COMMAND = (context) -> {
+            throw new UnsupportedOperationException();
+        };
+        SUGGESTION_PROVIDER = (context, builder) -> {
+            throw new UnsupportedOperationException();
+        };
     }
 
     public Commodore(@NotNull Plugin plugin) {
-        Bukkit.getPluginManager().registerEvents(new Listener() {
+        plugin.getServer().getPluginManager().registerEvents(new Listener() {
             @SuppressWarnings({"UnstableApiUsage"})
             @EventHandler
             public void onPlayerSendCommandsEvent(@NotNull AsyncPlayerSendCommandsEvent<?> event) {
                 if (event.isAsynchronous() || !event.hasFiredAsync()) {
-                    for (CommodoreCommand command : commands) {
-                        command.apply(event.getPlayer(), event.getCommandNode());
+                    Player player = event.getPlayer();
+                    RootCommandNode<?> commandNode = event.getCommandNode();
+
+                    for (CommodoreCommand command : Commodore.this.commands) {
+                        command.apply(player, commandNode);
                     }
                 }
             }
@@ -95,7 +102,9 @@ public final class Commodore {
                 this.commands.add(new CommodoreCommand(node, permissionTest));
             } else {
                 this.commands.add(new CommodoreCommand(
-                        LiteralArgumentBuilder.literal(alias).redirect((CommandNode<Object>) node).build(),
+                        literal(alias)
+                                .redirect((CommandNode<Object>) node)
+                                .build(),
                         permissionTest
                 ));
             }
@@ -128,7 +137,10 @@ public final class Commodore {
     ) throws IllegalAccessException {
         COMMAND_EXECUTE_FUNCTION_FIELD.set(node, COMMAND);
 
-        if (suggestionProvider != null && node instanceof ArgumentCommandNode<?, ?> argumentNode) {
+        if (
+                suggestionProvider != null
+                && node instanceof ArgumentCommandNode<?, ?> argumentNode
+        ) {
             CUSTOM_SUGGESTIONS_FIELD.set(argumentNode, suggestionProvider);
         }
 
@@ -162,7 +174,9 @@ public final class Commodore {
                 command.getAliases().stream()
         );
         String pluginName = command.getPlugin().getName().toLowerCase().trim();
-        aliasesStream = aliasesStream.flatMap(alias -> Stream.of(alias, pluginName + ":" + alias));
+        aliasesStream = aliasesStream.flatMap(
+                alias -> Stream.of(alias, pluginName + ":" + alias)
+        );
         return aliasesStream.distinct().collect(Collectors.toList());
     }
 

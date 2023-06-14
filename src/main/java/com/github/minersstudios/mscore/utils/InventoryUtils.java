@@ -1,6 +1,5 @@
 package com.github.minersstudios.mscore.utils;
 
-import com.github.minersstudios.mscore.MSCore;
 import com.github.minersstudios.mscore.inventory.CustomInventory;
 import com.github.minersstudios.mscore.inventory.ListedInventory;
 import org.jetbrains.annotations.Contract;
@@ -8,6 +7,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
+
+import static com.github.minersstudios.mscore.MSCore.getConfigCache;
 
 @SuppressWarnings("unused")
 public final class InventoryUtils {
@@ -22,8 +23,10 @@ public final class InventoryUtils {
 	 * @return custom inventory associated with key, or null if there is no custom inventory for the key
 	 */
 	public static @Nullable CustomInventory getCustomInventory(@NotNull String key) {
-		CustomInventory customInventory = MSCore.getConfigCache().customInventories.get(key);
-		return customInventory instanceof ListedInventory listedInventory ? listedInventory.getPage(0) : customInventory;
+		CustomInventory customInventory = getConfigCache().customInventories.get(key);
+		return customInventory instanceof ListedInventory listedInventory
+				? listedInventory.getPage(0)
+				: customInventory;
 	}
 
 	/**
@@ -35,7 +38,7 @@ public final class InventoryUtils {
 			@NotNull String key,
 			@NotNull CustomInventory customInventory
 	) {
-		return MSCore.getConfigCache().customInventories.put(key.toLowerCase(Locale.ENGLISH), customInventory);
+		return getConfigCache().customInventories.put(key.toLowerCase(Locale.ROOT), customInventory);
 	}
 
 	/**
@@ -43,6 +46,6 @@ public final class InventoryUtils {
 	 * @return the previous custom inventory associated with key, or null if there was no custom inventory for key
 	 */
 	public static @Nullable CustomInventory unregisterCustomInventory(@NotNull String key) {
-		return MSCore.getConfigCache().customInventories.remove(key.toLowerCase(Locale.ENGLISH));
+		return getConfigCache().customInventories.remove(key.toLowerCase(Locale.ROOT));
 	}
 }

@@ -299,11 +299,12 @@ public final class ChatUtils {
 		return PlainTextComponentSerializer.plainText().deserialize(text);
 	}
 
-	public static @Nullable List<Component> convertStringsToComponents(
+	public static @NotNull List<Component> convertStringsToComponents(
 			@Nullable Style style,
 			String @NotNull [] strings
 	) {
 		List<Component> components = new ArrayList<>();
+
 		for (String string : strings) {
 			Component component = Component.text(string);
 			components.add(
@@ -312,25 +313,26 @@ public final class ChatUtils {
 					: component.style(style)
 			);
 		}
-		return components.isEmpty() ? null : components;
+		return components;
 	}
 
-	public static @Nullable List<Component> convertStringsToComponents(
+	public static @NotNull List<Component> convertStringsToComponents(
 			@Nullable Style style,
 			@NotNull String first,
 			String @NotNull ... other
 	) {
 		String[] strings = new String[other.length + 1];
 		strings[0] = first;
+
 		System.arraycopy(other, 0, strings, 1, other.length);
 		return convertStringsToComponents(style, strings);
 	}
 
-	public static @Nullable List<Component> convertStringsToComponents(String @NotNull [] strings) {
+	public static @NotNull List<Component> convertStringsToComponents(String @NotNull [] strings) {
 		return convertStringsToComponents(DEFAULT_STYLE, strings);
 	}
 
-	public static @Nullable List<Component> convertStringsToComponents(
+	public static @NotNull List<Component> convertStringsToComponents(
 			@NotNull String first,
 			String @NotNull ... other
 	) {

@@ -77,7 +77,7 @@ public class InventoryButton {
 		this.clickAction = clickAction;
 	}
 
-	public void doAction(
+	public void doClickAction(
 			@NotNull InventoryClickEvent event,
 			@NotNull CustomInventory customInventory
 	) {

@@ -9,11 +9,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @SuppressWarnings("unused")
 public final class MSItemUtils {
@@ -50,16 +47,13 @@ public final class MSItemUtils {
 	}
 
 	/**
-	 * Gets {@link CustomItem} item stack
+	 * Gets {@link CustomItem} item stack from key
 	 *
-	 * @param namespacedKeyStr {@link CustomItem} namespaced key string, example - (msitem:example)
+	 * @param key {@link CustomItem} key string
 	 * @return {@link CustomItem} item stack
 	 */
-	@Contract("null -> null")
-	public static @Nullable ItemStack getCustomItemItemStack(@Nullable String namespacedKeyStr) {
-		if (namespacedKeyStr == null) return null;
-		CustomItem customItem = getCustomItem(namespacedKeyStr);
-		return customItem == null ? null : customItem.getItemStack();
+	public static @NotNull ItemStack getCustomItemItemStack(@NotNull String key) throws MSCustomNotFoundException {
+		return getCustomItem(key).getItemStack();
 	}
 
 	/**
@@ -67,36 +61,31 @@ public final class MSItemUtils {
 	 *
 	 * @param itemStack {@link ItemStack}
 	 * @return {@link CustomItem}
+	 * @throws MSCustomNotFoundException if {@link CustomItem} is not found
 	 */
 	@Contract("null -> null")
-	public static @Nullable CustomItem getCustomItem(@Nullable ItemStack itemStack) {
-		return isCustomItem(itemStack)
-				? getCustomItem(
-						"msitem:"
-						+ itemStack.getItemMeta()
-						.getPersistentDataContainer()
-						.get(CUSTOM_ITEM_TYPE_NAMESPACED_KEY, PersistentDataType.STRING)
-				)
-				: null;
+	public static @Nullable CustomItem getCustomItem(@Nullable ItemStack itemStack) throws MSCustomNotFoundException {
+		if (itemStack == null) return null;
+		ItemMeta itemMeta = itemStack.getItemMeta();
+		if (itemMeta == null) return null;
+		String key = itemMeta.getPersistentDataContainer().get(CUSTOM_ITEM_TYPE_NAMESPACED_KEY, PersistentDataType.STRING);
+		return key == null ? null : getCustomItem(key);
 	}
 
 	/**
-	 * Gets {@link CustomItem} from namespaced key string
+	 * Gets {@link CustomItem} from key
 	 *
-	 * @param namespacedKeyStr {@link CustomItem} namespaced key string, example - (msitem:example)
+	 * @param key {@link CustomItem} key string
 	 * @return {@link CustomItem}
+	 * @throws MSCustomNotFoundException if {@link CustomItem} is not found
 	 */
-	@Contract("null -> null")
-	public static @Nullable CustomItem getCustomItem(@Nullable String namespacedKeyStr) {
-		if (namespacedKeyStr == null) return null;
+	public static @NotNull CustomItem getCustomItem(@NotNull String key) throws MSCustomNotFoundException {
+		CustomItem customItem = MSCore.getConfigCache().customItemMap.getByPrimaryKey(key);
 
-		Pattern pattern = Pattern.compile(NAMESPACED_KEY_REGEX);
-		Matcher matcher = pattern.matcher(namespacedKeyStr.toLowerCase(Locale.ENGLISH));
-
-		if (matcher.find()) {
-			return MSCore.getConfigCache().customItemMap.getByPrimaryKey(matcher.group(1));
+		if (customItem == null) {
+			throw new MSCustomNotFoundException("Custom item is not found : " + key);
 		}
-		return null;
+		return customItem;
 	}
 
 	@Contract(value = "null -> false", pure = true)

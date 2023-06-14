@@ -8,11 +8,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @SuppressWarnings("unused")
 public final class MSBlockUtils {
@@ -37,16 +34,14 @@ public final class MSBlockUtils {
 	}
 
 	/**
-	 * Gets {@link CustomBlockData} item stack
+	 * Gets {@link CustomBlockData} item stack from key
 	 *
-	 * @param namespacedKeyStr {@link CustomBlockData} namespaced key string, example - (msblock:example)
+	 * @param key {@link CustomBlockData} key string
 	 * @return {@link CustomBlockData} item stack
+	 * @throws MSCustomNotFoundException if {@link CustomBlockData} is not found
 	 */
-	@Contract("null -> null")
-	public static @Nullable ItemStack getCustomBlockItem(@Nullable String namespacedKeyStr) {
-		if (namespacedKeyStr == null) return null;
-		CustomBlockData customBlockData = getCustomBlockData(namespacedKeyStr);
-		return customBlockData == null ? null : customBlockData.craftItemStack();
+	public static @NotNull ItemStack getCustomBlockItem(@NotNull String key) throws MSCustomNotFoundException {
+		return getCustomBlockData(key).craftItemStack();
 	}
 
 	/**
@@ -54,36 +49,31 @@ public final class MSBlockUtils {
 	 *
 	 * @param itemStack {@link ItemStack}
 	 * @return {@link CustomBlockData}
+	 * @throws MSCustomNotFoundException if {@link CustomBlockData} is not found
 	 */
 	@Contract("null -> null")
-	public static @Nullable CustomBlockData getCustomBlockData(@Nullable ItemStack itemStack) {
-		return isCustomBlock(itemStack)
-				? getCustomBlockData(
-						"msblock:"
-						+ itemStack.getItemMeta()
-						.getPersistentDataContainer()
-						.get(CUSTOM_BLOCK_TYPE_NAMESPACED_KEY, PersistentDataType.STRING)
-				)
-				: null;
+	public static @Nullable CustomBlockData getCustomBlockData(@Nullable ItemStack itemStack) throws MSCustomNotFoundException {
+		if (itemStack == null) return null;
+		ItemMeta itemMeta = itemStack.getItemMeta();
+		if (itemMeta == null) return null;
+		String key = itemMeta.getPersistentDataContainer().get(CUSTOM_BLOCK_TYPE_NAMESPACED_KEY, PersistentDataType.STRING);
+		return key == null ? null : getCustomBlockData(key);
 	}
 
 	/**
-	 * Gets {@link CustomBlockData} from namespaced key string
+	 * Gets {@link CustomBlockData} from key
 	 *
-	 * @param namespacedKeyStr {@link CustomBlockData} namespaced key string, example - (msblock:example)
+	 * @param key {@link CustomBlockData} key string
 	 * @return {@link CustomBlockData}
+	 * @throws MSCustomNotFoundException if {@link CustomBlockData} is not found
 	 */
-	@Contract("null -> null")
-	public static @Nullable CustomBlockData getCustomBlockData(@Nullable String namespacedKeyStr) {
-		if (namespacedKeyStr == null) return null;
+	public static @NotNull CustomBlockData getCustomBlockData(@NotNull String key) throws MSCustomNotFoundException {
+		CustomBlockData customBlockData = MSCore.getConfigCache().customBlockMap.getByPrimaryKey(key);
 
-		Pattern pattern = Pattern.compile(NAMESPACED_KEY_REGEX);
-		Matcher matcher = pattern.matcher(namespacedKeyStr.toLowerCase(Locale.ENGLISH));
-
-		if (matcher.find()) {
-			return MSCore.getConfigCache().customBlockMap.getByPrimaryKey(matcher.group(1));
+		if (customBlockData == null) {
+			throw new MSCustomNotFoundException("Custom block is not found : " + key);
 		}
-		return null;
+		return customBlockData;
 	}
 
 	@Contract(value = "null -> false", pure = true)

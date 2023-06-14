@@ -162,6 +162,7 @@ public final class PlayerUtils {
 			@NotNull String name
 	) {
 		OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
+
 		if (offlinePlayer.getName() == null) {
 			CraftServer craftServer = (CraftServer) Bukkit.getServer();
 			GameProfile gameProfile = new GameProfile(uuid, name);
