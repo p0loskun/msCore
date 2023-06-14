@@ -1,6 +1,7 @@
 package com.github.minersstudios.mscore.utils;
 
 import com.github.minersstudios.mscore.MSCore;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -90,14 +91,14 @@ public final class DateUtils {
 	 * Gets date with player time zone
 	 *
 	 * @param date   date to be converted
-	 * @param player player
+	 * @param sender command sender
 	 * @return string date format
 	 */
-	public static @NotNull String getPlayerDate(
+	public static @NotNull String getSenderDate(
 			@NotNull Date date,
-			@Nullable Player player
+			@Nullable CommandSender sender
 	) {
-		if (player != null) {
+		if (sender instanceof Player player) {
 			InetSocketAddress socketAddress = player.getAddress();
 			return DateUtils.getDate(date, socketAddress != null ? socketAddress.getAddress() : null);
 		}
