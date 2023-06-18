@@ -222,6 +222,7 @@ public abstract class MSPlugin extends JavaPlugin {
 		}
 
 		if (!permissionStr.isEmpty()) {
+			PluginManager pluginManager = this.getServer().getPluginManager();
 			Map<String, Boolean> children = new HashMap<>();
 			String[] keys = msCommand.permissionParentKeys();
 			boolean[] values = msCommand.permissionParentValues();
@@ -234,10 +235,11 @@ public abstract class MSPlugin extends JavaPlugin {
 				}
 			}
 
-			if (Bukkit.getPluginManager().getPermission(permissionStr) == null) {
-				Permission permission = new Permission(permissionStr, msCommand.permissionDefault(), children);
-				Bukkit.getPluginManager().addPermission(permission);
-			}
+			Permission permission = new Permission(permissionStr, msCommand.permissionDefault(), children);
+
+			try {
+				pluginManager.addPermission(permission);
+			} catch (IllegalArgumentException ignored) {}
 
 			pluginCommand.setPermission(permissionStr);
 		}
