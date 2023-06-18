@@ -1,12 +1,12 @@
 package com.github.minersstudios.mscore;
 
+import com.github.minersstudios.mscore.command.Commodore;
 import com.github.minersstudios.mscore.command.MSCommand;
 import com.github.minersstudios.mscore.command.MSCommandExecutor;
 import com.github.minersstudios.mscore.listener.MSListener;
 import com.google.common.base.Charsets;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import com.github.minersstudios.mscore.command.Commodore;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -16,7 +16,6 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.util.StringUtil;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,6 +27,7 @@ import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @SuppressWarnings({"unused", "EmptyMethod"})
@@ -46,7 +46,7 @@ public abstract class MSPlugin extends JavaPlugin {
 		this.loadedCustoms = false;
 
 		try (JarFile jarFile = new JarFile(this.getFile())) {
-			this.classNames = jarFile.stream()
+			this.classNames = jarFile.stream().parallel()
 					.map(JarEntry::getName)
 					.filter(name -> name.endsWith(".class"))
 					.map(name -> name.replace("/", ".").replace(".class", ""))
@@ -71,13 +71,8 @@ public abstract class MSPlugin extends JavaPlugin {
 		long time = System.currentTimeMillis();
 		this.commodore = new Commodore(this);
 
-		try {
-			this.loadListeners();
-			this.registerCommands();
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e);
-		}
-
+		this.loadListeners();
+		this.registerCommands();
 		this.enable();
 		this.getLogger().log(Level.INFO, "\033[0;92mEnabled in " + (System.currentTimeMillis() - time) + "ms");
 	}
@@ -123,7 +118,7 @@ public abstract class MSPlugin extends JavaPlugin {
 	public void saveResource(
 			@NotNull String resourcePath,
 			boolean replace
-	) {
+	) throws IllegalArgumentException {
 		if (resourcePath.isEmpty()) {
 			throw new IllegalArgumentException("ResourcePath cannot be null or empty");
 		}
@@ -131,14 +126,18 @@ public abstract class MSPlugin extends JavaPlugin {
 		resourcePath = resourcePath.replace('\\', '/');
 		InputStream in = this.getResource(resourcePath);
 
-		if (in == null) return;
+		if (in == null) {
+			throw new IllegalArgumentException("The embedded resource '" + resourcePath + "' cannot be found");
+		}
 
+		String dirPath = resourcePath.substring(0, Math.max(resourcePath.lastIndexOf('/'), 0));
 		File outFile = new File(this.pluginFolder, resourcePath);
-		File outDir = new File(this.pluginFolder, resourcePath.substring(0, Math.max(resourcePath.lastIndexOf('/'), 0)));
+		File outDir = new File(this.pluginFolder, dirPath);
 
 		if (!outDir.exists()) {
-			if (!outDir.mkdirs()) {
-				throw new SecurityException("Directory creation failed");
+			boolean created = outDir.mkdirs();
+			if (!created) {
+				this.getLogger().log(Level.WARNING, "Directory " + outDir.getName() + " creation failed");
 			}
 		}
 
@@ -172,29 +171,25 @@ public abstract class MSPlugin extends JavaPlugin {
 	/**
 	 * Registers all command in the project that is annotated with {@link MSCommand}
 	 * <p>
-	 * All commands must be implemented using {@link MSCommandExecutor} and located in the "com.github.minersstudios.plugin-name.commands" folder
-	 *
-	 * @throws ClassNotFoundException If the class was not found
+	 * All commands must be implemented using {@link MSCommandExecutor}
 	 */
-	public void registerCommands() throws ClassNotFoundException {
-		for (String className : this.classNames) {
-			if (StringUtil.startsWithIgnoreCase(className, "com.github.minersstudios." + this.getName() + ".commands")) {
+	public void registerCommands() {
+		this.classNames.stream().parallel().forEach(className -> {
+			try {
 				Class<?> clazz = this.getClassLoader().loadClass(className);
 				MSCommand msCommand = clazz.getAnnotation(MSCommand.class);
 
 				if (msCommand != null) {
-					try {
-						if (clazz.getDeclaredConstructor().newInstance() instanceof MSCommandExecutor msCommandExecutor) {
-							this.registerCommand(msCommand, msCommandExecutor);
-						} else {
-							this.getLogger().log(Level.WARNING, "Registered command that is not instance of MSCommandExecutor (" + className + ")");
-						}
-					} catch (Exception e) {
-						this.getLogger().log(Level.SEVERE, "Failed to register command", e);
+					if (clazz.getDeclaredConstructor().newInstance() instanceof MSCommandExecutor msCommandExecutor) {
+						this.registerCommand(msCommand, msCommandExecutor);
+					} else {
+						this.getLogger().log(Level.WARNING, "Registered command that is not instance of MSCommandExecutor (" + className + ")");
 					}
 				}
+			} catch (Exception e) {
+				this.getLogger().log(Level.SEVERE, "Failed to register command", e);
 			}
-		}
+		});
 	}
 
 	/**
@@ -258,44 +253,39 @@ public abstract class MSPlugin extends JavaPlugin {
 	}
 
 	private @NotNull PluginCommand createCommand(String command) {
-		PluginCommand pluginCommand;
 		try {
 			Constructor<PluginCommand> constructor = PluginCommand.class.getDeclaredConstructor(String.class, Plugin.class);
 			constructor.setAccessible(true);
-			pluginCommand = constructor.newInstance(command, this);
+			return constructor.newInstance(command, this);
 		} catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException | InstantiationException e) {
 			throw new RuntimeException(e);
 		}
-		return pluginCommand;
 	}
 
 	/**
 	 * Loads all listeners in the project that is annotated with {@link MSListener}
 	 * <p>
-	 * All listeners must be implemented using {@link Listener} and located in the "com.github.minersstudios.plugin-name.listeners" folder
-	 *
-	 * @throws ClassNotFoundException If the class was not found
+	 * All listeners must be implemented using {@link Listener}
 	 */
-	public void loadListeners() throws ClassNotFoundException {
+	public void loadListeners() {
+		Logger logger = this.getLogger();
 		PluginManager pluginManager = this.getServer().getPluginManager();
 
-		for (String className : this.getClassNames()) {
-			if (StringUtil.startsWithIgnoreCase(className, "com.github.minersstudios." + this.getName() + ".listeners")) {
+		this.classNames.stream().parallel().forEach(className -> {
+			try {
 				Class<?> clazz = this.getClassLoader().loadClass(className);
 
 				if (clazz.isAnnotationPresent(MSListener.class)) {
-					try {
-						if (clazz.getDeclaredConstructor().newInstance() instanceof Listener listener) {
-							pluginManager.registerEvents(listener, this);
-						} else {
-							this.getLogger().log(Level.WARNING, "Registered listener that is not instance of Listener (" + className + ")");
-						}
-					} catch (Exception e) {
-						this.getLogger().log(Level.SEVERE, "Failed to load listener", e);
+					if (clazz.getDeclaredConstructor().newInstance() instanceof Listener listener) {
+						pluginManager.registerEvents(listener, this);
+					} else {
+						logger.log(Level.WARNING, "Registered listener that is not instance of Listener (" + className + ")");
 					}
 				}
+			} catch (Exception e) {
+				logger.log(Level.SEVERE, "Failed to load listener", e);
 			}
-		}
+		});
 	}
 
 	/**

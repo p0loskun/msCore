@@ -16,7 +16,6 @@ import org.jetbrains.annotations.Nullable;
 public final class MSItemUtils {
 	public static final NamespacedKey CUSTOM_ITEM_TYPE_NAMESPACED_KEY = new NamespacedKey(MSItems.getInstance(), "type");
 	public static final NamespacedKey CUSTOM_ITEM_RENAMEABLE_NAMESPACED_KEY = new NamespacedKey(MSItems.getInstance(), "renameable");
-
 	public static final String NAMESPACED_KEY_REGEX = "msitem:(\\w+)";
 
 	@Contract(value = " -> fail")
@@ -81,7 +80,6 @@ public final class MSItemUtils {
 	 */
 	public static @NotNull CustomItem getCustomItem(@NotNull String key) throws MSCustomNotFoundException {
 		CustomItem customItem = MSCore.getConfigCache().customItemMap.getByPrimaryKey(key);
-
 		if (customItem == null) {
 			throw new MSCustomNotFoundException("Custom item is not found : " + key);
 		}

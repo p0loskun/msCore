@@ -141,7 +141,7 @@ public final class DateUtils {
 			@NotNull String string,
 			boolean throwException
 	) throws NumberFormatException, DateTimeException, ArithmeticException {
-		if (!string.matches(CHRONO_REGEX)) return null;
+		if (!matchesChrono(string)) return null;
 
 		String chronoUnit = string.replaceAll("\\d+", "");
 		Instant instant = Instant.now();

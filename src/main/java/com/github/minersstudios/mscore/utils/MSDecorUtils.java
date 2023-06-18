@@ -23,8 +23,8 @@ import org.jetbrains.annotations.Nullable;
 @SuppressWarnings("unused")
 public final class MSDecorUtils {
 	public static final NamespacedKey CUSTOM_DECOR_TYPE_NAMESPACED_KEY = new NamespacedKey(MSDecor.getInstance(), "type");
-
 	public static final String NAMESPACED_KEY_REGEX = "msdecor:(\\w+)";
+	public static final String ENTITY_TAG_NAME = "customDecor";
 
 	@Contract(value = " -> fail")
 	private MSDecorUtils() {
@@ -95,9 +95,9 @@ public final class MSDecorUtils {
 			@Nullable Component customName
 	) throws MSCustomNotFoundException {
 		CustomDecorData customDecorData = MSDecorUtils.getCustomDecorData(key);
+		CustomDecor customDecor = new CustomDecor(block, player, customDecorData);
 
-		new CustomDecor(block, player, customDecorData)
-				.setCustomDecor(blockFace, hand, customName);
+		customDecor.setCustomDecor(blockFace, hand, customName);
 	}
 
 	/**
@@ -118,7 +118,7 @@ public final class MSDecorUtils {
 	 */
 	@Contract("null -> false")
 	public static boolean isCustomDecorEntity(@Nullable Entity entity) {
-		return entity != null && entity.getScoreboardTags().contains("customDecor");
+		return entity != null && entity.getScoreboardTags().contains(ENTITY_TAG_NAME);
 	}
 
 	/**
@@ -167,7 +167,6 @@ public final class MSDecorUtils {
 	 */
 	public static @NotNull CustomDecorData getCustomDecorData(@NotNull String key) throws MSCustomNotFoundException {
 		CustomDecorData customDecorData = MSCore.getConfigCache().customDecorMap.getByPrimaryKey(key);
-
 		if (customDecorData == null) {
 			throw new MSCustomNotFoundException("Custom decor is not found : " + key);
 		}

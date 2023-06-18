@@ -19,9 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
-import org.json.simple.parser.ParseException;
 
-import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Map;
@@ -125,7 +123,7 @@ public final class PlayerUtils {
 								"$1-$2-$3-$4-$5"
 						)
 				);
-			} catch (IOException | ParseException e) {
+			} catch (Exception ignored) {
 				return null;
 			}
 		} else {

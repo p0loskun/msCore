@@ -14,7 +14,6 @@ import org.jetbrains.annotations.Nullable;
 @SuppressWarnings("unused")
 public final class MSBlockUtils {
 	public static final NamespacedKey CUSTOM_BLOCK_TYPE_NAMESPACED_KEY = new NamespacedKey(MSBlock.getInstance(), "type");
-
 	public static final String NAMESPACED_KEY_REGEX = "msblock:(\\w+)";
 
 	@Contract(value = " -> fail")
@@ -69,7 +68,6 @@ public final class MSBlockUtils {
 	 */
 	public static @NotNull CustomBlockData getCustomBlockData(@NotNull String key) throws MSCustomNotFoundException {
 		CustomBlockData customBlockData = MSCore.getConfigCache().customBlockMap.getByPrimaryKey(key);
-
 		if (customBlockData == null) {
 			throw new MSCustomNotFoundException("Custom block is not found : " + key);
 		}
