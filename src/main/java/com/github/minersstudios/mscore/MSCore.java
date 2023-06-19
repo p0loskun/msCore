@@ -5,29 +5,29 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 public final class MSCore extends MSPlugin {
-	private static MSCore instance;
-	private static ConfigCache configCache;
+    private static MSCore instance;
+    private static ConfigCache configCache;
 
-	@Override
-	public void enable() {
-		instance = this;
+    @Override
+    public void enable() {
+        instance = this;
 
-		reloadConfigs();
-	}
+        reloadConfigs();
+    }
 
-	public static void reloadConfigs() {
-		instance.saveDefaultConfig();
-		instance.reloadConfig();
-		configCache = new ConfigCache();
-	}
+    public static void reloadConfigs() {
+        instance.saveDefaultConfig();
+        instance.reloadConfig();
+        configCache = new ConfigCache();
+    }
 
-	@Contract(pure = true)
-	public static @NotNull MSCore getInstance() {
-		return instance;
-	}
+    @Contract(pure = true)
+    public static @NotNull MSCore getInstance() {
+        return instance;
+    }
 
-	@Contract(pure = true)
-	public static @NotNull ConfigCache getConfigCache() {
-		return configCache;
-	}
+    @Contract(pure = true)
+    public static @NotNull ConfigCache getConfigCache() {
+        return configCache;
+    }
 }

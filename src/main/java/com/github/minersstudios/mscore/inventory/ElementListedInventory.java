@@ -13,83 +13,83 @@ import java.util.Map;
 
 @SuppressWarnings("unused")
 public class ElementListedInventory extends ListedInventory {
-	protected final @NotNull Multimap<Integer, InventoryButton> elements;
-	protected final int[] elementSlots;
+    protected final @NotNull Multimap<Integer, InventoryButton> elements;
+    protected final int[] elementSlots;
 
-	public ElementListedInventory(
-			@NotNull String title,
-			@Range(from = 1, to = 6) int verticalSize,
-			@NotNull List<InventoryButton> elements,
-			int @Range(from = 0, to = Integer.MAX_VALUE) [] elementSlots
-	) {
-		super(title, verticalSize);
-		this.elementSlots = elementSlots;
-		this.elements = ArrayListMultimap.create();
+    public ElementListedInventory(
+            @NotNull String title,
+            @Range(from = 1, to = 6) int verticalSize,
+            @NotNull List<InventoryButton> elements,
+            int @Range(from = 0, to = Integer.MAX_VALUE) [] elementSlots
+    ) {
+        super(title, verticalSize);
+        this.elementSlots = elementSlots;
+        this.elements = ArrayListMultimap.create();
 
-		this.setElements(elements);
-		this.updatePages();
-		this.setButtons(this.getPageContents(this.page));
-	}
+        this.setElements(elements);
+        this.updatePages();
+        this.setButtons(this.getPageContents(this.page));
+    }
 
-	@Contract(" -> new")
-	public @NotNull Multimap<Integer, InventoryButton> getElements() {
-		return ArrayListMultimap.create(this.elements);
-	}
+    @Contract(" -> new")
+    public @NotNull Multimap<Integer, InventoryButton> getElements() {
+        return ArrayListMultimap.create(this.elements);
+    }
 
-	public void setElements(@NotNull List<InventoryButton> elements) {
-		this.elements.clear();
-		this.setPagesSize((int) Math.ceil((double) elements.size() / this.elementSlots.length));
+    public void setElements(@NotNull List<InventoryButton> elements) {
+        this.elements.clear();
+        this.setPagesSize((int) Math.ceil((double) elements.size() / this.elementSlots.length));
 
-		for (int page = 0; page < this.pagesSize; page++) {
-			for (int element = 0; element < this.elementSlots.length; element++) {
-				int index = element + (page * this.elementSlots.length);
-				if (index >= elements.size()) break;
-				this.elements.put(page, elements.get(index));
-			}
-		}
-	}
+        for (int page = 0; page < this.pagesSize; page++) {
+            for (int element = 0; element < this.elementSlots.length; element++) {
+                int index = element + (page * this.elementSlots.length);
+                if (index >= elements.size()) break;
+                this.elements.put(page, elements.get(index));
+            }
+        }
+    }
 
-	@Contract(" -> new")
-	public int[] getElementSlots() {
-		return this.elementSlots.clone();
-	}
+    @Contract(" -> new")
+    public int[] getElementSlots() {
+        return this.elementSlots.clone();
+    }
 
-	public @NotNull Map<Integer, InventoryButton> getPageContents(int page) {
-		Map<Integer, InventoryButton> content = new HashMap<>(this.elementSlots.length);
-		int i = 0;
+    public @NotNull Map<Integer, InventoryButton> getPageContents(int page) {
+        Map<Integer, InventoryButton> content = new HashMap<>(this.elementSlots.length);
+        int i = 0;
 
-		for (InventoryButton inventoryButton : this.elements.get(page)) {
-			content.put(this.elementSlots[i], inventoryButton);
-			i++;
-		}
+        for (InventoryButton inventoryButton : this.elements.get(page)) {
+            content.put(this.elementSlots[i], inventoryButton);
+            i++;
+        }
 
-		for (int slot : this.elementSlots) {
-			content.putIfAbsent(slot, new InventoryButton());
-		}
-		return content;
-	}
+        for (int slot : this.elementSlots) {
+            content.putIfAbsent(slot, new InventoryButton());
+        }
+        return content;
+    }
 
-	public @Nullable ListedInventory createPage(@Range(from = 0, to = Integer.MAX_VALUE) int page) {
-		if (page >= this.pagesSize) return null;
+    public @Nullable ListedInventory createPage(@Range(from = 0, to = Integer.MAX_VALUE) int page) {
+        if (page >= this.pagesSize) return null;
 
-		ListedInventory listedInventory = (ListedInventory) this.clone();
-		listedInventory.setPageIndex(page);
-		listedInventory.setButtons(this.getPageContents(page));
-		return listedInventory;
-	}
+        ListedInventory listedInventory = (ListedInventory) this.clone();
+        listedInventory.setPageIndex(page);
+        listedInventory.setButtons(this.getPageContents(page));
+        return listedInventory;
+    }
 
-	public void updatePages() {
-		this.pages.clear();
+    public void updatePages() {
+        this.pages.clear();
 
-		for (int page = 0; page < this.pagesSize; page++) {
-			this.pages.put(page, this.createPage(page));
-		}
+        for (int page = 0; page < this.pagesSize; page++) {
+            this.pages.put(page, this.createPage(page));
+        }
 
-		this.updateStaticButtons();
-	}
+        this.updateStaticButtons();
+    }
 
-	@Override
-	protected void setPagesSize(@Range(from = 0, to = Integer.MAX_VALUE) int pagesSize) {
-		this.pagesSize = pagesSize;
-	}
+    @Override
+    protected void setPagesSize(@Range(from = 0, to = Integer.MAX_VALUE) int pagesSize) {
+        this.pagesSize = pagesSize;
+    }
 }

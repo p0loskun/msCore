@@ -27,145 +27,144 @@ import java.util.UUID;
 
 @SuppressWarnings("unused")
 public final class PlayerUtils {
-	public static final @NotNull String UUID_URL = "https://api.mojang.com/users/profiles/minecraft/";
+    public static final @NotNull String UUID_URL = "https://api.mojang.com/users/profiles/minecraft/";
 
-	@Contract(value = " -> fail")
-	private PlayerUtils() {
-		throw new IllegalStateException("Utility class");
-	}
+    @Contract(value = " -> fail")
+    private PlayerUtils() {
+        throw new IllegalStateException("Utility class");
+    }
 
-	/**
-	 * Sets player to a seated position underneath him
-	 *
-	 * @param player   player
-	 */
-	public static void setSitting(@NotNull Player player) {
-		setSitting(player, player.getLocation());
-	}
+    /**
+     * Sets player to a seated position underneath him
+     *
+     * @param player   player
+     */
+    public static void setSitting(@NotNull Player player) {
+        setSitting(player, player.getLocation());
+    }
 
-	/**
-	 * Sets player to a seated position in specified location
-	 *
-	 * @param player   player
-	 * @param location location where the player will sit
-	 * @param args     message
-	 */
-	public static void setSitting(
-			@NotNull Player player,
-			@NotNull Location location,
-			String @Nullable ... args
-	) {
-		MSPlayerUtils.getPlayerInfo(player).setSitting(location, args);
-	}
+    /**
+     * Sets player to a seated position in specified location
+     *
+     * @param player   player
+     * @param location location where the player will sit
+     * @param args     message
+     */
+    public static void setSitting(
+            @NotNull Player player,
+            @NotNull Location location,
+            String @Nullable ... args
+    ) {
+        MSPlayerUtils.getPlayerInfo(player).setSitting(location, args);
+    }
 
-	/**
-	 * Unsets the sitting position of the player
-	 *
-	 * @param player player who is currently sitting
-	 * @param args   message
-	 */
-	public static void unsetSitting(
-			@NotNull Player player,
-			String @Nullable ... args
-	) {
-		MSPlayerUtils.getPlayerInfo(player).unsetSitting(args);
-	}
+    /**
+     * Unsets the sitting position of the player
+     *
+     * @param player player who is currently sitting
+     * @param args   message
+     */
+    public static void unsetSitting(
+            @NotNull Player player,
+            String @Nullable ... args
+    ) {
+        MSPlayerUtils.getPlayerInfo(player).unsetSitting(args);
+    }
 
-	/**
-	 * @param offlinePlayer offline player whose data will be loaded
-	 * @return Online player from offline player
-	 */
-	public static @Nullable Player loadPlayer(@NotNull OfflinePlayer offlinePlayer) {
-		if (!offlinePlayer.hasPlayedBefore()) return null;
+    /**
+     * @param offlinePlayer offline player whose data will be loaded
+     * @return Online player from offline player
+     */
+    public static @Nullable Player loadPlayer(@NotNull OfflinePlayer offlinePlayer) {
+        if (!offlinePlayer.hasPlayedBefore()) return null;
 
-		GameProfile profile = new GameProfile(
-				offlinePlayer.getUniqueId(),
-				offlinePlayer.getName() != null
-				? offlinePlayer.getName()
-				: offlinePlayer.getUniqueId().toString()
-		);
-		MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
-		ServerLevel worldServer = server.getLevel(Level.OVERWORLD);
+        GameProfile profile = new GameProfile(
+                offlinePlayer.getUniqueId(),
+                offlinePlayer.getName() != null
+                        ? offlinePlayer.getName()
+                        : offlinePlayer.getUniqueId().toString()
+        );
+        MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
+        ServerLevel worldServer = server.getLevel(Level.OVERWORLD);
 
-		if (worldServer == null) return null;
+        if (worldServer == null) return null;
 
-		Player online = new ServerPlayer(server, worldServer, profile).getBukkitEntity();
+        Player online = new ServerPlayer(server, worldServer, profile).getBukkitEntity();
 
-		online.loadData();
-		return online;
-	}
+        online.loadData();
+        return online;
+    }
 
-	/**
-	 * Gets UUID from player nickname
-	 *
-	 * @param nickname player nickname
-	 * @return player UUID
-	 */
-	public static @Nullable UUID getUUID(@NotNull String nickname) {
-		Map<String, UUID> map = MSCore.getConfigCache().playerUUIDs;
-		UUID uuid = map.get(nickname);
+    /**
+     * Gets UUID from player nickname
+     *
+     * @param nickname player nickname
+     * @return player UUID
+     */
+    public static @Nullable UUID getUUID(@NotNull String nickname) {
+        Map<String, UUID> map = MSCore.getConfigCache().playerUUIDs;
+        UUID uuid = map.get(nickname);
 
-		if (uuid != null) return uuid;
+        if (uuid != null) return uuid;
 
-		if (Bukkit.getOnlineMode()) {
-			try {
-				URL url = new URL(UUID_URL + nickname);
-				String jsonString = IOUtils.toString(url, Charset.defaultCharset());
+        if (Bukkit.getOnlineMode()) {
+            try {
+                URL url = new URL(UUID_URL + nickname);
+                String jsonString = IOUtils.toString(url, Charset.defaultCharset());
 
-				if (jsonString.isEmpty()) return null;
+                if (jsonString.isEmpty()) return null;
 
-				JSONObject jsonObject = (JSONObject) JSONValue.parseWithException(jsonString);
-				String uuidString = jsonObject.get("id").toString();
-				uuid = UUID.fromString(
-						uuidString
-						.replaceFirst(
-								"(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)",
-								"$1-$2-$3-$4-$5"
-						)
-				);
-			} catch (Exception ignored) {
-				return null;
-			}
-		} else {
-			byte[] bytes = ("OfflinePlayer:" + nickname).getBytes(Charsets.UTF_8);
-			uuid = UUID.nameUUIDFromBytes(bytes);
-		}
+                JSONObject jsonObject = (JSONObject) JSONValue.parseWithException(jsonString);
+                String uuidString = jsonObject.get("id").toString();
+                uuid = UUID.fromString(
+                        uuidString.replaceFirst(
+                                "(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)",
+                                "$1-$2-$3-$4-$5"
+                        )
+                );
+            } catch (Exception ignored) {
+                return null;
+            }
+        } else {
+            byte[] bytes = ("OfflinePlayer:" + nickname).getBytes(Charsets.UTF_8);
+            uuid = UUID.nameUUIDFromBytes(bytes);
+        }
 
-		map.put(nickname, uuid);
-		return uuid;
-	}
+        map.put(nickname, uuid);
+        return uuid;
+    }
 
-	/**
-	 * Gets offline player by nickname
-	 *
-	 * @param nickname player nickname
-	 * @return offline player
-	 */
-	public static @Nullable OfflinePlayer getOfflinePlayerByNick(@NotNull String nickname) {
-		UUID uuid = getUUID(nickname);
-		return uuid != null
-				? getOfflinePlayer(uuid, nickname)
-				: null;
-	}
+    /**
+     * Gets offline player by nickname
+     *
+     * @param nickname player nickname
+     * @return offline player
+     */
+    public static @Nullable OfflinePlayer getOfflinePlayerByNick(@NotNull String nickname) {
+        UUID uuid = getUUID(nickname);
+        return uuid != null
+                ? getOfflinePlayer(uuid, nickname)
+                : null;
+    }
 
-	/**
-	 * Gets offline player by uuid and nickname
-	 *
-	 * @param uuid player unique id
-	 * @param name player nickname
-	 * @return offline player
-	 */
-	public static @NotNull OfflinePlayer getOfflinePlayer(
-			@NotNull UUID uuid,
-			@NotNull String name
-	) {
-		OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
+    /**
+     * Gets offline player by uuid and nickname
+     *
+     * @param uuid player unique id
+     * @param name player nickname
+     * @return offline player
+     */
+    public static @NotNull OfflinePlayer getOfflinePlayer(
+            @NotNull UUID uuid,
+            @NotNull String name
+    ) {
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
 
-		if (offlinePlayer.getName() == null) {
-			CraftServer craftServer = (CraftServer) Bukkit.getServer();
-			GameProfile gameProfile = new GameProfile(uuid, name);
-			return craftServer.getOfflinePlayer(gameProfile);
-		}
-		return offlinePlayer;
-	}
+        if (offlinePlayer.getName() == null) {
+            CraftServer craftServer = (CraftServer) Bukkit.getServer();
+            GameProfile gameProfile = new GameProfile(uuid, name);
+            return craftServer.getOfflinePlayer(gameProfile);
+        }
+        return offlinePlayer;
+    }
 }

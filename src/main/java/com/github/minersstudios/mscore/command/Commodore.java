@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 
 public final class Commodore {
-    public final List<CommodoreCommand> commands = new ArrayList<>();
+    public final List<Command> commands = new ArrayList<>();
 
     private static final Field CHILDREN_FIELD;
     private static final Field LITERALS_FIELD;
@@ -71,7 +71,7 @@ public final class Commodore {
                     Player player = event.getPlayer();
                     RootCommandNode<?> commandNode = event.getCommandNode();
 
-                    for (CommodoreCommand command : Commodore.this.commands) {
+                    for (Command command : Commodore.this.commands) {
                         command.apply(player, commandNode);
                     }
                 }
@@ -99,9 +99,9 @@ public final class Commodore {
 
         for (String alias : aliases) {
             if (node.getLiteral().equals(alias)) {
-                this.commands.add(new CommodoreCommand(node, permissionTest));
+                this.commands.add(new Command(node, permissionTest));
             } else {
-                this.commands.add(new CommodoreCommand(
+                this.commands.add(new Command(
                         literal(alias)
                                 .redirect((CommandNode<Object>) node)
                                 .build(),
@@ -127,7 +127,7 @@ public final class Commodore {
             ((Map<?, ?>) LITERALS_FIELD.get(root)).remove(name);
             ((Map<?, ?>) ARGUMENTS_FIELD.get(root)).remove(name);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException();
         }
     }
 
@@ -180,8 +180,8 @@ public final class Commodore {
         return aliasesStream.distinct().collect(Collectors.toList());
     }
 
-    private record CommodoreCommand(
-            @NotNull LiteralCommandNode<?> node,
+    private record Command(
+            @NotNull CommandNode<?> node,
             @NotNull Predicate<? super Player> permissionTest
     ) {
 

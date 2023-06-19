@@ -10,11 +10,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public final class MSCustomNotFoundException extends RuntimeException {
 
-	public MSCustomNotFoundException() {
-		super();
-	}
-
-	public MSCustomNotFoundException(@NotNull String message) {
-		super(message);
-	}
+    public MSCustomNotFoundException(@NotNull String message) {
+        super(message);
+    }
 }

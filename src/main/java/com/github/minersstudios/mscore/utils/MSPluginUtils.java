@@ -8,17 +8,17 @@ import org.jetbrains.annotations.Contract;
 @SuppressWarnings("unused")
 public final class MSPluginUtils {
 
-	@Contract(value = " -> fail")
-	private MSPluginUtils() {
-		throw new IllegalStateException("Utility class");
-	}
+    @Contract(value = " -> fail")
+    private MSPluginUtils() {
+        throw new IllegalStateException("Utility class");
+    }
 
-	/**
-	 * @return True if msDecor, msBlock, msItems have loaded custom decors / blocks / items
-	 */
-	public static boolean isLoadedCustoms() {
-		return MSDecor.getInstance().isLoadedCustoms()
-				&& MSBlock.getInstance().isLoadedCustoms()
-				&& MSItems.getInstance().isLoadedCustoms();
-	}
+    /**
+     * @return True if msDecor, msBlock, msItems have loaded custom decors / blocks / items
+     */
+    public static boolean isLoadedCustoms() {
+        return MSDecor.getInstance().isLoadedCustoms()
+                && MSBlock.getInstance().isLoadedCustoms()
+                && MSItems.getInstance().isLoadedCustoms();
+    }
 }

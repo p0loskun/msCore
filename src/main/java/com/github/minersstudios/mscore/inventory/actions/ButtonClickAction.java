@@ -8,14 +8,14 @@ import org.jetbrains.annotations.NotNull;
 @FunctionalInterface
 public interface ButtonClickAction {
 
-	/**
-	 * @param event           the event that triggered the action
-	 * @param customInventory custom inventory that is involved in this event
-	 * @param button          the button that was clicked
-	 */
-	void doAction(
-			@NotNull InventoryClickEvent event,
-			@NotNull CustomInventory customInventory,
-			@NotNull InventoryButton button
-	);
+    /**
+     * @param event           the event that triggered the action
+     * @param customInventory custom inventory that is involved in this event
+     * @param button          the button that was clicked
+     */
+    void doAction(
+            @NotNull InventoryClickEvent event,
+            @NotNull CustomInventory customInventory,
+            @NotNull InventoryButton button
+    );
 }

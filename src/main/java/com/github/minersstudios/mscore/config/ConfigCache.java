@@ -17,31 +17,31 @@ import java.util.*;
 
 @SuppressWarnings("unused")
 public final class ConfigCache {
-	public final @NotNull File dataFile;
-	public final @NotNull YamlConfiguration yamlConfiguration;
+    public final @NotNull File dataFile;
+    public final @NotNull YamlConfiguration yamlConfiguration;
 
-	public final @NotNull DateTimeFormatter timeFormatter;
+    public final @NotNull DateTimeFormatter timeFormatter;
 
-	public final @NotNull DualMap<String, Integer, CustomDecorData> customDecorMap = new DualMap<>();
-	public final @NotNull List<Recipe> customDecorRecipes = new ArrayList<>();
+    public final @NotNull DualMap<String, Integer, CustomDecorData> customDecorMap = new DualMap<>();
+    public final @NotNull List<Recipe> customDecorRecipes = new ArrayList<>();
 
-	public final @NotNull DualMap<String, Integer, CustomBlockData> customBlockMap = new DualMap<>();
-	public final @NotNull Map<Integer, CustomBlockData> cachedNoteBlockData = new HashMap<>();
-	public final @NotNull List<Recipe> customBlockRecipes = new ArrayList<>();
+    public final @NotNull DualMap<String, Integer, CustomBlockData> customBlockMap = new DualMap<>();
+    public final @NotNull Map<Integer, CustomBlockData> cachedNoteBlockData = new HashMap<>();
+    public final @NotNull List<Recipe> customBlockRecipes = new ArrayList<>();
 
-	public final @NotNull DualMap<String, Integer, CustomItem> customItemMap = new DualMap<>();
-	public final @NotNull DualMap<String, Integer, RenameableItem> renameableItemMap = new DualMap<>();
-	public final @NotNull List<RenameableItem> renameableItemsMenu = new ArrayList<>();
-	public final @NotNull List<Recipe> customItemRecipes = new ArrayList<>();
+    public final @NotNull DualMap<String, Integer, CustomItem> customItemMap = new DualMap<>();
+    public final @NotNull DualMap<String, Integer, RenameableItem> renameableItemMap = new DualMap<>();
+    public final @NotNull List<RenameableItem> renameableItemsMenu = new ArrayList<>();
+    public final @NotNull List<Recipe> customItemRecipes = new ArrayList<>();
 
-	public final @NotNull HashMap<String, CustomInventory> customInventories = new HashMap<>();
+    public final @NotNull HashMap<String, CustomInventory> customInventories = new HashMap<>();
 
-	public final Map<String, UUID> playerUUIDs = new HashMap<>();
+    public final Map<String, UUID> playerUUIDs = new HashMap<>();
 
-	public ConfigCache() {
-		this.dataFile = MSCore.getInstance().getConfigFile();
-		this.yamlConfiguration = YamlConfiguration.loadConfiguration(this.dataFile);
+    public ConfigCache() {
+        this.dataFile = MSCore.getInstance().getConfigFile();
+        this.yamlConfiguration = YamlConfiguration.loadConfiguration(this.dataFile);
 
-		this.timeFormatter = DateTimeFormatter.ofPattern(this.yamlConfiguration.getString("date-format", "EEE, yyyy-MM-dd HH:mm z"));
-	}
+        this.timeFormatter = DateTimeFormatter.ofPattern(this.yamlConfiguration.getString("date-format", "EEE, yyyy-MM-dd HH:mm z"));
+    }
 }

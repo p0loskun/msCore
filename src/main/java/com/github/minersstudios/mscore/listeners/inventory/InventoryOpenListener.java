@@ -10,10 +10,10 @@ import org.jetbrains.annotations.NotNull;
 @MSListener
 public class InventoryOpenListener implements Listener {
 
-	@EventHandler
-	public void onInventoryOpen(@NotNull InventoryOpenEvent event) {
-		if (event.getInventory() instanceof CustomInventory customInventory) {
-			customInventory.doOpenAction(event);
-		}
-	}
+    @EventHandler
+    public void onInventoryOpen(@NotNull InventoryOpenEvent event) {
+        if (event.getInventory() instanceof CustomInventory customInventory) {
+            customInventory.doOpenAction(event);
+        }
+    }
 }

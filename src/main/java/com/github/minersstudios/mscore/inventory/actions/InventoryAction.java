@@ -7,12 +7,12 @@ import org.jetbrains.annotations.NotNull;
 @FunctionalInterface
 public interface InventoryAction<E extends Event> {
 
-	/**
-	 * @param event           the event that triggered the action
-	 * @param customInventory custom inventory that is involved in this event
-	 */
-	void doAction(
-			@NotNull E event,
-			@NotNull CustomInventory customInventory
-	);
+    /**
+     * @param event           the event that triggered the action
+     * @param customInventory custom inventory that is involved in this event
+     */
+    void doAction(
+            @NotNull E event,
+            @NotNull CustomInventory customInventory
+    );
 }

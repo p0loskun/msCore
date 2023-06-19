@@ -17,19 +17,19 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface MSCommand {
 
-	@NotNull String command();
+    @NotNull String command();
 
-	@NotNull String usage() default "";
+    @NotNull String usage() default "";
 
-	@NotNull String description() default "";
+    @NotNull String description() default "";
 
-	String @NotNull [] aliases() default {};
+    String @NotNull [] aliases() default {};
 
-	@NotNull String permission() default "";
+    @NotNull String permission() default "";
 
-	@NotNull PermissionDefault permissionDefault() default PermissionDefault.NOT_OP;
+    @NotNull PermissionDefault permissionDefault() default PermissionDefault.NOT_OP;
 
-	String @NotNull [] permissionParentKeys() default {};
+    String @NotNull [] permissionParentKeys() default {};
 
-	boolean[] permissionParentValues() default {};
+    boolean[] permissionParentValues() default {};
 }

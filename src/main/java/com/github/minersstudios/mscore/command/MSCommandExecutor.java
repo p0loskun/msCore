@@ -14,17 +14,17 @@ import java.util.List;
 @SuppressWarnings("unused")
 public interface MSCommandExecutor extends CommandExecutor, TabCompleter {
 
-	default @Nullable CommandNode<?> getCommandNode() {
-		return null;
-	}
+    default @Nullable CommandNode<?> getCommandNode() {
+        return null;
+    }
 
-	@Override
-	default @Nullable List<String> onTabComplete(
-			@NotNull CommandSender sender,
-			@NotNull Command command,
-			@NotNull String label,
-			String @NotNull ... args
-	) {
-		return new ArrayList<>();
-	}
+    @Override
+    default @Nullable List<String> onTabComplete(
+            @NotNull CommandSender sender,
+            @NotNull Command command,
+            @NotNull String label,
+            String @NotNull ... args
+    ) {
+        return new ArrayList<>();
+    }
 }

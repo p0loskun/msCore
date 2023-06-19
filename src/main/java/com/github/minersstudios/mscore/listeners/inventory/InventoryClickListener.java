@@ -16,37 +16,37 @@ import org.jetbrains.annotations.NotNull;
 @MSListener
 public class InventoryClickListener implements Listener {
 
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void onInventoryClick(@NotNull InventoryClickEvent event) {
-		Inventory clickedInventory = event.getClickedInventory();
-		ClickType clickType = event.getClick();
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onInventoryClick(@NotNull InventoryClickEvent event) {
+        Inventory clickedInventory = event.getClickedInventory();
+        ClickType clickType = event.getClick();
 
-		if (
-				clickedInventory == null
-				|| !(event.getView().getTopInventory() instanceof CustomInventory customInventory)
-		) return;
+        if (
+                clickedInventory == null
+                || !(event.getView().getTopInventory() instanceof CustomInventory customInventory)
+        ) return;
 
-		if (
-				clickedInventory.getType() == InventoryType.PLAYER
-				&& (clickType.isShiftClick() || clickType == ClickType.DOUBLE_CLICK)
-		) {
-			event.setCancelled(true);
-		}
+        if (
+                clickedInventory.getType() == InventoryType.PLAYER
+                && (clickType.isShiftClick() || clickType == ClickType.DOUBLE_CLICK)
+        ) {
+            event.setCancelled(true);
+        }
 
-		if (clickedInventory instanceof CustomInventory) {
-			InventoryButton inventoryButton = customInventory.getClickedButton(event.getSlot());
+        if (clickedInventory instanceof CustomInventory) {
+            InventoryButton inventoryButton = customInventory.getClickedButton(event.getSlot());
 
-			if (inventoryButton != null) {
-				inventoryButton.doClickAction(event, customInventory);
-			}
+            if (inventoryButton != null) {
+                inventoryButton.doClickAction(event, customInventory);
+            }
 
-			customInventory.doClickAction(event);
+            customInventory.doClickAction(event);
 
-			if (customInventory.getClickAction() == null) {
-				event.setCancelled(true);
-			}
-		} else if (clickedInventory instanceof PlayerInventory) {
-			customInventory.doBottomClickAction(event);
-		}
-	}
+            if (customInventory.getClickAction() == null) {
+                event.setCancelled(true);
+            }
+        } else if (clickedInventory instanceof PlayerInventory) {
+            customInventory.doBottomClickAction(event);
+        }
+    }
 }
