@@ -7,7 +7,6 @@ import com.github.minersstudios.mscore.listener.MSListener;
 import com.google.common.base.Charsets;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -177,14 +176,14 @@ public abstract class MSPlugin extends JavaPlugin {
      * All commands must be implemented using {@link MSCommandExecutor}
      */
     public void registerCommands() {
-        this.classNames.stream().parallel().forEach(className -> {
+        this.classNames.forEach(className -> {
             try {
                 Class<?> clazz = this.getClassLoader().loadClass(className);
                 MSCommand msCommand = clazz.getAnnotation(MSCommand.class);
 
                 if (msCommand != null) {
                     if (clazz.getDeclaredConstructor().newInstance() instanceof MSCommandExecutor msCommandExecutor) {
-                        Bukkit.getScheduler().runTask(this, () -> this.registerCommand(msCommand, msCommandExecutor));
+                       this.registerCommand(msCommand, msCommandExecutor);
                     } else {
                         this.getLogger().log(Level.WARNING, "Registered command that is not instance of MSCommandExecutor (" + className + ")");
                     }
