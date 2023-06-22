@@ -7,6 +7,7 @@ import com.github.minersstudios.mscore.listener.MSListener;
 import com.google.common.base.Charsets;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -183,7 +184,7 @@ public abstract class MSPlugin extends JavaPlugin {
 
                 if (msCommand != null) {
                     if (clazz.getDeclaredConstructor().newInstance() instanceof MSCommandExecutor msCommandExecutor) {
-                        this.registerCommand(msCommand, msCommandExecutor);
+                        Bukkit.getScheduler().runTask(this, () -> this.registerCommand(msCommand, msCommandExecutor));
                     } else {
                         this.getLogger().log(Level.WARNING, "Registered command that is not instance of MSCommandExecutor (" + className + ")");
                     }
@@ -243,8 +244,8 @@ public abstract class MSPlugin extends JavaPlugin {
                 }
             }
 
-            Permission permission = new Permission(permissionStr, msCommand.permissionDefault(), children);
-            if (!pluginManager.getPermissions().contains(permission)) {
+            if (pluginManager.getPermission(permissionStr) == null) {
+                Permission permission = new Permission(permissionStr, msCommand.permissionDefault(), children);
                 pluginManager.addPermission(permission);
             }
 
