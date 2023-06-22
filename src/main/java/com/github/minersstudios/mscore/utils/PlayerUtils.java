@@ -1,7 +1,7 @@
 package com.github.minersstudios.mscore.utils;
 
 import com.github.minersstudios.mscore.MSCore;
-import com.github.minersstudios.msutils.utils.MSPlayerUtils;
+import com.github.minersstudios.msutils.MSUtils;
 import com.google.common.base.Charsets;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.server.MinecraftServer;
@@ -55,7 +55,7 @@ public final class PlayerUtils {
             @NotNull Location location,
             String @Nullable ... args
     ) {
-        MSPlayerUtils.getPlayerInfo(player).setSitting(location, args);
+        MSUtils.getConfigCache().playerInfoMap.getPlayerInfo(player).setSitting(location, args);
     }
 
     /**
@@ -68,7 +68,7 @@ public final class PlayerUtils {
             @NotNull Player player,
             String @Nullable ... args
     ) {
-        MSPlayerUtils.getPlayerInfo(player).unsetSitting(args);
+        MSUtils.getConfigCache().playerInfoMap.getPlayerInfo(player).unsetSitting(args);
     }
 
     /**

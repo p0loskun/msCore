@@ -120,7 +120,7 @@
         <dependency>
             <groupId>com.github.MinersStudios</groupId>
             <artifactId>msUtils</artifactId>
-            <version>release-a20f880e09-1</version>
+            <version>release-42cbd12bdb-1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
