@@ -1,6 +1,6 @@
 package com.github.minersstudios.mscore.utils;
 
-import com.github.minersstudios.mscore.MSCore;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Contract;
@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
+
+import static com.github.minersstudios.mscore.MSCore.getConfigCache;
 
 @SuppressWarnings("unused")
 public final class DateUtils {
@@ -47,7 +49,7 @@ public final class DateUtils {
         ZoneId zoneId = ZoneId.systemDefault();
 
         if (address == null) {
-            return milli.atZone(zoneId).format(MSCore.getConfigCache().timeFormatter);
+            return milli.atZone(zoneId).format(getConfigCache().timeFormatter);
         }
 
         String timeZone = getTimezone(address);
@@ -55,7 +57,7 @@ public final class DateUtils {
                 ZoneId.of(timeZone.equalsIgnoreCase("Europe/Kyiv")
                         ? "Europe/Kiev"
                         : timeZone
-                )).format(MSCore.getConfigCache().timeFormatter);
+                )).format(getConfigCache().timeFormatter);
     }
 
     /**
@@ -82,7 +84,7 @@ public final class DateUtils {
                     ? pageString.split("\"timezone\":\"")[1].split("\",")[0]
                     : ZoneId.systemDefault().toString();
         } catch (IOException e) {
-            MSCore.getInstance().getLogger().log(Level.WARNING, e.getMessage());
+            Bukkit.getLogger().log(Level.WARNING, e.getMessage());
             return ZoneId.systemDefault().toString();
         }
     }

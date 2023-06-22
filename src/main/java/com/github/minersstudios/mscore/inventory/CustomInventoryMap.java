@@ -1,29 +1,29 @@
-package com.github.minersstudios.mscore.utils;
+package com.github.minersstudios.mscore.inventory;
 
-import com.github.minersstudios.mscore.inventory.CustomInventory;
-import com.github.minersstudios.mscore.inventory.ListedInventory;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.Locale;
-
-import static com.github.minersstudios.mscore.MSCore.getConfigCache;
+import java.util.Map;
 
 @SuppressWarnings("unused")
-public final class InventoryUtils {
+public class CustomInventoryMap {
+    private final @NotNull Map<String, CustomInventory> map = new HashMap<>();
 
-    @Contract(value = " -> fail")
-    private InventoryUtils() {
-        throw new IllegalStateException("Utility class");
+    /**
+     * @return Custom inventory map with associated keys
+     */
+    public @NotNull Map<String, CustomInventory> getMap() {
+        return this.map;
     }
 
     /**
      * @param key custom inventory key
      * @return custom inventory associated with key, or null if there is no custom inventory for the key
      */
-    public static @Nullable CustomInventory getCustomInventory(@NotNull String key) {
-        CustomInventory customInventory = getConfigCache().customInventories.get(key);
+    public @Nullable CustomInventory get(@NotNull String key) {
+        CustomInventory customInventory = this.map.get(key);
         return customInventory instanceof ListedInventory listedInventory
                 ? listedInventory.getPage(0)
                 : customInventory;
@@ -34,18 +34,18 @@ public final class InventoryUtils {
      * @param customInventory the custom inventory
      * @return the previous custom inventory associated with key, or null if there was no custom inventory for key
      */
-    public static @Nullable CustomInventory registerCustomInventory(
+    public @Nullable CustomInventory put(
             @NotNull String key,
             @NotNull CustomInventory customInventory
     ) {
-        return getConfigCache().customInventories.put(key.toLowerCase(Locale.ROOT), customInventory);
+        return this.map.put(key.toLowerCase(Locale.ROOT), customInventory);
     }
 
     /**
      * @param key custom inventory key
      * @return the previous custom inventory associated with key, or null if there was no custom inventory for key
      */
-    public static @Nullable CustomInventory unregisterCustomInventory(@NotNull String key) {
-        return getConfigCache().customInventories.remove(key.toLowerCase(Locale.ROOT));
+    public @Nullable CustomInventory remove(@NotNull String key) {
+        return this.map.remove(key.toLowerCase(Locale.ROOT));
     }
 }

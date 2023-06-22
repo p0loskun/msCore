@@ -1,9 +1,8 @@
 package com.github.minersstudios.mscore.config;
 
 import com.github.minersstudios.msblock.customblock.CustomBlockData;
-import com.github.minersstudios.mscore.MSCore;
 import com.github.minersstudios.mscore.collections.DualMap;
-import com.github.minersstudios.mscore.inventory.CustomInventory;
+import com.github.minersstudios.mscore.inventory.CustomInventoryMap;
 import com.github.minersstudios.msdecor.customdecor.CustomDecorData;
 import com.github.minersstudios.msitems.items.CustomItem;
 import com.github.minersstudios.msitems.items.RenameableItem;
@@ -34,14 +33,14 @@ public final class ConfigCache {
     public final @NotNull List<RenameableItem> renameableItemsMenu = new ArrayList<>();
     public final @NotNull List<Recipe> customItemRecipes = new ArrayList<>();
 
-    public final @NotNull HashMap<String, CustomInventory> customInventories = new HashMap<>();
+    public final @NotNull CustomInventoryMap customInventoryMap;
 
     public final Map<String, UUID> playerUUIDs = new HashMap<>();
 
-    public ConfigCache() {
-        this.dataFile = MSCore.getInstance().getConfigFile();
+    public ConfigCache(@NotNull File configFile) {
+        this.dataFile = configFile;
         this.yamlConfiguration = YamlConfiguration.loadConfiguration(this.dataFile);
-
         this.timeFormatter = DateTimeFormatter.ofPattern(this.yamlConfiguration.getString("date-format", "EEE, yyyy-MM-dd HH:mm z"));
+        this.customInventoryMap = new CustomInventoryMap();
     }
 }

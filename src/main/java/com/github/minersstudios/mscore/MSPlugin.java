@@ -133,11 +133,13 @@ public abstract class MSPlugin extends JavaPlugin {
         String dirPath = path.substring(0, Math.max(path.lastIndexOf('/'), 0));
         File outFile = new File(this.pluginFolder, path);
         File outDir = new File(this.pluginFolder, dirPath);
+        String outFileName = outFile.getName();
+        String outDirName = outFile.getName();
 
         if (!outDir.exists()) {
             boolean created = outDir.mkdirs();
             if (!created) {
-                this.getLogger().log(Level.WARNING, "Directory " + outDir.getName() + " creation failed");
+                this.getLogger().log(Level.WARNING, "Directory " + outDirName + " creation failed");
             }
         }
 
@@ -154,10 +156,10 @@ public abstract class MSPlugin extends JavaPlugin {
                 out.close();
                 in.close();
             } else {
-                this.getLogger().log(Level.WARNING, "Could not save " + outFile.getName() + " to " + outFile + " because " + outFile.getName() + " already exists.");
+                this.getLogger().log(Level.WARNING, "Could not save " + outFileName + " to " + outFile + " because " + outFileName + " already exists.");
             }
         } catch (IOException ex) {
-            this.getLogger().log(Level.SEVERE, "Could not save " + outFile.getName() + " to " + outFile, ex);
+            this.getLogger().log(Level.SEVERE, "Could not save " + outFileName + " to " + outFile, ex);
         }
     }
 

@@ -5,25 +5,17 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 public final class MSCore extends MSPlugin {
-    private static MSCore instance;
     private static ConfigCache configCache;
 
     @Override
     public void enable() {
-        instance = this;
-
-        reloadConfigs();
+        this.reloadConfigs();
     }
 
-    public static void reloadConfigs() {
-        instance.saveDefaultConfig();
-        instance.reloadConfig();
-        configCache = new ConfigCache();
-    }
-
-    @Contract(pure = true)
-    public static @NotNull MSCore getInstance() {
-        return instance;
+    public void reloadConfigs() {
+        this.saveDefaultConfig();
+        this.reloadConfig();
+        configCache = new ConfigCache(this.getConfigFile());
     }
 
     @Contract(pure = true)
