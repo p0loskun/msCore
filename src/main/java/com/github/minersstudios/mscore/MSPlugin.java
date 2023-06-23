@@ -36,6 +36,8 @@ public abstract class MSPlugin extends JavaPlugin {
     protected FileConfiguration newConfig;
     protected boolean loadedCustoms;
     protected Set<String> classNames;
+    protected Map<MSCommand, MSCommandExecutor> msCommands;
+    protected Set<Listener> listeners;
     protected Commodore commodore;
 
     @Override
@@ -44,15 +46,13 @@ public abstract class MSPlugin extends JavaPlugin {
         this.configFile = new File(this.pluginFolder, "config.yml");
         this.loadedCustoms = false;
 
-        try (JarFile jarFile = new JarFile(this.getFile())) {
-            this.classNames = jarFile.stream().parallel()
-                    .map(JarEntry::getName)
-                    .filter(name -> name.endsWith(".class"))
-                    .map(name -> name.replace("/", ".").replace(".class", ""))
-                    .collect(Collectors.toSet());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        long time = System.currentTimeMillis();
+
+        this.loadClassNames();
+        this.loadCommands();
+        this.loadListeners();
+
+        System.out.println(System.currentTimeMillis() - time);
 
         try {
             Field field = JavaPlugin.class.getDeclaredField("dataFolder");
@@ -70,8 +70,8 @@ public abstract class MSPlugin extends JavaPlugin {
         long time = System.currentTimeMillis();
         this.commodore = new Commodore(this);
 
-        this.loadListeners();
         this.registerCommands();
+        this.registerListeners();
         this.enable();
         this.getLogger().log(Level.INFO, "\033[0;92mEnabled in " + (System.currentTimeMillis() - time) + "ms");
     }
@@ -170,28 +170,35 @@ public abstract class MSPlugin extends JavaPlugin {
         }
     }
 
-    /**
-     * Registers all command in the project that is annotated with {@link MSCommand}
-     * <p>
-     * All commands must be implemented using {@link MSCommandExecutor}
-     */
-    public void registerCommands() {
-        this.classNames.forEach(className -> {
+    public void loadCommands() {
+        Logger logger = this.getLogger();
+        this.msCommands = new HashMap<>();
+
+        this.classNames.stream().parallel().forEach(className -> {
             try {
                 Class<?> clazz = this.getClassLoader().loadClass(className);
                 MSCommand msCommand = clazz.getAnnotation(MSCommand.class);
 
                 if (msCommand != null) {
                     if (clazz.getDeclaredConstructor().newInstance() instanceof MSCommandExecutor msCommandExecutor) {
-                       this.registerCommand(msCommand, msCommandExecutor);
+                        this.msCommands.put(msCommand, msCommandExecutor);
                     } else {
-                        this.getLogger().log(Level.WARNING, "Registered command that is not instance of MSCommandExecutor (" + className + ")");
+                        logger.log(Level.WARNING, "Loaded command that is not instance of MSCommandExecutor (" + className + ")");
                     }
                 }
             } catch (Exception e) {
-                this.getLogger().log(Level.SEVERE, "Failed to register command", e);
+                logger.log(Level.SEVERE, "Failed to load command", e);
             }
         });
+    }
+
+    /**
+     * Registers all command in the project that is annotated with {@link MSCommand}
+     * <p>
+     * All commands must be implemented using {@link MSCommandExecutor}
+     */
+    public void registerCommands() {
+        this.msCommands.forEach(this::registerCommand);
     }
 
     /**
@@ -272,14 +279,9 @@ public abstract class MSPlugin extends JavaPlugin {
         }
     }
 
-    /**
-     * Loads all listeners in the project that is annotated with {@link MSListener}
-     * <p>
-     * All listeners must be implemented using {@link Listener}
-     */
     public void loadListeners() {
         Logger logger = this.getLogger();
-        PluginManager pluginManager = this.getServer().getPluginManager();
+        this.listeners = new HashSet<>();
 
         this.classNames.stream().parallel().forEach(className -> {
             try {
@@ -287,7 +289,7 @@ public abstract class MSPlugin extends JavaPlugin {
 
                 if (clazz.isAnnotationPresent(MSListener.class)) {
                     if (clazz.getDeclaredConstructor().newInstance() instanceof Listener listener) {
-                        pluginManager.registerEvents(listener, this);
+                        this.listeners.add(listener);
                     } else {
                         logger.log(Level.WARNING, "Registered listener that is not instance of Listener (" + className + ")");
                     }
@@ -296,6 +298,28 @@ public abstract class MSPlugin extends JavaPlugin {
                 logger.log(Level.SEVERE, "Failed to load listener", e);
             }
         });
+    }
+
+    /**
+     * Registers all listeners in the project that is annotated with {@link MSListener}
+     * <p>
+     * All listeners must be implemented using {@link Listener}
+     */
+    public void registerListeners() {
+        PluginManager pluginManager = this.getServer().getPluginManager();
+        this.listeners.forEach(listener -> pluginManager.registerEvents(listener, this));
+    }
+
+    private void loadClassNames() {
+        try (JarFile jarFile = new JarFile(this.getFile())) {
+            this.classNames = jarFile.stream().parallel()
+                    .map(JarEntry::getName)
+                    .filter(name -> name.endsWith(".class"))
+                    .map(name -> name.replace("/", ".").replace(".class", ""))
+                    .collect(Collectors.toSet());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
