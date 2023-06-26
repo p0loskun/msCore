@@ -6,7 +6,7 @@ import org.bukkit.SoundGroup;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.craftbukkit.v1_19_R3.block.CraftBlock;
+import org.bukkit.craftbukkit.v1_20_R1.block.CraftBlock;
 import org.bukkit.event.inventory.InventoryType;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;

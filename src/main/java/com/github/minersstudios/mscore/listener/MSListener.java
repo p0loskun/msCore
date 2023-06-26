@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 /**
  * Loads all listeners in the project that are annotated with this interface
  * <p>
- * All listeners must be implemented using {@link Listener} and located in the "com.github.minersstudios.plugin-name.listeners" folder
+ * All listeners must be implemented using {@link Listener}
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

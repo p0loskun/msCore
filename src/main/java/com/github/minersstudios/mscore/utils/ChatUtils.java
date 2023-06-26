@@ -18,9 +18,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 @SuppressWarnings("unused")
 public final class ChatUtils {
+    private static final Logger LOGGER = Bukkit.getLogger();
+
     public static final Style DEFAULT_STYLE = Style.style(
             NamedTextColor.WHITE,
             TextDecoration.OBFUSCATED.withState(false),
@@ -29,7 +32,6 @@ public final class ChatUtils {
             TextDecoration.STRIKETHROUGH.withState(false),
             TextDecoration.UNDERLINED.withState(false)
     );
-
     public static final Style COLORLESS_DEFAULT_STYLE = Style.style(
             TextDecoration.OBFUSCATED.withState(false),
             TextDecoration.BOLD.withState(false),
@@ -61,7 +63,7 @@ public final class ChatUtils {
         ) {
             sender.sendMessage(Component.text(" ").append(message));
         } else {
-            Bukkit.getLogger().info(serializeLegacyComponent(message));
+            LOGGER.info(serializeLegacyComponent(message));
         }
     }
 
@@ -115,7 +117,7 @@ public final class ChatUtils {
         ) {
             sender.sendMessage(message.color(NamedTextColor.GREEN));
         } else {
-            Bukkit.getLogger().info(serializeLegacyComponent(message.color(NamedTextColor.GREEN)));
+            LOGGER.info(serializeLegacyComponent(message.color(NamedTextColor.GREEN)));
         }
     }
 
@@ -168,7 +170,7 @@ public final class ChatUtils {
         ) {
             sender.sendMessage(message.color(NamedTextColor.GOLD));
         } else {
-            Bukkit.getLogger().warning(serializeLegacyComponent(message.color(NamedTextColor.GOLD)));
+            LOGGER.warning(serializeLegacyComponent(message.color(NamedTextColor.GOLD)));
         }
     }
 
@@ -221,7 +223,7 @@ public final class ChatUtils {
         ) {
             sender.sendMessage(message.color(NamedTextColor.RED));
         } else {
-            Bukkit.getLogger().severe(serializeLegacyComponent(message.color(NamedTextColor.RED)));
+            LOGGER.severe(serializeLegacyComponent(message.color(NamedTextColor.RED)));
         }
     }
 
@@ -309,8 +311,8 @@ public final class ChatUtils {
             Component component = Component.text(string);
             components.add(
                     style == null
-                            ? component
-                            : component.style(style)
+                    ? component
+                    : component.style(style)
             );
         }
         return components;

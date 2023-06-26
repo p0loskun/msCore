@@ -165,8 +165,6 @@ public final class ItemUtils {
                 case OFF_HAND -> holder.playEffect(EntityEffect.BREAK_EQUIPMENT_OFF_HAND);
                 default -> holder.playEffect(EntityEffect.BREAK_EQUIPMENT_MAIN_HAND);
             }
-
-            holder.updateInventory();
         }
         return true;
     }

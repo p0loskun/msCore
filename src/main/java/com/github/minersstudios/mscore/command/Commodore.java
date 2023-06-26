@@ -16,17 +16,16 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.mojang.brigadier.builder.LiteralArgumentBuilder.literal;
 
 public final class Commodore {
     public final List<Command> commands = new ArrayList<>();
+    private final String pluginName;
 
     private static final Field CHILDREN_FIELD;
     private static final Field LITERALS_FIELD;
@@ -63,6 +62,8 @@ public final class Commodore {
     }
 
     public Commodore(@NotNull Plugin plugin) {
+        this.pluginName = plugin.getName().toLowerCase().trim();
+
         plugin.getServer().getPluginManager().registerEvents(new Listener() {
             @SuppressWarnings({"UnstableApiUsage"})
             @EventHandler
@@ -71,9 +72,7 @@ public final class Commodore {
                     Player player = event.getPlayer();
                     RootCommandNode<?> commandNode = event.getCommandNode();
 
-                    for (Command command : Commodore.this.commands) {
-                        command.apply(player, commandNode);
-                    }
+                    Commodore.this.commands.forEach(command -> command.apply(player, commandNode));
                 }
             }
         }, plugin);
@@ -88,26 +87,23 @@ public final class Commodore {
         try {
             setFields(node, SUGGESTION_PROVIDER);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to set fields", e);
         }
 
-        Collection<String> aliases = getAliases(command);
+        List<String> aliases = this.getAliases(command);
 
         if (!aliases.contains(node.getLiteral())) {
             node = renameLiteralNode(node, command.getName());
         }
 
         for (String alias : aliases) {
-            if (node.getLiteral().equals(alias)) {
-                this.commands.add(new Command(node, permissionTest));
-            } else {
-                this.commands.add(new Command(
-                        literal(alias)
-                                .redirect((CommandNode<Object>) node)
-                                .build(),
-                        permissionTest
-                ));
-            }
+            CommandNode<Object> targetNode = node.getLiteral().equals(alias)
+                    ? (CommandNode<Object>) node
+                    : literal(alias)
+                    .redirect((CommandNode<Object>) node)
+                    .build();
+
+            this.commands.add(new Command(targetNode, permissionTest));
         }
     }
 
@@ -115,7 +111,14 @@ public final class Commodore {
             @NotNull PluginCommand command,
             @NotNull LiteralCommandNode<?> argumentBuilder
     ) {
-        register(command, argumentBuilder, command::testPermissionSilent);
+        this.register(command, argumentBuilder, command::testPermissionSilent);
+    }
+
+    private @NotNull List<String> getAliases(@NotNull PluginCommand command) {
+        return Stream.concat(Stream.of(command.getLabel()), command.getAliases().stream())
+                .flatMap(alias -> Stream.of(alias, this.pluginName + ":" + alias))
+                .distinct()
+                .toList();
     }
 
     private static void removeChild(
@@ -127,7 +130,7 @@ public final class Commodore {
             ((Map<?, ?>) LITERALS_FIELD.get(root)).remove(name);
             ((Map<?, ?>) ARGUMENTS_FIELD.get(root)).remove(name);
         } catch (IllegalAccessException e) {
-            throw new RuntimeException();
+            throw new RuntimeException("Failed to remove child", e);
         }
     }
 
@@ -165,19 +168,8 @@ public final class Commodore {
         for (CommandNode<S> child : node.getChildren()) {
             clone.addChild(child);
         }
-        return clone;
-    }
 
-    private static Collection<String> getAliases(@NotNull PluginCommand command) {
-        Stream<String> aliasesStream = Stream.concat(
-                Stream.of(command.getLabel()),
-                command.getAliases().stream()
-        );
-        String pluginName = command.getPlugin().getName().toLowerCase().trim();
-        aliasesStream = aliasesStream.flatMap(
-                alias -> Stream.of(alias, pluginName + ":" + alias)
-        );
-        return aliasesStream.distinct().collect(Collectors.toList());
+        return clone;
     }
 
     private record Command(

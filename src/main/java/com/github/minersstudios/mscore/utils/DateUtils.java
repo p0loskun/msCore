@@ -19,7 +19,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -27,6 +26,9 @@ import static com.github.minersstudios.mscore.MSCore.getConfigCache;
 
 @SuppressWarnings("unused")
 public final class DateUtils {
+    private static final ZoneId DEFAULT_ZONE_ID = ZoneId.systemDefault();
+    private static final String DEFAULT_TIMEZONE = DEFAULT_ZONE_ID.toString();
+
     public static final String CHRONO_REGEX = "\\d+[smhdMy]";
 
     @Contract(value = " -> fail")
@@ -42,18 +44,15 @@ public final class DateUtils {
      * @return string date format
      */
     public static @NotNull String getDate(
-            @NotNull Date date,
+            @NotNull Instant date,
             @Nullable InetAddress address
     ) {
-        Instant milli = Instant.ofEpochMilli(date.getTime());
-        ZoneId zoneId = ZoneId.systemDefault();
-
         if (address == null) {
-            return milli.atZone(zoneId).format(getConfigCache().timeFormatter);
+            return date.atZone(DEFAULT_ZONE_ID).format(getConfigCache().timeFormatter);
         }
 
         String timeZone = getTimezone(address);
-        return milli.atZone(
+        return date.atZone(
                 ZoneId.of(timeZone.equalsIgnoreCase("Europe/Kyiv")
                         ? "Europe/Kiev"
                         : timeZone
@@ -82,10 +81,10 @@ public final class DateUtils {
             String pageString = entirePage.toString();
             return pageString.contains("\"timezone\":\"")
                     ? pageString.split("\"timezone\":\"")[1].split("\",")[0]
-                    : ZoneId.systemDefault().toString();
+                    : DEFAULT_TIMEZONE;
         } catch (IOException e) {
-            Bukkit.getLogger().log(Level.WARNING, e.getMessage());
-            return ZoneId.systemDefault().toString();
+            Bukkit.getLogger().log(Level.WARNING, e.getMessage(), e);
+            return DEFAULT_TIMEZONE;
         }
     }
 
@@ -97,12 +96,17 @@ public final class DateUtils {
      * @return string date format
      */
     public static @NotNull String getSenderDate(
-            @NotNull Date date,
+            @NotNull Instant date,
             @Nullable CommandSender sender
     ) {
         if (sender instanceof Player player) {
             InetSocketAddress socketAddress = player.getAddress();
-            return DateUtils.getDate(date, socketAddress != null ? socketAddress.getAddress() : null);
+            return DateUtils.getDate(
+                    date,
+                    socketAddress != null
+                            ? socketAddress.getAddress()
+                            : null
+            );
         }
         return DateUtils.getDate(date, null);
     }
@@ -139,27 +143,25 @@ public final class DateUtils {
      * @throws DateTimeException     if the chrono unit value is too big and the addition cannot be made
      * @throws ArithmeticException   if numeric overflow occurs
      */
-    public static @Nullable Date getDateFromString(
+    public static @Nullable Instant getDateFromString(
             @NotNull String string,
             boolean throwException
     ) throws NumberFormatException, DateTimeException, ArithmeticException {
         if (!matchesChrono(string)) return null;
 
+        Instant now = Instant.now();
         String chronoUnit = string.replaceAll("\\d+", "");
-        Instant instant = Instant.now();
 
         try {
             long number = Long.parseLong(string.replaceAll("[smhdMy]", ""));
-            return Date.from(
-                    switch (chronoUnit) {
-                        case "s" -> instant.plus(number, ChronoUnit.SECONDS);
-                        case "m" -> instant.plus(number, ChronoUnit.MINUTES);
-                        case "h" -> instant.plus(number, ChronoUnit.HOURS);
-                        case "M" -> instant.plus(Math.multiplyExact(number, ChronoUnit.MONTHS.getDuration().toDays()), ChronoUnit.DAYS);
-                        case "y" -> instant.plus(Math.multiplyExact(number, ChronoUnit.YEARS.getDuration().toDays()), ChronoUnit.DAYS);
-                        default -> instant.plus(number, ChronoUnit.DAYS);
-                    }
-            );
+            return switch (chronoUnit) {
+                        case "s" -> now.plus(number, ChronoUnit.SECONDS);
+                        case "m" -> now.plus(number, ChronoUnit.MINUTES);
+                        case "h" -> now.plus(number, ChronoUnit.HOURS);
+                        case "M" -> now.plus(Math.multiplyExact(number, 30), ChronoUnit.DAYS);
+                        case "y" -> now.plus(Math.multiplyExact(number, 365), ChronoUnit.DAYS);
+                        default -> now.plus(number, ChronoUnit.DAYS);
+                    };
         } catch (DateTimeException | NumberFormatException | ArithmeticException e) {
             if (throwException) throw e;
             return null;
@@ -177,7 +179,7 @@ public final class DateUtils {
      * @throws DateTimeException     if the chrono unit value is too big and the addition cannot be made
      * @throws ArithmeticException   if numeric overflow occurs
      */
-    public static @Nullable Date getDateFromString(@NotNull String string) throws NumberFormatException, DateTimeException, ArithmeticException {
+    public static @Nullable Instant getDateFromString(@NotNull String string) throws NumberFormatException, DateTimeException, ArithmeticException {
         return getDateFromString(string, true);
     }
 
