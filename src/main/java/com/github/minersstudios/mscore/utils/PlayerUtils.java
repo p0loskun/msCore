@@ -31,13 +31,13 @@ public final class PlayerUtils {
 
     @Contract(value = " -> fail")
     private PlayerUtils() {
-        throw new IllegalStateException("Utility class");
+        throw new AssertionError("Utility class");
     }
 
     /**
      * Sets player to a seated position underneath him
      *
-     * @param player   player
+     * @param player player
      */
     public static void setSitting(@NotNull Player player) {
         setSitting(player, player.getLocation());
@@ -46,9 +46,9 @@ public final class PlayerUtils {
     /**
      * Sets player to a seated position in specified location
      *
-     * @param player   player
-     * @param location location where the player will sit
-     * @param args     message
+     * @param player   Player
+     * @param location Location where the player will sit
+     * @param args     Message
      */
     public static void setSitting(
             @NotNull Player player,
@@ -61,8 +61,8 @@ public final class PlayerUtils {
     /**
      * Unsets the sitting position of the player
      *
-     * @param player player who is currently sitting
-     * @param args   message
+     * @param player Player who is currently sitting
+     * @param args   Message
      */
     public static void unsetSitting(
             @NotNull Player player,
@@ -72,7 +72,7 @@ public final class PlayerUtils {
     }
 
     /**
-     * @param offlinePlayer offline player whose data will be loaded
+     * @param offlinePlayer Offline player whose data will be loaded
      * @return Online player from offline player
      */
     public static @Nullable Player loadPlayer(@NotNull OfflinePlayer offlinePlayer) {
@@ -98,8 +98,8 @@ public final class PlayerUtils {
     /**
      * Gets UUID from player nickname
      *
-     * @param nickname player nickname
-     * @return player UUID
+     * @param nickname Player nickname
+     * @return Player UUID
      */
     public static @Nullable UUID getUUID(@NotNull String nickname) {
         Map<String, UUID> map = MSCore.getConfigCache().playerUUIDs;
@@ -137,8 +137,8 @@ public final class PlayerUtils {
     /**
      * Gets offline player by nickname
      *
-     * @param nickname player nickname
-     * @return offline player
+     * @param nickname Player nickname
+     * @return Offline player
      */
     public static @Nullable OfflinePlayer getOfflinePlayerByNick(@NotNull String nickname) {
         UUID uuid = getUUID(nickname);
@@ -150,9 +150,9 @@ public final class PlayerUtils {
     /**
      * Gets offline player by uuid and nickname
      *
-     * @param uuid player unique id
-     * @param name player nickname
-     * @return offline player
+     * @param uuid Player unique id
+     * @param name Player nickname
+     * @return Offline player
      */
     public static @NotNull OfflinePlayer getOfflinePlayer(
             @NotNull UUID uuid,

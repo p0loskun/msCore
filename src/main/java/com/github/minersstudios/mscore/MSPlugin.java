@@ -3,6 +3,7 @@ package com.github.minersstudios.mscore;
 import com.github.minersstudios.mscore.command.Commodore;
 import com.github.minersstudios.mscore.command.MSCommand;
 import com.github.minersstudios.mscore.command.MSCommandExecutor;
+import com.github.minersstudios.mscore.config.ConfigCache;
 import com.github.minersstudios.mscore.listener.MSListener;
 import com.google.common.base.Charsets;
 import com.mojang.brigadier.tree.CommandNode;
@@ -40,31 +41,57 @@ public abstract class MSPlugin extends JavaPlugin {
     protected Set<Listener> listeners;
     protected Commodore commodore;
 
+    private static final Field DATA_FOLDER_FIELD;
+
+    static {
+        try {
+            DATA_FOLDER_FIELD = JavaPlugin.class.getDeclaredField("dataFolder");
+            DATA_FOLDER_FIELD.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException("Could not find data folder field", e);
+        }
+    }
+
+    /**
+     * Called after a plugin is loaded but before it has been enabled
+     * <br>
+     * When multiple plugins are loaded, the onLoad() for all plugins is
+     * called before any onEnable() is called
+     * <br>
+     * Sets the plugin folder to "/config/minersstudios/PLUGIN_NAME"
+     * <br>
+     * Also loads the config from the new folder, class names, command instances and listener instances
+     * <br>
+     * After that, it calls the load() method
+     */
     @Override
     public final void onLoad() {
         this.pluginFolder = new File("config/minersstudios/" + this.getName() + "/");
         this.configFile = new File(this.pluginFolder, "config.yml");
         this.loadedCustoms = false;
 
-        long time = System.currentTimeMillis();
-
         this.loadClassNames();
         this.loadCommands();
         this.loadListeners();
 
-        System.out.println(System.currentTimeMillis() - time);
-
         try {
-            Field field = JavaPlugin.class.getDeclaredField("dataFolder");
-            field.setAccessible(true);
-            field.set(this, this.pluginFolder);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            DATA_FOLDER_FIELD.set(this, this.pluginFolder);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("Could not set data folder", e);
         }
 
         this.load();
     }
 
+    /**
+     * Called when this plugin is enabled
+     * <br>
+     * Registers all commands and listeners
+     * <br>
+     * After that, it calls the enable() method
+     * <br>
+     * Also logs the time it took to enable the plugin
+     */
     @Override
     public final void onEnable() {
         long time = System.currentTimeMillis();
@@ -76,6 +103,13 @@ public abstract class MSPlugin extends JavaPlugin {
         this.getLogger().log(Level.INFO, "\033[0;92mEnabled in " + (System.currentTimeMillis() - time) + "ms");
     }
 
+    /**
+     * Called when this plugin is disabled
+     * <br>
+     * After that, it calls the disable() method
+     * <br>
+     * Also logs the time it took to disable the plugin
+     */
     @Override
     public final void onDisable() {
         long time = System.currentTimeMillis();
@@ -170,7 +204,12 @@ public abstract class MSPlugin extends JavaPlugin {
         }
     }
 
-    public void loadCommands() {
+    /**
+     * Loads all commands annotated with {@link MSCommand} the project
+     * <br>
+     * All commands must be implemented using {@link MSCommandExecutor}
+     */
+    private void loadCommands() {
         Logger logger = this.getLogger();
         this.msCommands = new HashMap<>();
 
@@ -194,7 +233,7 @@ public abstract class MSPlugin extends JavaPlugin {
 
     /**
      * Registers all command in the project that is annotated with {@link MSCommand}
-     * <p>
+     * <br>
      * All commands must be implemented using {@link MSCommandExecutor}
      */
     public void registerCommands() {
@@ -202,8 +241,8 @@ public abstract class MSPlugin extends JavaPlugin {
     }
 
     /**
-     * @param msCommand command to be registered
-     * @param executor  command executor
+     * @param msCommand Command to be registered
+     * @param executor  Command executor
      */
     public final void registerCommand(
             @NotNull MSCommand msCommand,
@@ -262,13 +301,17 @@ public abstract class MSPlugin extends JavaPlugin {
         pluginCommand.setTabCompleter(executor);
 
         if (commandNode != null) {
-            this.commodore.register(pluginCommand, (LiteralCommandNode<?>) commandNode);
+            this.commodore.register(pluginCommand, (LiteralCommandNode<?>) commandNode, pluginCommand::testPermissionSilent);
         }
 
         this.getServer().getCommandMap().register(this.getName(), pluginCommand);
     }
 
-    private @Nullable PluginCommand createCommand(@NotNull String command) throws RuntimeException {
+    /**
+     * @param command Command name
+     * @return New {@link PluginCommand} instance
+     */
+    private @Nullable PluginCommand createCommand(@NotNull String command) {
         try {
             Constructor<PluginCommand> constructor = PluginCommand.class.getDeclaredConstructor(String.class, Plugin.class);
             constructor.setAccessible(true);
@@ -279,7 +322,12 @@ public abstract class MSPlugin extends JavaPlugin {
         }
     }
 
-    public void loadListeners() {
+    /**
+     * Loads all listeners annotated with {@link MSListener} the project
+     * <br>
+     * All listeners must be implemented using {@link Listener}
+     */
+    private void loadListeners() {
         Logger logger = this.getLogger();
         this.listeners = new HashSet<>();
 
@@ -302,7 +350,7 @@ public abstract class MSPlugin extends JavaPlugin {
 
     /**
      * Registers all listeners in the project that is annotated with {@link MSListener}
-     * <p>
+     * <br>
      * All listeners must be implemented using {@link Listener}
      */
     public void registerListeners() {
@@ -310,6 +358,11 @@ public abstract class MSPlugin extends JavaPlugin {
         this.listeners.forEach(listener -> pluginManager.registerEvents(listener, this));
     }
 
+    /**
+     * Gathers the names of all plugin classes and converts them to the same string as the package
+     * <br>
+     * "com/example/Example.class" -> "com.example.Example"
+     */
     private void loadClassNames() {
         try (JarFile jarFile = new JarFile(this.getFile())) {
             this.classNames = jarFile.stream().parallel()
@@ -323,37 +376,69 @@ public abstract class MSPlugin extends JavaPlugin {
     }
 
     /**
-     * Gathers the names of all plugin classes and converts them to a package-like string
-     * <p>
-     * "com/example/Example.class" -> "com.example.Example"
+     * Gets the names of all plugin classes, similar to the package string
+     * <br>
+     * "com.example.Example"
      *
-     * @return plugin class names
+     * @return Plugin class names
      */
     public final @NotNull Set<String> getClassNames() {
         return this.classNames;
     }
 
+    /**
+     * Same as {@link JavaPlugin#onLoad()}
+     * 
+     * @see MSPlugin#onLoad()
+     */
     public void load() {}
 
+    /**
+     * Same as {@link JavaPlugin#onEnable()}
+     * 
+     * @see MSPlugin#onEnable()
+     */
     public void enable() {}
 
+    /**
+     * Same as {@link JavaPlugin#onDisable()}
+     * 
+     * @see MSPlugin#onDisable()
+     */
     public void disable() {}
 
+    /**
+     * @return Plugin config file "/config/minersstudios/PLUGIN_NAME/config.yml"
+     */
     @Contract(pure = true)
     public final @NotNull File getConfigFile() {
         return this.configFile;
     }
 
+    /**
+     * @return Plugin folder "/config/minersstudios/PLUGIN_NAME"
+     */
     @Contract(pure = true)
     public final @NotNull File getPluginFolder() {
         return this.pluginFolder;
     }
 
+    /**
+     * Used in :
+     * <br>msBlock({@link ConfigCache#customBlockMap})
+     * <br>msDecor({@link ConfigCache#customDecorMap})
+     * <br>msItem({@link ConfigCache#customItemMap})
+     *
+     * @return True if the plugin has loaded the customs to the cache
+     */
     @Contract(pure = true)
     public final boolean isLoadedCustoms() {
         return this.loadedCustoms;
     }
 
+    /**
+     * @param loadedCustoms True if the plugin has loaded the customs to the cache
+     */
     public final void setLoadedCustoms(boolean loadedCustoms) {
         this.loadedCustoms = loadedCustoms;
     }

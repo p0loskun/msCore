@@ -17,16 +17,16 @@ public final class MSCustomUtils {
 
     @Contract(value = " -> fail")
     private MSCustomUtils() {
-        throw new IllegalStateException("Utility class");
+        throw new AssertionError("Utility class");
     }
 
     /**
      * Gets an {@link ItemStack} of custom item / block / decor
      *
-     * @param namespacedKeyStr namespaced key string, example - (msitem:example)
+     * @param namespacedKeyStr Namespaced key string, example - (msitem:example)
      * @return {@link ItemStack} of custom item / block / decor
-     * @throws NullPointerException      if namespaced key is invalid or null
-     * @throws MSCustomNotFoundException if {@link CustomBlockData} is not found
+     * @throws NullPointerException      If namespaced key is invalid or null
+     * @throws MSCustomNotFoundException If {@link CustomBlockData} is not found
      */
     @Contract("null -> null")
     public static @Nullable ItemStack getItemStack(@Nullable String namespacedKeyStr) throws MSCustomNotFoundException {
@@ -49,7 +49,7 @@ public final class MSCustomUtils {
      *
      * @param itemStack {@link ItemStack}
      * @return {@link CustomBlockData} or {@link CustomDecorData} or {@link CustomItem}
-     * @throws MSCustomNotFoundException if custom is not found
+     * @throws MSCustomNotFoundException If custom is not found
      */
     @Contract("null -> null")
     public static @Nullable Object getCustom(@Nullable ItemStack itemStack) throws MSCustomNotFoundException {
@@ -79,10 +79,10 @@ public final class MSCustomUtils {
     /**
      * Gets {@link CustomBlockData} or {@link CustomDecorData} or {@link CustomItem} from namespaced key
      *
-     * @param namespacedKeyStr namespaced key string, example - (msitem:example)
+     * @param namespacedKeyStr Namespaced key string, example - (msitem:example)
      * @return {@link CustomBlockData} or {@link CustomDecorData} or {@link CustomItem}
-     * @throws NullPointerException      if namespaced key is invalid or null
-     * @throws MSCustomNotFoundException if custom is not found
+     * @throws NullPointerException      If namespaced key is invalid or null
+     * @throws MSCustomNotFoundException If custom is not found
      */
     @Contract("null -> null")
     public static @Nullable Object getCustom(@Nullable String namespacedKeyStr) throws MSCustomNotFoundException {

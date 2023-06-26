@@ -9,9 +9,11 @@ import org.jetbrains.annotations.NotNull;
 public interface ButtonClickAction {
 
     /**
-     * @param event           the event that triggered the action
-     * @param customInventory custom inventory that is involved in this event
-     * @param button          the button that was clicked
+     * Do action when button is clicked
+     *
+     * @param event           Event that triggered the action
+     * @param customInventory Custom inventory that is involved in this event
+     * @param button          Button that was clicked
      */
     void doAction(
             @NotNull InventoryClickEvent event,

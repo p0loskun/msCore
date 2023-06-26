@@ -28,19 +28,19 @@ public final class MSDecorUtils {
 
     @Contract(value = " -> fail")
     private MSDecorUtils() {
-        throw new IllegalStateException("Utility class");
+        throw new AssertionError("Utility class");
     }
 
     /**
      * Places custom decor
-     * <p>
+     * <br>
      * Calls {@link CustomDecorPlaceEvent} when returns true
      *
-     * @param block     block instead of which decor will be installed
-     * @param player    player who places decor
+     * @param block     Block instead of which decor will be installed
+     * @param player    Player who places decor
      * @param key       {@link CustomDecorData} namespaced key string, example - (msdecor:example)
-     * @param blockFace side on which decor will be placed
-     * @throws MSCustomNotFoundException if {@link CustomDecorData} is not found
+     * @param blockFace Side on which decor will be placed
+     * @throws MSCustomNotFoundException If {@link CustomDecorData} is not found
      */
     public static void placeCustomDecor(
             @NotNull Block block,
@@ -53,15 +53,15 @@ public final class MSDecorUtils {
 
     /**
      * Places custom decor
-     * <p>
+     * <br>
      * Calls {@link CustomDecorPlaceEvent} when returns true
      *
-     * @param block     block instead of which decor will be installed
-     * @param player    player who places decor
+     * @param block     Block instead of which decor will be installed
+     * @param player    Player who places decor
      * @param key       {@link CustomDecorData} namespaced key string, example - (msdecor:example)
-     * @param blockFace side on which decor will be placed
-     * @param hand      hand that was involved
-     * @throws MSCustomNotFoundException if {@link CustomDecorData} is not found
+     * @param blockFace Side on which decor will be placed
+     * @param hand      Hand that was involved
+     * @throws MSCustomNotFoundException If {@link CustomDecorData} is not found
      */
     public static void placeCustomDecor(
             @NotNull Block block,
@@ -75,16 +75,16 @@ public final class MSDecorUtils {
 
     /**
      * Places custom decor
-     * <p>
+     * <br>
      * Calls {@link CustomDecorPlaceEvent} when returns true
      *
-     * @param block      block instead of which decor will be installed
-     * @param player     player who places decor
+     * @param block      Block instead of which decor will be installed
+     * @param player     Player who places decor
      * @param key        {@link CustomDecorData} namespaced key string, example - (msdecor:example)
-     * @param blockFace  side on which decor will be placed
-     * @param hand       hand that was involved
-     * @param customName custom name of decor
-     * @throws MSCustomNotFoundException if {@link CustomDecorData} is not found
+     * @param blockFace  Side on which decor will be placed
+     * @param hand       Hand that was involved
+     * @param customName Custom name of decor
+     * @throws MSCustomNotFoundException If {@link CustomDecorData} is not found
      */
     public static void placeCustomDecor(
             @NotNull Block block,
@@ -101,7 +101,7 @@ public final class MSDecorUtils {
     }
 
     /**
-     * @param material material of block
+     * @param material Material of block
      * @return True if the material is used as a decor HitBox
      */
     @Contract("null -> false")
@@ -113,7 +113,7 @@ public final class MSDecorUtils {
     }
 
     /**
-     * @param entity the entity
+     * @param entity The entity
      * @return True if the entity has the "customDecor" tag
      */
     @Contract("null -> false")
@@ -122,7 +122,7 @@ public final class MSDecorUtils {
     }
 
     /**
-     * @param itemStack item
+     * @param itemStack Item
      * @return True if item is {@link CustomDecorData}
      */
     @Contract("null -> false")
@@ -137,7 +137,7 @@ public final class MSDecorUtils {
      *
      * @param key {@link CustomDecorData} key string
      * @return {@link CustomDecorData} item stack
-     * @throws MSCustomNotFoundException if {@link CustomDecorData} is not found
+     * @throws MSCustomNotFoundException If {@link CustomDecorData} is not found
      */
     public static @NotNull ItemStack getCustomDecorItem(@NotNull String key) throws MSCustomNotFoundException {
         return getCustomDecorData(key).getItemStack();
@@ -147,8 +147,8 @@ public final class MSDecorUtils {
      * Gets {@link CustomDecorData} from {@link ItemStack}
      *
      * @param itemStack {@link ItemStack}
-     * @return {@link CustomDecorData}
-     * @throws MSCustomNotFoundException if {@link CustomDecorData} is not found
+     * @return {@link CustomDecorData} object
+     * @throws MSCustomNotFoundException If {@link CustomDecorData} is not found
      */
     public static @Nullable CustomDecorData getCustomDecorData(@Nullable ItemStack itemStack) throws MSCustomNotFoundException {
         if (itemStack == null) return null;
@@ -161,9 +161,9 @@ public final class MSDecorUtils {
     /**
      * Gets {@link CustomDecorData} from key
      *
-     * @param key {@link CustomDecorData} key string
-     * @return {@link CustomDecorData}
-     * @throws MSCustomNotFoundException if {@link CustomDecorData} is not found
+     * @param key {@link CustomDecorData} Key string
+     * @return {@link CustomDecorData} object
+     * @throws MSCustomNotFoundException If {@link CustomDecorData} is not found
      */
     public static @NotNull CustomDecorData getCustomDecorData(@NotNull String key) throws MSCustomNotFoundException {
         CustomDecorData customDecorData = MSCore.getConfigCache().customDecorMap.getByPrimaryKey(key);
@@ -173,6 +173,10 @@ public final class MSDecorUtils {
         return customDecorData;
     }
 
+    /**
+     * @param string String to be checked
+     * @return True if string matches {@link MSDecorUtils#NAMESPACED_KEY_REGEX} regex
+     */
     @Contract(value = "null -> false", pure = true)
     public static boolean matchesNamespacedKey(@Nullable String string) {
         return string != null && string.matches(NAMESPACED_KEY_REGEX);

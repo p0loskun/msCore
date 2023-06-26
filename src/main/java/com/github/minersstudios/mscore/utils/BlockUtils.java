@@ -64,13 +64,13 @@ public final class BlockUtils {
 
     @Contract(value = " -> fail")
     private BlockUtils() {
-        throw new IllegalStateException("Utility class");
+        throw new AssertionError("Utility class");
     }
 
     /**
      * Breaks top / bottom block
      *
-     * @param centreBlock block around which the blocks break
+     * @param centreBlock Block around which the blocks break
      */
     public static void removeBlocksAround(@NotNull Block centreBlock) {
         CraftBlock topBlock = (CraftBlock) centreBlock.getRelative(BlockFace.UP);
@@ -86,7 +86,7 @@ public final class BlockUtils {
     }
 
     /**
-     * @param material material that will be used to get the {@link BlockData}
+     * @param material Material that will be used to get the {@link BlockData}
      * @return {@link BlockData} from {@link Material}
      */
     public static @Nullable BlockData getBlockDataByMaterial(@NotNull Material material) {
@@ -98,7 +98,7 @@ public final class BlockUtils {
     }
 
     /**
-     * @param blockData block data from which sounds will be extracted
+     * @param blockData Block data from which sounds will be extracted
      * @return True if material has wood sound
      */
     public static boolean isWoodenSound(@NotNull BlockData blockData) {

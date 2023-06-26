@@ -6,6 +6,7 @@ import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
+import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -61,6 +62,11 @@ public final class Commodore {
         };
     }
 
+    /**
+     * API for registering commands with Mojang's Brigadier command system
+     *
+     * @param plugin Plugin to register Commodore for
+     */
     public Commodore(@NotNull Plugin plugin) {
         this.pluginName = plugin.getName().toLowerCase().trim();
 
@@ -78,19 +84,23 @@ public final class Commodore {
         }, plugin);
     }
 
+    /**
+     * Registers a command with Commodore
+     *
+     * @param command        Command to register
+     * @param node           Command node to register
+     * @param permissionTest Permission test to apply to the command
+     */
     @SuppressWarnings("unchecked")
     public void register(
             @NotNull PluginCommand command,
             @NotNull LiteralCommandNode<?> node,
-            @NotNull Predicate<? super Player> permissionTest
+            @NotNull Predicate<? super CommandSender> permissionTest
     ) {
-        try {
-            setFields(node, SUGGESTION_PROVIDER);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException("Failed to set fields", e);
-        }
+        setFields(node, SUGGESTION_PROVIDER);
 
         List<String> aliases = this.getAliases(command);
+        System.out.println(aliases);
 
         if (!aliases.contains(node.getLiteral())) {
             node = renameLiteralNode(node, command.getName());
@@ -107,13 +117,14 @@ public final class Commodore {
         }
     }
 
-    public void register(
-            @NotNull PluginCommand command,
-            @NotNull LiteralCommandNode<?> argumentBuilder
-    ) {
-        this.register(command, argumentBuilder, command::testPermissionSilent);
-    }
-
+    /**
+     * Gets the default aliases of a command, and with the plugin name prepended
+     * <br>
+     * Example: /command -> /command, /plugin:command
+     *
+     * @param command Command to get aliases for
+     * @return Aliases of the command
+     */
     private @NotNull List<String> getAliases(@NotNull PluginCommand command) {
         return Stream.concat(Stream.of(command.getLabel()), command.getAliases().stream())
                 .flatMap(alias -> Stream.of(alias, this.pluginName + ":" + alias))
@@ -121,6 +132,12 @@ public final class Commodore {
                 .toList();
     }
 
+    /**
+     * Removes a child command from a root node
+     *
+     * @param root Root node
+     * @param name Name of the child
+     */
     private static void removeChild(
             @NotNull RootCommandNode<?> root,
             @NotNull String name
@@ -134,17 +151,29 @@ public final class Commodore {
         }
     }
 
+    /**
+     * Sets the command fields for a command node and its children
+     * <br>
+     * Also sets the suggestion provider for {@link ArgumentCommandNode}s
+     *
+     * @param node               Command node
+     * @param suggestionProvider Suggestion provider
+     */
     private static void setFields(
             @NotNull CommandNode<?> node,
             @Nullable SuggestionProvider<?> suggestionProvider
-    ) throws IllegalAccessException {
-        COMMAND_EXECUTE_FUNCTION_FIELD.set(node, COMMAND);
+    ) {
+        try {
+            COMMAND_EXECUTE_FUNCTION_FIELD.set(node, COMMAND);
 
-        if (
-                suggestionProvider != null
-                && node instanceof ArgumentCommandNode<?, ?> argumentNode
-        ) {
-            CUSTOM_SUGGESTIONS_FIELD.set(argumentNode, suggestionProvider);
+            if (
+                    suggestionProvider != null
+                    && node instanceof ArgumentCommandNode<?, ?> argumentNode
+            ) {
+                CUSTOM_SUGGESTIONS_FIELD.set(argumentNode, suggestionProvider);
+            }
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("Failed to set fields", e);
         }
 
         for (CommandNode<?> child : node.getChildren()) {
@@ -152,6 +181,13 @@ public final class Commodore {
         }
     }
 
+    /**
+     * Renames a literal command node
+     *
+     * @param node    Command node to rename
+     * @param literal New literal for the command node
+     * @return Command node with the new literal
+     */
     private static <S> @NotNull LiteralCommandNode<S> renameLiteralNode(
             @NotNull LiteralCommandNode<S> node,
             @NotNull String literal
@@ -172,17 +208,23 @@ public final class Commodore {
         return clone;
     }
 
-    private record Command(
+    public record Command(
             @NotNull CommandNode<?> node,
-            @NotNull Predicate<? super Player> permissionTest
+            @NotNull Predicate<? super CommandSender> permissionTest
     ) {
 
+        /**
+         * Applies the command to a sender
+         *
+         * @param sender Sender to apply the command to
+         * @param root   Root node to apply the command to
+         */
         @SuppressWarnings({"unchecked", "rawtypes"})
         public void apply(
-                @NotNull Player player,
+                @NotNull CommandSender sender,
                 @NotNull RootCommandNode<?> root
         ) {
-            if (!this.permissionTest.test(player)) return;
+            if (!this.permissionTest.test(sender)) return;
             removeChild(root, this.node.getName());
             root.addChild((CommandNode) this.node);
         }

@@ -8,8 +8,10 @@ import org.jetbrains.annotations.NotNull;
 public interface InventoryAction<E extends Event> {
 
     /**
-     * @param event           the event that triggered the action
-     * @param customInventory custom inventory that is involved in this event
+     * Performs action when event is triggered
+     *
+     * @param event           Event that triggered the action
+     * @param customInventory Custom inventory that is involved in this event
      */
     void doAction(
             @NotNull E event,

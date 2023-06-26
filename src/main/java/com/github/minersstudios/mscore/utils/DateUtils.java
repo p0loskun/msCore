@@ -33,15 +33,15 @@ public final class DateUtils {
 
     @Contract(value = " -> fail")
     private DateUtils() {
-        throw new IllegalStateException("Utility class");
+        throw new AssertionError("Utility class");
     }
 
     /**
-     * Gets the date at the address
+     * Gets date from string
      *
-     * @param date    date to be converted
-     * @param address address
-     * @return string date format
+     * @param date    Date to be converted
+     * @param address Address
+     * @return String date format
      */
     public static @NotNull String getDate(
             @NotNull Instant date,
@@ -63,7 +63,7 @@ public final class DateUtils {
      * Gets timezone from ip
      *
      * @param ip IP address
-     * @return timezone from ip
+     * @return Timezone from ip
      */
     public static @NotNull String getTimezone(@NotNull InetAddress ip) {
         try (InputStream input = new URL("http://ip-api.com/json/" + ip.getHostAddress()).openStream()) {
@@ -91,8 +91,8 @@ public final class DateUtils {
     /**
      * Gets date with player time zone
      *
-     * @param date   date to be converted
-     * @param sender command sender
+     * @param date   Date to be converted
+     * @param sender Command sender
      * @return string date format
      */
     public static @NotNull String getSenderDate(
@@ -113,11 +113,11 @@ public final class DateUtils {
 
     /**
      * Gets time suggestions from number
-     * <p>
+     * <br>
      * Used for command tab completer
      *
-     * @param input number of time
-     * @return time suggestions
+     * @param input Number of time
+     * @return Time suggestions
      */
     public static @NotNull List<String> getTimeSuggestions(@NotNull String input) {
         List<String> suggestions = new ArrayList<>();
@@ -133,15 +133,15 @@ public final class DateUtils {
 
     /**
      * Gets a date with time added
-     * <p>
+     * <br>
      * Regex : \d+[smhdMy]
      *
-     * @param string         time
-     * @param throwException if true, an exception will be thrown
-     * @return date with time added
-     * @throws NumberFormatException if the string does not contain a parsable long
-     * @throws DateTimeException     if the chrono unit value is too big and the addition cannot be made
-     * @throws ArithmeticException   if numeric overflow occurs
+     * @param string         Time
+     * @param throwException If true, an exception will be thrown
+     * @return Date with time added
+     * @throws NumberFormatException If the string does not contain a parsable long
+     * @throws DateTimeException     If the chrono unit value is too big and the addition cannot be made
+     * @throws ArithmeticException   If numeric overflow occurs
      */
     public static @Nullable Instant getDateFromString(
             @NotNull String string,
@@ -170,19 +170,23 @@ public final class DateUtils {
 
     /**
      * Gets a date with time added
-     * <p>
+     * <br>
      * Regex : \d+[smhdMy]
      *
-     * @param string time
-     * @return date with time added
-     * @throws NumberFormatException if the string does not contain a parsable long
-     * @throws DateTimeException     if the chrono unit value is too big and the addition cannot be made
-     * @throws ArithmeticException   if numeric overflow occurs
+     * @param string Time
+     * @return Date with time added
+     * @throws NumberFormatException If the string does not contain a parsable long
+     * @throws DateTimeException     If the chrono unit value is too big and the addition cannot be made
+     * @throws ArithmeticException   If numeric overflow occurs
      */
     public static @Nullable Instant getDateFromString(@NotNull String string) throws NumberFormatException, DateTimeException, ArithmeticException {
         return getDateFromString(string, true);
     }
 
+    /**
+     * @param string String to be checked
+     * @return True if the string matches the {@link #CHRONO_REGEX} regex
+     */
     @Contract(value = "null -> false", pure = true)
     public static boolean matchesChrono(@Nullable String string) {
         return string != null && string.matches(CHRONO_REGEX);

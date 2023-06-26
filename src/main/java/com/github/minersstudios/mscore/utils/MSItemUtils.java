@@ -20,11 +20,11 @@ public final class MSItemUtils {
 
     @Contract(value = " -> fail")
     private MSItemUtils() {
-        throw new IllegalStateException("Utility class");
+        throw new AssertionError("Utility class");
     }
 
     /**
-     * @param itemStack item
+     * @param itemStack Item
      * @return True if item is {@link CustomItem}
      */
     @Contract("null -> false")
@@ -35,7 +35,7 @@ public final class MSItemUtils {
     }
 
     /**
-     * @param itemStack item
+     * @param itemStack Item
      * @return True if item is {@link RenameableItem}
      */
     @Contract("null -> false")
@@ -59,8 +59,8 @@ public final class MSItemUtils {
      * Gets {@link CustomItem} from {@link ItemStack}
      *
      * @param itemStack {@link ItemStack}
-     * @return {@link CustomItem}
-     * @throws MSCustomNotFoundException if {@link CustomItem} is not found
+     * @return {@link CustomItem} object
+     * @throws MSCustomNotFoundException If {@link CustomItem} is not found
      */
     @Contract("null -> null")
     public static @Nullable CustomItem getCustomItem(@Nullable ItemStack itemStack) throws MSCustomNotFoundException {
@@ -75,8 +75,8 @@ public final class MSItemUtils {
      * Gets {@link CustomItem} from key
      *
      * @param key {@link CustomItem} key string
-     * @return {@link CustomItem}
-     * @throws MSCustomNotFoundException if {@link CustomItem} is not found
+     * @return {@link CustomItem} object
+     * @throws MSCustomNotFoundException If {@link CustomItem} is not found
      */
     public static @NotNull CustomItem getCustomItem(@NotNull String key) throws MSCustomNotFoundException {
         CustomItem customItem = MSCore.getConfigCache().customItemMap.getByPrimaryKey(key);
@@ -86,6 +86,10 @@ public final class MSItemUtils {
         return customItem;
     }
 
+    /**
+     * @param string String to be checked
+     * @return True if string matches {@link MSItemUtils#NAMESPACED_KEY_REGEX} regex
+     */
     @Contract(value = "null -> false", pure = true)
     public static boolean matchesNamespacedKey(@Nullable String string) {
         return string != null && string.matches(NAMESPACED_KEY_REGEX);

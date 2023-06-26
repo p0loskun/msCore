@@ -14,6 +14,9 @@ import java.util.List;
 @SuppressWarnings("unused")
 public interface MSCommandExecutor extends CommandExecutor, TabCompleter {
 
+    /**
+     * @return CommandNode for {@link Commodore} registration
+     */
     default @Nullable CommandNode<?> getCommandNode() {
         return null;
     }

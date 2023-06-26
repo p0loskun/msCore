@@ -22,12 +22,12 @@ public final class ItemUtils {
 
     @Contract(value = " -> fail")
     private ItemUtils() {
-        throw new IllegalStateException("Utility class");
+        throw new AssertionError("Utility class");
     }
 
     /**
-     * @param first  first {@link ItemStack}
-     * @param second second {@link ItemStack}
+     * @param first  First {@link ItemStack}
+     * @param second Second {@link ItemStack}
      * @return True if the CustomModelData and {@link Material} of the two items are the same
      */
     @Contract("null, null -> false")
@@ -48,10 +48,10 @@ public final class ItemUtils {
     }
 
     /**
-     * @param list list of items
-     * @param item item that will be checked for its presence in the list
+     * @param list List of items
+     * @param item Item that will be checked for its presence in the list
      * @return True if the list contains the item
-     * <p>
+     * <br>
      * Uses the {@link #isSimilarItemStacks(ItemStack, ItemStack)} method for this
      */
     @Contract("_, null -> false")
@@ -69,8 +69,8 @@ public final class ItemUtils {
     /**
      * Deals one point of damage to the specified item
      *
-     * @param holder player who is holding the item
-     * @param item   the item
+     * @param holder Player who is holding the item
+     * @param item   The item
      * @return False if the {@link ItemMeta} of the item is not an instance of {@link Damageable}
      */
     @Contract("_, null -> false")
@@ -84,9 +84,9 @@ public final class ItemUtils {
     /**
      * Damages the specified item with specified damage
      *
-     * @param holder         player who is holding the item
-     * @param item           the item
-     * @param originalDamage damage you want to inflict on the item
+     * @param holder         Player who is holding the item
+     * @param item           The item
+     * @param originalDamage Damage you want to inflict on the item
      * @return False if the {@link ItemMeta} of the item is not an instance of {@link Damageable}
      */
     @Contract("_, null, _ -> false")
@@ -101,10 +101,10 @@ public final class ItemUtils {
     /**
      * Damages the specified item with specified damage
      *
-     * @param holder         player who is holding the item
-     * @param slot           slot where the player is holding the item (used for item break effect)
-     * @param item           the item
-     * @param originalDamage damage you want to inflict on the item
+     * @param holder         Player who is holding the item
+     * @param slot           Slot where the player is holding the item (used for item break effect)
+     * @param item           The item
+     * @param originalDamage Damage you want to inflict on the item
      * @return False if the {@link ItemMeta} of the item is not an instance of {@link Damageable}
      */
     @Contract("_, _, null, _ -> false")

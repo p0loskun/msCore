@@ -10,7 +10,7 @@ public final class MSPluginUtils {
 
     @Contract(value = " -> fail")
     private MSPluginUtils() {
-        throw new IllegalStateException("Utility class");
+        throw new AssertionError("Utility class");
     }
 
     /**

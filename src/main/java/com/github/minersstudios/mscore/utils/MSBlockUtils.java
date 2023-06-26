@@ -18,11 +18,11 @@ public final class MSBlockUtils {
 
     @Contract(value = " -> fail")
     private MSBlockUtils() {
-        throw new IllegalStateException("Utility class");
+        throw new AssertionError("Utility class");
     }
 
     /**
-     * @param itemStack item
+     * @param itemStack Item
      * @return True if item is {@link CustomBlockData}
      */
     @Contract("null -> false")
@@ -47,8 +47,8 @@ public final class MSBlockUtils {
      * Gets {@link CustomBlockData} from {@link ItemStack}
      *
      * @param itemStack {@link ItemStack}
-     * @return {@link CustomBlockData}
-     * @throws MSCustomNotFoundException if {@link CustomBlockData} is not found
+     * @return {@link CustomBlockData} object
+     * @throws MSCustomNotFoundException If {@link CustomBlockData} is not found
      */
     @Contract("null -> null")
     public static @Nullable CustomBlockData getCustomBlockData(@Nullable ItemStack itemStack) throws MSCustomNotFoundException {
@@ -63,8 +63,8 @@ public final class MSBlockUtils {
      * Gets {@link CustomBlockData} from key
      *
      * @param key {@link CustomBlockData} key string
-     * @return {@link CustomBlockData}
-     * @throws MSCustomNotFoundException if {@link CustomBlockData} is not found
+     * @return {@link CustomBlockData} object
+     * @throws MSCustomNotFoundException If {@link CustomBlockData} is not found
      */
     public static @NotNull CustomBlockData getCustomBlockData(@NotNull String key) throws MSCustomNotFoundException {
         CustomBlockData customBlockData = MSCore.getConfigCache().customBlockMap.getByPrimaryKey(key);
@@ -74,6 +74,10 @@ public final class MSBlockUtils {
         return customBlockData;
     }
 
+    /**
+     * @param string String to be checked
+     * @return True if string matches {@link MSBlockUtils#NAMESPACED_KEY_REGEX} regex
+     */
     @Contract(value = "null -> false", pure = true)
     public static boolean matchesNamespacedKey(@Nullable String string) {
         return string != null && string.matches(NAMESPACED_KEY_REGEX);

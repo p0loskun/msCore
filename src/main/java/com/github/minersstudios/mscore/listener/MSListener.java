@@ -8,8 +8,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Loads all listeners in the project that are annotated with this interface
- * <p>
+ * All listeners implemented using this annotation will be registered automatically
+ * <br>
  * All listeners must be implemented using {@link Listener}
  */
 @Retention(RetentionPolicy.RUNTIME)

@@ -34,7 +34,7 @@ public class InventoryClickListener implements Listener {
         }
 
         if (clickedInventory instanceof CustomInventory) {
-            InventoryButton inventoryButton = customInventory.getClickedButton(event.getSlot());
+            InventoryButton inventoryButton = customInventory.getButtonAt(event.getSlot());
 
             if (inventoryButton != null) {
                 inventoryButton.doClickAction(event, customInventory);

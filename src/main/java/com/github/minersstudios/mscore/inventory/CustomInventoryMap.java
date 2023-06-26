@@ -19,8 +19,8 @@ public class CustomInventoryMap {
     }
 
     /**
-     * @param key custom inventory key
-     * @return custom inventory associated with key, or null if there is no custom inventory for the key
+     * @param key Custom inventory key
+     * @return Custom inventory associated with key, or null if there is no custom inventory for the key
      */
     public @Nullable CustomInventory get(@NotNull String key) {
         CustomInventory customInventory = this.map.get(key);
@@ -30,9 +30,9 @@ public class CustomInventoryMap {
     }
 
     /**
-     * @param key             custom inventory key
-     * @param customInventory the custom inventory
-     * @return the previous custom inventory associated with key, or null if there was no custom inventory for key
+     * @param key             Custom inventory key
+     * @param customInventory The custom inventory
+     * @return The previous custom inventory associated with key, or null if there was no custom inventory for key
      */
     public @Nullable CustomInventory put(
             @NotNull String key,
@@ -42,8 +42,8 @@ public class CustomInventoryMap {
     }
 
     /**
-     * @param key custom inventory key
-     * @return the previous custom inventory associated with key, or null if there was no custom inventory for key
+     * @param key Custom inventory key
+     * @return The previous custom inventory associated with key, or null if there was no custom inventory for key
      */
     public @Nullable CustomInventory remove(@NotNull String key) {
         return this.map.remove(key.toLowerCase(Locale.ROOT));
