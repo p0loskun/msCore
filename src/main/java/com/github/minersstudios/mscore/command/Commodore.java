@@ -100,7 +100,6 @@ public final class Commodore {
         setFields(node, SUGGESTION_PROVIDER);
 
         List<String> aliases = this.getAliases(command);
-        System.out.println(aliases);
 
         if (!aliases.contains(node.getLiteral())) {
             node = renameLiteralNode(node, command.getName());

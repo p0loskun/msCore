@@ -16,9 +16,6 @@ import java.util.*;
 
 @SuppressWarnings("unused")
 public final class ConfigCache {
-    public final @NotNull File dataFile;
-    public final @NotNull YamlConfiguration yamlConfiguration;
-
     public final @NotNull DateTimeFormatter timeFormatter;
 
     public final @NotNull DualMap<String, Integer, CustomDecorData> customDecorMap = new DualMap<>();
@@ -38,9 +35,9 @@ public final class ConfigCache {
     public final Map<String, UUID> playerUUIDs = new HashMap<>();
 
     public ConfigCache(@NotNull File configFile) {
-        this.dataFile = configFile;
-        this.yamlConfiguration = YamlConfiguration.loadConfiguration(this.dataFile);
-        this.timeFormatter = DateTimeFormatter.ofPattern(this.yamlConfiguration.getString("date-format", "EEE, yyyy-MM-dd HH:mm z"));
+        YamlConfiguration yamlConfiguration = YamlConfiguration.loadConfiguration(configFile);
+        this.timeFormatter = DateTimeFormatter.ofPattern(yamlConfiguration.getString("date-format", "EEE, yyyy-MM-dd HH:mm z"));
+
         this.customInventoryMap = new CustomInventoryMap();
     }
 }
