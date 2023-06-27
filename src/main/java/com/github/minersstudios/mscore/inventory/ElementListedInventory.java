@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,38 +22,52 @@ public class ElementListedInventory extends ListedInventory {
      *
      * @param title        Title of the inventory
      * @param verticalSize Vertical size of the inventory
-     * @param elements     Elements of the inventory
      * @param elementSlots Slots of the elements in the inventory
      */
-    public ElementListedInventory(
+    protected ElementListedInventory(
             @NotNull String title,
             @Range(from = 1, to = 6) int verticalSize,
-            @NotNull List<InventoryButton> elements,
             int @Range(from = 0, to = Integer.MAX_VALUE) [] elementSlots
     ) {
         super(title, verticalSize);
         this.elementSlots = elementSlots;
         this.elements = ArrayListMultimap.create();
+    }
 
-        this.setElements(elements);
-        this.updatePages();
-        this.setButtons(this.getPageContents(this.page));
+    /**
+     * Creates a new inventory with elements and pages
+     *
+     * @param title        Title of the inventory
+     * @param verticalSize Vertical size of the inventory
+     * @param elementSlots Slots of the elements in the inventory
+     * @return New element listed inventory
+     */
+    @Contract("_, _, _ -> new")
+    public static @NotNull ElementListedInventory create(
+            @NotNull String title,
+            @Range(from = 1, to = 6) int verticalSize,
+            int @Range(from = 0, to = Integer.MAX_VALUE) [] elementSlots
+    ) {
+        return new ElementListedInventory(title, verticalSize, elementSlots);
     }
 
     /**
      * @return Elements of the inventory
      */
     @Contract(" -> new")
-    public @NotNull Multimap<Integer, InventoryButton> getElements() {
+    public @NotNull Multimap<Integer, InventoryButton> elements() {
         return ArrayListMultimap.create(this.elements);
     }
 
     /**
      * Set the elements of the inventory
+     * <br>
+     * <b>NOTE:</b> This will also update the pages and buttons
      *
      * @param elements New elements of the inventory
+     * @return This inventory
      */
-    public void setElements(@NotNull List<InventoryButton> elements) {
+    public @NotNull ElementListedInventory elements(@NotNull List<InventoryButton> elements) {
         this.elements.clear();
         this.setPagesSize((int) Math.ceil((double) elements.size() / this.elementSlots.length));
 
@@ -63,6 +78,11 @@ public class ElementListedInventory extends ListedInventory {
                 this.elements.put(page, elements.get(index));
             }
         }
+
+        this.updatePages();
+        this.buttons(this.getPageContents(this.page));
+
+        return this;
     }
 
     /**
@@ -88,9 +108,10 @@ public class ElementListedInventory extends ListedInventory {
             i++;
         }
 
-        for (int slot : this.elementSlots) {
-            content.putIfAbsent(slot, null);
-        }
+        Arrays.stream(this.elementSlots)
+                .filter(slot -> !content.containsKey(slot))
+                .forEach(slot -> content.put(slot, null));
+
         return content;
     }
 
@@ -105,7 +126,7 @@ public class ElementListedInventory extends ListedInventory {
 
         ListedInventory listedInventory = (ListedInventory) this.clone();
         listedInventory.setPageIndex(page);
-        listedInventory.setButtons(this.getPageContents(page));
+        listedInventory.buttons(this.getPageContents(page));
         return listedInventory;
     }
 

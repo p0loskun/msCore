@@ -20,7 +20,7 @@ public class ListedInventory extends CustomInventory {
      * @param title        Title of the inventory
      * @param verticalSize Vertical size of the inventory
      */
-    public ListedInventory(
+    protected ListedInventory(
             @NotNull String title,
             @Range(from = 1, to = 6) int verticalSize
     ) {
@@ -28,18 +28,52 @@ public class ListedInventory extends CustomInventory {
     }
 
     /**
+     * Creates a new listed inventory with pages
+     *
+     * @param title        Title of the inventory
+     * @param verticalSize Vertical size of the inventory
+     * @return New listed inventory
+     */
+    public static @NotNull ListedInventory create(
+            @NotNull String title,
+            @Range(from = 1, to = 6) int verticalSize
+    ) {
+        return new ListedInventory(title, verticalSize);
+    }
+
+    /**
+     * Used to update static buttons in the inventory
+     * <br>
+     * If there are no static buttons, this method does not need to be called
+     *
+     * @return Listed inventory
+     */
+    public @NotNull ListedInventory build() {
+        this.updateStaticButtons();
+        return this;
+    }
+
+    /**
+     * Integers - slot
+     * <br>
+     * StaticInventoryButton - static button placed in that slot
+     *
+     * @return Static button map of this listed inventory
+     */
+    public @NotNull Map<Integer, StaticInventoryButton> staticButtons() {
+        return this.staticButtons;
+    }
+
+    /**
      * Sets static buttons in this inventory
      *
      * @param buttons Static buttons to set
      * @throws IllegalArgumentException If any of the static buttons is out of inventory size
-     * @see #setStaticButtonAt(int, StaticInventoryButton)
+     * @see #staticButtonAt(int, StaticInventoryButton)
      */
-    public void setStaticButtons(@NotNull Map<Integer, StaticInventoryButton> buttons) throws IllegalArgumentException {
-        for (Map.Entry<Integer, StaticInventoryButton> entry : buttons.entrySet()) {
-            this.setStaticButtonAt(entry.getKey(), entry.getValue());
-        }
-
-        this.updateStaticButtons();
+    public @NotNull ListedInventory staticButtons(@NotNull Map<Integer, StaticInventoryButton> buttons) throws IllegalArgumentException {
+        buttons.forEach(this::staticButtonAt);
+        return this;
     }
 
     /**
@@ -47,6 +81,18 @@ public class ListedInventory extends CustomInventory {
      */
     public boolean hasStaticButtons() {
         return !this.staticButtons.isEmpty();
+    }
+
+    /**
+     * @param slot Slot to get button from
+     * @return {@link StaticInventoryButton} / {@link InventoryButton} at specified slot or null if there is no button
+     */
+    @Override
+    public @Nullable InventoryButton buttonAt(@Range(from = 0, to = Integer.MAX_VALUE) int slot) {
+        StaticInventoryButton staticButton = this.staticButtons.get(slot);
+        return staticButton == null
+                ? this.buttons.getOrDefault(slot, null)
+                : staticButton.getButton(this);
     }
 
     /**
@@ -58,28 +104,13 @@ public class ListedInventory extends CustomInventory {
      * @param button Static button to set
      * @throws IllegalArgumentException If slot is out of inventory size
      */
-    public void setStaticButtonAt(
+    public @NotNull ListedInventory staticButtonAt(
             @Range(from = 0, to = LAST_SLOT) int slot,
             @NotNull StaticInventoryButton button
     ) throws IllegalArgumentException {
-        if (slot >= this.size) {
-            throw new IllegalArgumentException();
-        }
-
+        this.validateSlot(slot);
         this.staticButtons.put(slot, button);
-    }
-
-    /**
-     * @param slot Slot to get button from
-     * @return {@link StaticInventoryButton} / {@link InventoryButton} at specified slot or null if there is no button
-     */
-    @Override
-    public @Nullable InventoryButton getButtonAt(@Range(from = 0, to = Integer.MAX_VALUE) int slot) {
-        StaticInventoryButton staticButton = this.staticButtons.getOrDefault(slot, null);
-        if (staticButton != null) {
-            return staticButton.getButton(this);
-        }
-        return this.buttons.getOrDefault(slot, null);
+        return this;
     }
 
     /**
@@ -170,7 +201,7 @@ public class ListedInventory extends CustomInventory {
     }
 
     /**
-     * Updates static buttons in all pages
+     * Updates static buttons in all pages of the listed inventory
      */
     public void updateStaticButtons() {
         if (this.hasStaticButtons()) {

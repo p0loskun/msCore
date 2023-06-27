@@ -9,6 +9,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
@@ -18,7 +19,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "UnusedReturnValue"})
 public class CustomInventory extends CraftInventoryCustom implements Inventory, Cloneable {
     protected final int size;
     protected @NotNull Map<Integer, InventoryButton> buttons;
@@ -40,7 +41,7 @@ public class CustomInventory extends CraftInventoryCustom implements Inventory, 
      * @param title        Title of the inventory
      * @param verticalSize Vertical size of the inventory
      */
-    public CustomInventory(
+    protected CustomInventory(
             @NotNull String title,
             @Range(from = 1, to = 6) int verticalSize
     ) {
@@ -50,13 +51,28 @@ public class CustomInventory extends CraftInventoryCustom implements Inventory, 
     }
 
     /**
+     * Creates new custom inventory with specified title and vertical size
+     *
+     * @param title        Title of the inventory
+     * @param verticalSize Vertical size of the inventory
+     * @return New custom inventory
+     */
+    @Contract("_, _ -> new")
+    public static @NotNull CustomInventory create(
+            @NotNull String title,
+            @Range(from = 1, to = 6) int verticalSize
+    ) {
+        return new CustomInventory(title, verticalSize);
+    }
+
+    /**
      * Integers - slot
      * <br>
      * InventoryButton - button placed in that slot
      *
      * @return Button map of this inventory
      */
-    public @NotNull Map<Integer, InventoryButton> getButtons() {
+    public @NotNull Map<Integer, InventoryButton> buttons() {
         return this.buttons;
     }
 
@@ -64,12 +80,12 @@ public class CustomInventory extends CraftInventoryCustom implements Inventory, 
      * Sets buttons in this inventory
      *
      * @param buttons Buttons to set
+     * @return This instance
      * @throws IllegalArgumentException If any of the buttons is out of inventory size
      */
-    public void setButtons(@NotNull Map<Integer, InventoryButton> buttons) throws IllegalArgumentException {
-        for (Map.Entry<Integer, InventoryButton> entry : buttons.entrySet()) {
-            this.setButtonAt(entry.getKey(), entry.getValue());
-        }
+    public @NotNull CustomInventory buttons(@NotNull Map<Integer, InventoryButton> buttons) throws IllegalArgumentException {
+        buttons.forEach(this::buttonAt);
+        return this;
     }
 
     /**
@@ -80,10 +96,12 @@ public class CustomInventory extends CraftInventoryCustom implements Inventory, 
     }
 
     /**
+     * Gets button at specified slot
+     *
      * @param slot Slot to get button from
      * @return Button at specified slot or null if there is no button
      */
-    public @Nullable InventoryButton getButtonAt(@Range(from = 0, to = LAST_SLOT) int slot) {
+    public @Nullable InventoryButton buttonAt(@Range(from = 0, to = LAST_SLOT) int slot) {
         return this.buttons.getOrDefault(slot, null);
     }
 
@@ -92,24 +110,25 @@ public class CustomInventory extends CraftInventoryCustom implements Inventory, 
      *
      * @param slot   Slot to set button at
      * @param button Button to set
+     * @return This inventory
      * @throws IllegalArgumentException If slot is out of inventory size
      */
-    public void setButtonAt(
+    public @NotNull CustomInventory buttonAt(
             @Range(from = 0, to = LAST_SLOT) int slot,
             @NotNull InventoryButton button
     ) throws IllegalArgumentException {
-        if (slot >= this.size) {
-            throw new IllegalArgumentException();
-        }
-
+        this.validateSlot(slot);
         this.buttons.put(slot, button);
         this.setItem(slot, button.item());
+        return this;
     }
 
     /**
+     * Gets inventory open action
+     *
      * @return Inventory action that is performed when this inventory is opened
      */
-    public @Nullable InventoryAction<InventoryOpenEvent> getOpenAction() {
+    public @Nullable InventoryAction<InventoryOpenEvent> openAction() {
         return this.openAction;
     }
 
@@ -117,9 +136,71 @@ public class CustomInventory extends CraftInventoryCustom implements Inventory, 
      * Sets inventory action that is performed when this inventory is opened
      *
      * @param openAction New open action
+     * @return This inventory
      */
-    public void setOpenAction(@Nullable InventoryAction<InventoryOpenEvent> openAction) {
+    public @NotNull CustomInventory openAction(@Nullable InventoryAction<InventoryOpenEvent> openAction) {
         this.openAction = openAction;
+        return this;
+    }
+
+    /**
+     * Gets inventory close action
+     *
+     * @return Inventory action that is performed when this inventory is closed
+     */
+    public @Nullable InventoryAction<InventoryCloseEvent> closeAction() {
+        return this.closeAction;
+    }
+
+    /**
+     * Sets inventory action that is performed when this inventory is closed
+     *
+     * @param closeAction New close action
+     * @return This inventory
+     */
+    public @NotNull CustomInventory closeAction(@Nullable InventoryAction<InventoryCloseEvent> closeAction) {
+        this.closeAction = closeAction;
+        return this;
+    }
+
+    /**
+     * Gets inventory click action
+     *
+     * @return Inventory action that is performed when this inventory is clicked
+     */
+    public @Nullable InventoryAction<InventoryClickEvent> clickAction() {
+        return this.clickAction;
+    }
+
+    /**
+     * Sets inventory action that is performed when this inventory is clicked
+     *
+     * @param clickAction New click action
+     * @return This inventory
+     */
+    public @NotNull CustomInventory clickAction(@Nullable InventoryAction<InventoryClickEvent> clickAction) {
+        this.clickAction = clickAction;
+        return this;
+    }
+
+    /**
+     * Gets bottom inventory click action
+     *
+     * @return Inventory action that is performed when player is clicked bottom inventory
+     */
+    public @Nullable InventoryAction<InventoryClickEvent> bottomInventoryClickAction() {
+        return this.bottomClickAction;
+    }
+
+    /**
+     * Sets inventory action that is performed when player is clicked bottom inventory
+     *
+     * @param bottomClickAction New bottom inventory click action
+     * @return This inventory
+     */
+    public @NotNull CustomInventory bottomInventoryClickAction(@Nullable InventoryAction<InventoryClickEvent> bottomClickAction) {
+        this.bottomClickAction = bottomClickAction;
+        return this;
     }
 
     /**
@@ -134,22 +215,6 @@ public class CustomInventory extends CraftInventoryCustom implements Inventory, 
     }
 
     /**
-     * @return Inventory action that is performed when this inventory is closed
-     */
-    public @Nullable InventoryAction<InventoryCloseEvent> getCloseAction() {
-        return this.closeAction;
-    }
-
-    /**
-     * Sets inventory action that is performed when this inventory is closed
-     *
-     * @param closeAction New close action
-     */
-    public void setCloseAction(@Nullable InventoryAction<InventoryCloseEvent> closeAction) {
-        this.closeAction = closeAction;
-    }
-
-    /**
      * Performs the closing action when the inventory is closed, if it is set
      *
      * @param event Event that triggered the action
@@ -161,23 +226,9 @@ public class CustomInventory extends CraftInventoryCustom implements Inventory, 
     }
 
     /**
-     * @return Inventory action that is performed when this inventory is clicked
-     */
-    public @Nullable InventoryAction<InventoryClickEvent> getClickAction() {
-        return this.clickAction;
-    }
-
-    /**
-     * Sets inventory action that is performed when this inventory is clicked
-     *
-     * @param clickAction New click action
-     */
-    public void setClickAction(@Nullable InventoryAction<InventoryClickEvent> clickAction) {
-        this.clickAction = clickAction;
-    }
-
-    /**
      * Performs the clicking action when the inventory is clicked, if it is set
+     * <br>
+     * If click action is not set, it will cancel the click event
      *
      * @param event Event that triggered the action
      */
@@ -185,22 +236,6 @@ public class CustomInventory extends CraftInventoryCustom implements Inventory, 
         if (this.clickAction != null) {
             this.clickAction.doAction(event, this.clone());
         }
-    }
-
-    /**
-     * @return Inventory action that is performed when player is clicked bottom inventory
-     */
-    public @Nullable InventoryAction<InventoryClickEvent> getBottomInventoryClickAction() {
-        return this.bottomClickAction;
-    }
-
-    /**
-     * Sets inventory action that is performed when player is clicked bottom inventory
-     *
-     * @param bottomClickAction New bottom inventory click action
-     */
-    public void setBottomInventoryClickAction(@Nullable InventoryAction<InventoryClickEvent> bottomClickAction) {
-        this.bottomClickAction = bottomClickAction;
     }
 
     /**
@@ -212,6 +247,13 @@ public class CustomInventory extends CraftInventoryCustom implements Inventory, 
         if (this.bottomClickAction != null) {
             this.bottomClickAction.doAction(event, this.clone());
         }
+    }
+
+    public boolean validateSlot(int slot) {
+        if (slot < 0 || slot >= this.getSize()) {
+            throw new IllegalArgumentException("Slot must be between 0 and " + (this.getSize() - 1));
+        }
+        return true;
     }
 
     /**
@@ -232,8 +274,8 @@ public class CustomInventory extends CraftInventoryCustom implements Inventory, 
             unsafe.putObject(clone, unsafe.objectFieldOffset(inventoryField), newContainer);
 
             clone.buttons = new HashMap<>(this.buttons);
-
             clone.setContents(this.getContents());
+
             return clone;
         } catch (CloneNotSupportedException | IllegalAccessException | NoSuchFieldException e) {
             throw new RuntimeException(e);
