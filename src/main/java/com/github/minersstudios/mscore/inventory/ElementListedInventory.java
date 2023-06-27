@@ -52,6 +52,17 @@ public class ElementListedInventory extends ListedInventory {
     }
 
     /**
+     * Used to update the pages of the inventory
+     *
+     * @return Listed inventory
+     */
+    @Override
+    public @NotNull ElementListedInventory build() {
+        this.updatePages();
+        return this;
+    }
+
+    /**
      * @return Elements of the inventory
      */
     @Contract(" -> new")

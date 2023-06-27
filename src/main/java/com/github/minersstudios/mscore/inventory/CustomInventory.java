@@ -3,12 +3,14 @@ package com.github.minersstudios.mscore.inventory;
 import com.github.minersstudios.mscore.inventory.actions.InventoryAction;
 import com.github.minersstudios.mscore.utils.ChatUtils;
 import net.minecraft.world.Container;
+import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftInventory;
 import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftInventoryCustom;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -27,6 +29,8 @@ public class CustomInventory extends CraftInventoryCustom implements Inventory, 
     protected @Nullable InventoryAction<InventoryCloseEvent> closeAction;
     protected @Nullable InventoryAction<InventoryClickEvent> clickAction;
     protected @Nullable InventoryAction<InventoryClickEvent> bottomClickAction;
+
+    protected static final ItemStack EMPTY_ITEM = new ItemStack(Material.AIR);
 
     /**
      * Last slot in the inventory (5th row, 9th column)
@@ -115,11 +119,11 @@ public class CustomInventory extends CraftInventoryCustom implements Inventory, 
      */
     public @NotNull CustomInventory buttonAt(
             @Range(from = 0, to = LAST_SLOT) int slot,
-            @NotNull InventoryButton button
+            @Nullable InventoryButton button
     ) throws IllegalArgumentException {
         this.validateSlot(slot);
         this.buttons.put(slot, button);
-        this.setItem(slot, button.item());
+        this.setItem(slot, button == null ? EMPTY_ITEM : button.item());
         return this;
     }
 

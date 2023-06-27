@@ -106,7 +106,7 @@ public class ListedInventory extends CustomInventory {
      */
     public @NotNull ListedInventory staticButtonAt(
             @Range(from = 0, to = LAST_SLOT) int slot,
-            @NotNull StaticInventoryButton button
+            @Nullable StaticInventoryButton button
     ) throws IllegalArgumentException {
         this.validateSlot(slot);
         this.staticButtons.put(slot, button);
@@ -205,11 +205,11 @@ public class ListedInventory extends CustomInventory {
      */
     public void updateStaticButtons() {
         if (this.hasStaticButtons()) {
-            for (Map.Entry<Integer, StaticInventoryButton> entry : this.staticButtons.entrySet()) {
+            this.staticButtons.forEach((slot, button) -> {
                 for (ListedInventory listedInventory : this.pages.values()) {
-                    listedInventory.setItem(entry.getKey(), entry.getValue().getButton(listedInventory).item());
+                    listedInventory.setItem(slot, button == null ? EMPTY_ITEM : button.getButton(listedInventory).item());
                 }
-            }
+            });
         }
     }
 
