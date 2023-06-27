@@ -28,13 +28,6 @@ public class ListedInventory extends CustomInventory {
     }
 
     /**
-     * @return True if the inventory has any static buttons
-     */
-    public boolean hasStaticButtons() {
-        return !this.staticButtons.isEmpty();
-    }
-
-    /**
      * Sets static buttons in this inventory
      *
      * @param buttons Static buttons to set
@@ -47,6 +40,13 @@ public class ListedInventory extends CustomInventory {
         }
 
         this.updateStaticButtons();
+    }
+
+    /**
+     * @return True if the inventory has any static buttons
+     */
+    public boolean hasStaticButtons() {
+        return !this.staticButtons.isEmpty();
     }
 
     /**
@@ -83,33 +83,6 @@ public class ListedInventory extends CustomInventory {
     }
 
     /**
-     * Updates static buttons in all pages
-     */
-    public void updateStaticButtons() {
-        if (this.hasStaticButtons()) {
-            for (Map.Entry<Integer, StaticInventoryButton> entry : this.staticButtons.entrySet()) {
-                for (ListedInventory listedInventory : this.pages.values()) {
-                    listedInventory.setItem(entry.getKey(), entry.getValue().getButton(listedInventory).getItem());
-                }
-            }
-        }
-    }
-
-    /**
-     * Updates static buttons in specified page
-     *
-     * @param page Page to update static buttons in
-     */
-    public void updateStaticButtons(@Range(from = 0, to = Integer.MAX_VALUE) int page) {
-        ListedInventory listedInventory = this.pages.get(page);
-        if (this.hasStaticButtons()) {
-            for (Map.Entry<Integer, StaticInventoryButton> entry : this.staticButtons.entrySet()) {
-                listedInventory.setItem(entry.getKey(), entry.getValue().getButton(listedInventory).getItem());
-            }
-        }
-    }
-
-    /**
      * Integer - page index
      * <br>
      * ListedInventory - page
@@ -126,22 +99,6 @@ public class ListedInventory extends CustomInventory {
      */
     public @Nullable ListedInventory getPage(@Range(from = 0, to = Integer.MAX_VALUE) int page) {
         return this.pages.getOrDefault(page, null);
-    }
-
-    /**
-     * Adds new page to the {@link #pages} with next index and static buttons
-     *
-     * @return New page
-     */
-    public @NotNull ListedInventory addPage() {
-        int page = this.pagesSize;
-        ListedInventory listedInventory = (ListedInventory) this.clone();
-
-        listedInventory.setPageIndex(page);
-        this.pages.put(page, listedInventory);
-        this.updateStaticButtons(page);
-        this.setPagesSize(this.pages.size());
-        return listedInventory;
     }
 
     /**
@@ -193,6 +150,49 @@ public class ListedInventory extends CustomInventory {
     protected void setPagesSize(@Range(from = 0, to = Integer.MAX_VALUE) int pagesSize) {
         for (ListedInventory listedInventory : this.pages.values()) {
             listedInventory.pagesSize = pagesSize;
+        }
+    }
+
+    /**
+     * Adds new page to the {@link #pages} with next index and static buttons
+     *
+     * @return New page
+     */
+    public @NotNull ListedInventory addPage() {
+        int page = this.pagesSize;
+        ListedInventory listedInventory = (ListedInventory) this.clone();
+
+        listedInventory.setPageIndex(page);
+        this.pages.put(page, listedInventory);
+        this.updateStaticButtons(page);
+        this.setPagesSize(this.pages.size());
+        return listedInventory;
+    }
+
+    /**
+     * Updates static buttons in all pages
+     */
+    public void updateStaticButtons() {
+        if (this.hasStaticButtons()) {
+            for (Map.Entry<Integer, StaticInventoryButton> entry : this.staticButtons.entrySet()) {
+                for (ListedInventory listedInventory : this.pages.values()) {
+                    listedInventory.setItem(entry.getKey(), entry.getValue().getButton(listedInventory).item());
+                }
+            }
+        }
+    }
+
+    /**
+     * Updates static buttons in specified page
+     *
+     * @param page Page to update static buttons in
+     */
+    public void updateStaticButtons(@Range(from = 0, to = Integer.MAX_VALUE) int page) {
+        ListedInventory listedInventory = this.pages.get(page);
+        if (this.hasStaticButtons()) {
+            for (Map.Entry<Integer, StaticInventoryButton> entry : this.staticButtons.entrySet()) {
+                listedInventory.setItem(entry.getKey(), entry.getValue().getButton(listedInventory).item());
+            }
         }
     }
 }

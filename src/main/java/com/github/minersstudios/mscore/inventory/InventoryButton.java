@@ -6,6 +6,7 @@ import org.bukkit.SoundCategory;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,64 +17,80 @@ public class InventoryButton {
     private @Nullable ButtonClickAction clickAction;
 
     /**
-     * Empty button
+     * Empty button constructor
      */
-    public InventoryButton() {
-        this(null, null, null);
+    private InventoryButton() {}
+
+    /**
+     * Creates new instance of {@link InventoryButton} with null values
+     *
+     * @return New instance of {@link InventoryButton}
+     */
+    @Contract(value = " -> new")
+    public static @NotNull InventoryButton create() {
+        return new InventoryButton();
     }
 
     /**
-     * Button with item
+     * Gets player who clicked the button
      *
-     * @param item Item to be displayed on button
+     * @return Player who clicked the button
      */
-    public InventoryButton(
-            @Nullable ItemStack item
-    ) {
-        this(null, item, null);
+    public @Nullable Player whoClicked() {
+        return this.whoClicked;
     }
 
     /**
-     * Button with item and click action
+     * Sets player who clicked the button
      *
-     * @param item        Item to be displayed on button
-     * @param clickAction Action to be performed when button is clicked
+     * @param whoClicked New player
+     * @return This instance
      */
-    public InventoryButton(
-            @Nullable ItemStack item,
-            @Nullable ButtonClickAction clickAction
-    ) {
-        this(null, item, clickAction);
-    }
-
-    /**
-     * Button with player and item
-     *
-     * @param whoClicked Player who clicked the button
-     * @param item       Item to be displayed on button
-     */
-    public InventoryButton(
-            @Nullable Player whoClicked,
-            @Nullable ItemStack item
-    ) {
-        this(whoClicked, item, null);
-    }
-
-    /**
-     * Button with player, item and click action
-     *
-     * @param whoClicked  Player who clicked the button
-     * @param item        Item to be displayed on button
-     * @param clickAction Action to be performed when button is clicked
-     */
-    public InventoryButton(
-            @Nullable Player whoClicked,
-            @Nullable ItemStack item,
-            @Nullable ButtonClickAction clickAction
-    ) {
+    public @NotNull InventoryButton whoClicked(@Nullable Player whoClicked) {
         this.whoClicked = whoClicked;
+        return this;
+    }
+
+    /**
+     * Gets item to be displayed on button
+     *
+     * @return Item to be displayed on button
+     */
+    public @Nullable ItemStack item() {
+        return this.item;
+    }
+
+    /**
+     * Sets item to be displayed on button
+     *
+     * @param item New item
+     * @return This instance
+     */
+    public @NotNull InventoryButton item(@Nullable ItemStack item) {
         this.item = item;
+        return this;
+    }
+
+    /**
+     * Gets click action to be performed when button is clicked
+     *
+     * @return Click action to be performed when button is clicked
+     * @see ButtonClickAction
+     */
+    public @Nullable ButtonClickAction clickAction() {
+        return this.clickAction;
+    }
+
+    /**
+     * Sets click action to be performed when button is clicked
+     *
+     * @param clickAction New click action
+     * @return This instance
+     * @see ButtonClickAction
+     */
+    public @NotNull InventoryButton clickAction(@Nullable ButtonClickAction clickAction) {
         this.clickAction = clickAction;
+        return this;
     }
 
     /**
@@ -83,54 +100,6 @@ public class InventoryButton {
      */
     public static void playClickSound(@NotNull Player player) {
         player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, SoundCategory.MASTER, 0.5f, 1.0f);
-    }
-
-    /**
-     * @return Player who clicked the button
-     */
-    public @Nullable Player getWhoClicked() {
-        return this.whoClicked;
-    }
-
-    /**
-     * Sets player who clicked the button
-     *
-     * @param whoClicked New player
-     */
-    public void setWhoClicked(@Nullable Player whoClicked) {
-        this.whoClicked = whoClicked;
-    }
-
-    /**
-     * @return Item to be displayed on button
-     */
-    public @Nullable ItemStack getItem() {
-        return this.item;
-    }
-
-    /**
-     * Sets item to be displayed on button
-     *
-     * @param item New item
-     */
-    public void setItem(@Nullable ItemStack item) {
-        this.item = item;
-    }
-
-    /**
-     * @return Click action to be performed when button is clicked
-     */
-    public @Nullable ButtonClickAction getClickAction() {
-        return this.clickAction;
-    }
-
-    /**
-     * Sets click action to be performed when button is clicked
-     *
-     * @param clickAction New click action
-     */
-    public void setClickAction(@Nullable ButtonClickAction clickAction) {
-        this.clickAction = clickAction;
     }
 
     /**

@@ -5,6 +5,9 @@ import com.github.minersstudios.mscore.inventory.InventoryButton;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Represents action that is performed when button is clicked
+ */
 @FunctionalInterface
 public interface ButtonClickAction {
 

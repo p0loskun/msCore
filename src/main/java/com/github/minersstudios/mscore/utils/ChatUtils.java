@@ -46,6 +46,37 @@ public final class ChatUtils {
     }
 
     /**
+     * Sends info message to console
+     *
+     * @param message Info message {@link String}
+     */
+    public static void sendInfo(@NotNull String message) {
+        sendInfo(null, message);
+    }
+
+    /**
+     * Sends info message to target
+     *
+     * @param target  Target, if null sends to console
+     * @param message Info message {@link String}
+     */
+    public static void sendInfo(
+            @Nullable Object target,
+            @NotNull String message
+    ) {
+        sendInfo(target, Component.text(message));
+    }
+
+    /**
+     * Sends info message to console
+     *
+     * @param message Info message {@link Component}
+     */
+    public static void sendInfo(@NotNull Component message) {
+        sendInfo(null, message);
+    }
+
+    /**
      * Sends info message to target
      *
      * @param target  Target, if null sends to console
@@ -68,35 +99,34 @@ public final class ChatUtils {
     }
 
     /**
-     * Sends info message to console
+     * Sends fine message to console
      *
-     * @param message Info message {@link Component}
+     * @param message Fine message {@link String}
      */
-    public static void sendInfo(@NotNull Component message) {
-        sendInfo(null, message);
+    public static void sendFine(@NotNull String message) {
+        sendFine(null, message);
     }
 
-
     /**
-     * Sends info message to target
+     * Sends fine message to target
      *
      * @param target  Target, if null sends to console
-     * @param message Info message {@link String}
+     * @param message Fine message {@link String}
      */
-    public static void sendInfo(
+    public static void sendFine(
             @Nullable Object target,
             @NotNull String message
     ) {
-        sendInfo(target, Component.text(message));
+        sendFine(target, Component.text(message));
     }
 
     /**
-     * Sends info message to console
+     * Sends fine message to console
      *
-     * @param message Info message {@link String}
+     * @param message Fine message {@link Component}
      */
-    public static void sendInfo(@NotNull String message) {
-        sendInfo(null, message);
+    public static void sendFine(@NotNull Component message) {
+        sendFine(null, message);
     }
 
     /**
@@ -124,34 +154,34 @@ public final class ChatUtils {
     }
 
     /**
-     * Sends fine message to console
+     * Sends warning message to console
      *
-     * @param message Fine message {@link Component}
+     * @param message Warning message {@link String}
      */
-    public static void sendFine(@NotNull Component message) {
-        sendFine(null, message);
+    public static void sendWarning(@NotNull String message) {
+        sendWarning(null, message);
     }
 
     /**
-     * Sends fine message to target
+     * Sends warning message to target
      *
      * @param target  Target, if null sends to console
-     * @param message Fine message {@link String}
+     * @param message Warning message {@link String}
      */
-    public static void sendFine(
+    public static void sendWarning(
             @Nullable Object target,
             @NotNull String message
     ) {
-        sendFine(target, Component.text(message));
+        sendWarning(target, Component.text(message));
     }
 
     /**
-     * Sends fine message to console
+     * Sends warning message to console
      *
-     * @param message Fine message {@link String}
+     * @param message Warning message {@link Component}
      */
-    public static void sendFine(@NotNull String message) {
-        sendFine(null, message);
+    public static void sendWarning(@NotNull Component message) {
+        sendWarning(null, message);
     }
 
     /**
@@ -179,34 +209,34 @@ public final class ChatUtils {
     }
 
     /**
-     * Sends warning message to console
+     * Sends error message to console
      *
-     * @param message Warning message {@link Component}
+     * @param message Error message {@link String}
      */
-    public static void sendWarning(@NotNull Component message) {
-        sendWarning(null, message);
+    public static void sendError(@NotNull String message) {
+        sendError(null, message);
     }
 
     /**
-     * Sends warning message to target
+     * Sends error message to target
      *
      * @param target  Target, if null sends to console
-     * @param message Warning message {@link String}
+     * @param message Error message {@link String}
      */
-    public static void sendWarning(
+    public static void sendError(
             @Nullable Object target,
             @NotNull String message
     ) {
-        sendWarning(target, Component.text(message));
+        sendError(target, Component.text(message));
     }
 
     /**
-     * Sends warning message to console
+     * Sends error message to console
      *
-     * @param message Warning message {@link String}
+     * @param message Error message {@link Component}
      */
-    public static void sendWarning(@NotNull String message) {
-        sendWarning(null, message);
+    public static void sendError(@NotNull Component message) {
+        sendError(null, message);
     }
 
     /**
@@ -231,37 +261,6 @@ public final class ChatUtils {
         } else {
             CONSOLE_SENDER.sendMessage(coloredMessage);
         }
-    }
-
-    /**
-     * Sends error message to console
-     *
-     * @param message Error message {@link Component}
-     */
-    public static void sendError(@NotNull Component message) {
-        sendError(null, message);
-    }
-
-    /**
-     * Sends error message to target
-     *
-     * @param target  Target, if null sends to console
-     * @param message Error message {@link String}
-     */
-    public static void sendError(
-            @Nullable Object target,
-            @NotNull String message
-    ) {
-        sendError(target, Component.text(message));
-    }
-
-    /**
-     * Sends error message to console
-     *
-     * @param message Error message {@link String}
-     */
-    public static void sendError(@NotNull String message) {
-        sendError(null, message);
     }
 
     /**
@@ -393,32 +392,6 @@ public final class ChatUtils {
     }
 
     /**
-     * Converts strings to components
-     * <br>
-     * Example:
-     * <br>
-     * <code>convertStringsToComponents(null, "Hello", "Sir.", "PackmanDude");</code>
-     * <br>
-     * - will return list of components with text "Hello", "Sir." and "PackmanDude"
-     *
-     * @param style Style to be applied to all components
-     * @param first First string
-     * @param other Other strings
-     * @return List of components
-     */
-    public static @NotNull List<Component> convertStringsToComponents(
-            @Nullable Style style,
-            @NotNull String first,
-            String @NotNull ... other
-    ) {
-        String[] strings = new String[other.length + 1];
-        strings[0] = first;
-
-        System.arraycopy(other, 0, strings, 1, other.length);
-        return convertStringsToComponents(style, strings);
-    }
-
-    /**
      * Converts strings to components with {@link #DEFAULT_STYLE}
      * <br>
      * Example:
@@ -452,5 +425,31 @@ public final class ChatUtils {
             String @NotNull ... other
     ) {
         return convertStringsToComponents(DEFAULT_STYLE, first, other);
+    }
+
+    /**
+     * Converts strings to components
+     * <br>
+     * Example:
+     * <br>
+     * <code>convertStringsToComponents(null, "Hello", "Sir.", "PackmanDude");</code>
+     * <br>
+     * - will return list of components with text "Hello", "Sir." and "PackmanDude"
+     *
+     * @param style Style to be applied to all components
+     * @param first First string
+     * @param other Other strings
+     * @return List of components
+     */
+    public static @NotNull List<Component> convertStringsToComponents(
+            @Nullable Style style,
+            @NotNull String first,
+            String @NotNull ... other
+    ) {
+        String[] strings = new String[other.length + 1];
+        strings[0] = first;
+
+        System.arraycopy(other, 0, strings, 1, other.length);
+        return convertStringsToComponents(style, strings);
     }
 }

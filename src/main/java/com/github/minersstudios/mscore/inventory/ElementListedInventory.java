@@ -89,7 +89,7 @@ public class ElementListedInventory extends ListedInventory {
         }
 
         for (int slot : this.elementSlots) {
-            content.putIfAbsent(slot, new InventoryButton());
+            content.putIfAbsent(slot, null);
         }
         return content;
     }

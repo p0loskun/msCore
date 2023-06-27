@@ -119,6 +119,74 @@ public abstract class MSPlugin extends JavaPlugin {
         ChatUtils.sendFine("[" + this.getName() + "] Disabled in " + (System.currentTimeMillis() - time) + "ms");
     }
 
+    /**
+     * Same as {@link JavaPlugin#onLoad()}
+     *
+     * @see MSPlugin#onLoad()
+     */
+    public void load() {}
+
+    /**
+     * Same as {@link JavaPlugin#onEnable()}
+     *
+     * @see MSPlugin#onEnable()
+     */
+    public void enable() {}
+
+    /**
+     * Same as {@link JavaPlugin#onDisable()}
+     *
+     * @see MSPlugin#onDisable()
+     */
+    public void disable() {}
+
+    /**
+     * Gets the names of all plugin classes, similar to the package string
+     * <br>
+     * "com.example.Example"
+     *
+     * @return Plugin class names
+     */
+    public final @NotNull Set<String> getClassNames() {
+        return this.classNames;
+    }
+
+    /**
+     * @return Plugin config file "/config/minersstudios/PLUGIN_NAME/config.yml"
+     */
+    @Contract(pure = true)
+    public final @NotNull File getConfigFile() {
+        return this.configFile;
+    }
+
+    /**
+     * @return Plugin folder "/config/minersstudios/PLUGIN_NAME"
+     */
+    @Contract(pure = true)
+    public final @NotNull File getPluginFolder() {
+        return this.pluginFolder;
+    }
+
+    /**
+     * @param loadedCustoms True if the plugin has loaded the customs to the cache
+     */
+    public final void setLoadedCustoms(boolean loadedCustoms) {
+        this.loadedCustoms = loadedCustoms;
+    }
+
+    /**
+     * Used in :
+     * <br>msBlock({@link ConfigCache#customBlockMap})
+     * <br>msDecor({@link ConfigCache#customDecorMap})
+     * <br>msItem({@link ConfigCache#customItemMap})
+     *
+     * @return True if the plugin has loaded the customs to the cache
+     */
+    @Contract(pure = true)
+    public final boolean isLoadedCustoms() {
+        return this.loadedCustoms;
+    }
+
     @Override
     public @NotNull FileConfiguration getConfig() {
         if (this.newConfig == null) {
@@ -242,6 +310,42 @@ public abstract class MSPlugin extends JavaPlugin {
     }
 
     /**
+     * Loads all listeners annotated with {@link MSListener} the project
+     * <br>
+     * All listeners must be implemented using {@link Listener}
+     */
+    private void loadListeners() {
+        Logger logger = this.getLogger();
+        this.listeners = new HashSet<>();
+
+        this.classNames.stream().parallel().forEach(className -> {
+            try {
+                Class<?> clazz = this.getClassLoader().loadClass(className);
+
+                if (clazz.isAnnotationPresent(MSListener.class)) {
+                    if (clazz.getDeclaredConstructor().newInstance() instanceof Listener listener) {
+                        this.listeners.add(listener);
+                    } else {
+                        logger.log(Level.WARNING, "Registered listener that is not instance of Listener (" + className + ")");
+                    }
+                }
+            } catch (Exception e) {
+                logger.log(Level.SEVERE, "Failed to load listener", e);
+            }
+        });
+    }
+
+    /**
+     * Registers all listeners in the project that is annotated with {@link MSListener}
+     * <br>
+     * All listeners must be implemented using {@link Listener}
+     */
+    public void registerListeners() {
+        PluginManager pluginManager = this.getServer().getPluginManager();
+        this.listeners.forEach(listener -> pluginManager.registerEvents(listener, this));
+    }
+
+    /**
      * @param msCommand Command to be registered
      * @param executor  Command executor
      */
@@ -276,11 +380,11 @@ public abstract class MSPlugin extends JavaPlugin {
             pluginCommand.setDescription(description);
         }
 
-		if (!permissionStr.isEmpty()) {
-			PluginManager pluginManager = this.getServer().getPluginManager();
-			Map<String, Boolean> children = new HashMap<>();
-			String[] keys = msCommand.permissionParentKeys();
-			boolean[] values = msCommand.permissionParentValues();
+        if (!permissionStr.isEmpty()) {
+            PluginManager pluginManager = this.getServer().getPluginManager();
+            Map<String, Boolean> children = new HashMap<>();
+            String[] keys = msCommand.permissionParentKeys();
+            boolean[] values = msCommand.permissionParentValues();
 
             if (keys.length != values.length) {
                 throw new IllegalArgumentException("Permission and boolean array lengths do not match in command : " + name);
@@ -324,42 +428,6 @@ public abstract class MSPlugin extends JavaPlugin {
     }
 
     /**
-     * Loads all listeners annotated with {@link MSListener} the project
-     * <br>
-     * All listeners must be implemented using {@link Listener}
-     */
-    private void loadListeners() {
-        Logger logger = this.getLogger();
-        this.listeners = new HashSet<>();
-
-        this.classNames.stream().parallel().forEach(className -> {
-            try {
-                Class<?> clazz = this.getClassLoader().loadClass(className);
-
-                if (clazz.isAnnotationPresent(MSListener.class)) {
-                    if (clazz.getDeclaredConstructor().newInstance() instanceof Listener listener) {
-                        this.listeners.add(listener);
-                    } else {
-                        logger.log(Level.WARNING, "Registered listener that is not instance of Listener (" + className + ")");
-                    }
-                }
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, "Failed to load listener", e);
-            }
-        });
-    }
-
-    /**
-     * Registers all listeners in the project that is annotated with {@link MSListener}
-     * <br>
-     * All listeners must be implemented using {@link Listener}
-     */
-    public void registerListeners() {
-        PluginManager pluginManager = this.getServer().getPluginManager();
-        this.listeners.forEach(listener -> pluginManager.registerEvents(listener, this));
-    }
-
-    /**
      * Gathers the names of all plugin classes and converts them to the same string as the package
      * <br>
      * "com/example/Example.class" -> "com.example.Example"
@@ -374,73 +442,5 @@ public abstract class MSPlugin extends JavaPlugin {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    /**
-     * Gets the names of all plugin classes, similar to the package string
-     * <br>
-     * "com.example.Example"
-     *
-     * @return Plugin class names
-     */
-    public final @NotNull Set<String> getClassNames() {
-        return this.classNames;
-    }
-
-    /**
-     * Same as {@link JavaPlugin#onLoad()}
-     * 
-     * @see MSPlugin#onLoad()
-     */
-    public void load() {}
-
-    /**
-     * Same as {@link JavaPlugin#onEnable()}
-     * 
-     * @see MSPlugin#onEnable()
-     */
-    public void enable() {}
-
-    /**
-     * Same as {@link JavaPlugin#onDisable()}
-     * 
-     * @see MSPlugin#onDisable()
-     */
-    public void disable() {}
-
-    /**
-     * @return Plugin config file "/config/minersstudios/PLUGIN_NAME/config.yml"
-     */
-    @Contract(pure = true)
-    public final @NotNull File getConfigFile() {
-        return this.configFile;
-    }
-
-    /**
-     * @return Plugin folder "/config/minersstudios/PLUGIN_NAME"
-     */
-    @Contract(pure = true)
-    public final @NotNull File getPluginFolder() {
-        return this.pluginFolder;
-    }
-
-    /**
-     * Used in :
-     * <br>msBlock({@link ConfigCache#customBlockMap})
-     * <br>msDecor({@link ConfigCache#customDecorMap})
-     * <br>msItem({@link ConfigCache#customItemMap})
-     *
-     * @return True if the plugin has loaded the customs to the cache
-     */
-    @Contract(pure = true)
-    public final boolean isLoadedCustoms() {
-        return this.loadedCustoms;
-    }
-
-    /**
-     * @param loadedCustoms True if the plugin has loaded the customs to the cache
-     */
-    public final void setLoadedCustoms(boolean loadedCustoms) {
-        this.loadedCustoms = loadedCustoms;
     }
 }

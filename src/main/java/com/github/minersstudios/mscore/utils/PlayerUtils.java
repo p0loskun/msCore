@@ -4,6 +4,7 @@ import com.github.minersstudios.mscore.MSCore;
 import com.github.minersstudios.msutils.MSUtils;
 import com.google.common.base.Charsets;
 import com.mojang.authlib.GameProfile;
+import net.kyori.adventure.text.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -40,7 +41,7 @@ public final class PlayerUtils {
      * @param player player
      */
     public static void setSitting(@NotNull Player player) {
-        setSitting(player, player.getLocation());
+        setSitting(player, player.getLocation(), null);
     }
 
     /**
@@ -48,27 +49,49 @@ public final class PlayerUtils {
      *
      * @param player   Player
      * @param location Location where the player will sit
-     * @param args     Message
+     */
+    public static void setSitting(
+            @NotNull Player player,
+            @NotNull Location location
+    ) {
+        setSitting(player, location, null);
+    }
+
+    /**
+     * Sets player to a seated position in specified location with message
+     *
+     * @param player   Player
+     * @param location Location where the player will sit
+     * @param message  Message
      */
     public static void setSitting(
             @NotNull Player player,
             @NotNull Location location,
-            String @Nullable ... args
+            @Nullable Component message
     ) {
-        MSUtils.getConfigCache().playerInfoMap.getPlayerInfo(player).setSitting(location, args);
+        MSUtils.getConfigCache().playerInfoMap.getPlayerInfo(player).setSitting(location, message);
     }
 
     /**
      * Unsets the sitting position of the player
      *
-     * @param player Player who is currently sitting
-     * @param args   Message
+     * @param player  Player who is currently sitting
+     */
+    public static void unsetSitting(@NotNull Player player) {
+        unsetSitting(player, null);
+    }
+
+    /**
+     * Unsets the sitting position of the player with message
+     *
+     * @param player  Player who is currently sitting
+     * @param message Message
      */
     public static void unsetSitting(
             @NotNull Player player,
-            String @Nullable ... args
+            @Nullable Component message
     ) {
-        MSUtils.getConfigCache().playerInfoMap.getPlayerInfo(player).unsetSitting(args);
+        MSUtils.getConfigCache().playerInfoMap.getPlayerInfo(player).unsetSitting(message);
     }
 
     /**

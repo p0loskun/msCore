@@ -61,13 +61,6 @@ public class CustomInventory extends CraftInventoryCustom implements Inventory, 
     }
 
     /**
-     * @return True if this inventory has any buttons
-     */
-    public boolean hasButtons() {
-        return !this.buttons.isEmpty();
-    }
-
-    /**
      * Sets buttons in this inventory
      *
      * @param buttons Buttons to set
@@ -77,6 +70,21 @@ public class CustomInventory extends CraftInventoryCustom implements Inventory, 
         for (Map.Entry<Integer, InventoryButton> entry : buttons.entrySet()) {
             this.setButtonAt(entry.getKey(), entry.getValue());
         }
+    }
+
+    /**
+     * @return True if this inventory has any buttons
+     */
+    public boolean hasButtons() {
+        return !this.buttons.isEmpty();
+    }
+
+    /**
+     * @param slot Slot to get button from
+     * @return Button at specified slot or null if there is no button
+     */
+    public @Nullable InventoryButton getButtonAt(@Range(from = 0, to = LAST_SLOT) int slot) {
+        return this.buttons.getOrDefault(slot, null);
     }
 
     /**
@@ -95,15 +103,7 @@ public class CustomInventory extends CraftInventoryCustom implements Inventory, 
         }
 
         this.buttons.put(slot, button);
-        this.setItem(slot, button.getItem());
-    }
-
-    /**
-     * @param slot Slot to get button from
-     * @return Button at specified slot or null if there is no button
-     */
-    public @Nullable InventoryButton getButtonAt(@Range(from = 0, to = LAST_SLOT) int slot) {
-        return this.buttons.getOrDefault(slot, null);
+        this.setItem(slot, button.item());
     }
 
     /**
