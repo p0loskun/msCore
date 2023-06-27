@@ -1,9 +1,7 @@
 package com.github.minersstudios.mscore.utils;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
-import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -18,26 +16,28 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
+
+import static net.kyori.adventure.text.format.NamedTextColor.*;
+import static net.kyori.adventure.text.format.TextDecoration.*;
 
 @SuppressWarnings("unused")
 public final class ChatUtils {
-    private static final Logger LOGGER = Bukkit.getLogger();
+    private static final ConsoleCommandSender CONSOLE_SENDER = Bukkit.getConsoleSender();
 
     public static final Style DEFAULT_STYLE = Style.style(
-            NamedTextColor.WHITE,
-            TextDecoration.OBFUSCATED.withState(false),
-            TextDecoration.BOLD.withState(false),
-            TextDecoration.ITALIC.withState(false),
-            TextDecoration.STRIKETHROUGH.withState(false),
-            TextDecoration.UNDERLINED.withState(false)
+            WHITE,
+            OBFUSCATED.withState(false),
+            BOLD.withState(false),
+            ITALIC.withState(false),
+            STRIKETHROUGH.withState(false),
+            UNDERLINED.withState(false)
     );
     public static final Style COLORLESS_DEFAULT_STYLE = Style.style(
-            TextDecoration.OBFUSCATED.withState(false),
-            TextDecoration.BOLD.withState(false),
-            TextDecoration.ITALIC.withState(false),
-            TextDecoration.STRIKETHROUGH.withState(false),
-            TextDecoration.UNDERLINED.withState(false)
+            OBFUSCATED.withState(false),
+            BOLD.withState(false),
+            ITALIC.withState(false),
+            STRIKETHROUGH.withState(false),
+            UNDERLINED.withState(false)
     );
 
     @Contract(value = " -> fail")
@@ -63,7 +63,7 @@ public final class ChatUtils {
         ) {
             sender.sendMessage(Component.text(" ").append(message));
         } else {
-            LOGGER.info(serializeLegacyComponent(message));
+            CONSOLE_SENDER.sendMessage(message);
         }
     }
 
@@ -109,15 +109,17 @@ public final class ChatUtils {
             @Nullable Object target,
             @NotNull Component message
     ) {
+        Component coloredMessage = message.color(GREEN);
+
         if (target instanceof Player player) {
-            player.sendMessage(Badges.GREEN_EXCLAMATION_MARK.append(message.color(NamedTextColor.GREEN)));
+            player.sendMessage(Badges.GREEN_EXCLAMATION_MARK.append(coloredMessage));
         } else if (
                 target instanceof CommandSender sender
                 && !(sender instanceof ConsoleCommandSender)
         ) {
-            sender.sendMessage(message.color(NamedTextColor.GREEN));
+            sender.sendMessage(coloredMessage);
         } else {
-            LOGGER.info(serializeLegacyComponent(message.color(NamedTextColor.GREEN)));
+            CONSOLE_SENDER.sendMessage(coloredMessage);
         }
     }
 
@@ -162,15 +164,17 @@ public final class ChatUtils {
             @Nullable Object target,
             @NotNull Component message
     ) {
+        Component coloredMessage = message.color(GOLD);
+
         if (target instanceof Player player) {
-            player.sendMessage(Badges.YELLOW_EXCLAMATION_MARK.append(message.color(NamedTextColor.GOLD)));
+            player.sendMessage(Badges.YELLOW_EXCLAMATION_MARK.append(coloredMessage));
         } else if (
                 target instanceof CommandSender sender
                 && !(sender instanceof ConsoleCommandSender)
         ) {
-            sender.sendMessage(message.color(NamedTextColor.GOLD));
+            sender.sendMessage(coloredMessage);
         } else {
-            LOGGER.warning(serializeLegacyComponent(message.color(NamedTextColor.GOLD)));
+            CONSOLE_SENDER.sendMessage(coloredMessage);
         }
     }
 
@@ -215,15 +219,17 @@ public final class ChatUtils {
             @Nullable Object target,
             @NotNull Component message
     ) {
+        Component coloredMessage = message.color(RED);
+
         if (target instanceof Player player) {
-            player.sendMessage(Badges.RED_EXCLAMATION_MARK.append(message.color(NamedTextColor.RED)));
+            player.sendMessage(Badges.RED_EXCLAMATION_MARK.append(coloredMessage));
         } else if (
                 target instanceof CommandSender sender
                 && !(sender instanceof ConsoleCommandSender)
         ) {
-            sender.sendMessage(message.color(NamedTextColor.RED));
+            sender.sendMessage(coloredMessage);
         } else {
-            LOGGER.severe(serializeLegacyComponent(message.color(NamedTextColor.RED)));
+            CONSOLE_SENDER.sendMessage(coloredMessage);
         }
     }
 

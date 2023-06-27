@@ -5,6 +5,7 @@ import com.github.minersstudios.mscore.command.MSCommand;
 import com.github.minersstudios.mscore.command.MSCommandExecutor;
 import com.github.minersstudios.mscore.config.ConfigCache;
 import com.github.minersstudios.mscore.listener.MSListener;
+import com.github.minersstudios.mscore.utils.ChatUtils;
 import com.google.common.base.Charsets;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
@@ -100,7 +101,7 @@ public abstract class MSPlugin extends JavaPlugin {
         this.registerCommands();
         this.registerListeners();
         this.enable();
-        this.getLogger().log(Level.INFO, "\033[0;92mEnabled in " + (System.currentTimeMillis() - time) + "ms");
+        ChatUtils.sendFine("[" + this.getName() + "] Enabled in " + (System.currentTimeMillis() - time) + "ms");
     }
 
     /**
@@ -115,7 +116,7 @@ public abstract class MSPlugin extends JavaPlugin {
         long time = System.currentTimeMillis();
 
         this.disable();
-        this.getLogger().log(Level.INFO, "\033[0;92mDisabled in " + (System.currentTimeMillis() - time) + "ms");
+        ChatUtils.sendFine("[" + this.getName() + "] Disabled in " + (System.currentTimeMillis() - time) + "ms");
     }
 
     @Override
