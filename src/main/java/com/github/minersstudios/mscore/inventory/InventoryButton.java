@@ -32,26 +32,6 @@ public class InventoryButton {
     }
 
     /**
-     * Gets player who clicked the button
-     *
-     * @return Player who clicked the button
-     */
-    public @Nullable Player whoClicked() {
-        return this.whoClicked;
-    }
-
-    /**
-     * Sets player who clicked the button
-     *
-     * @param whoClicked New player
-     * @return This instance
-     */
-    public @NotNull InventoryButton whoClicked(@Nullable Player whoClicked) {
-        this.whoClicked = whoClicked;
-        return this;
-    }
-
-    /**
      * Gets item to be displayed on button
      *
      * @return Item to be displayed on button
