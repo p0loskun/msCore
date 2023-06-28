@@ -52,7 +52,7 @@ public class MSCoreCommandHandler implements MSCommandExecutor {
             @NotNull String label,
             String @NotNull ... args
     ) {
-        return args.length == 0 ? List.of("reloadlanguage", "reloadconfig") : new ArrayList<>();
+        return args.length == 1 ? List.of("reloadlanguage", "reloadconfig") : new ArrayList<>();
     }
 
     @Override

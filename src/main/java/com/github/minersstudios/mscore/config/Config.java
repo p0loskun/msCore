@@ -16,7 +16,5 @@ public class Config {
         this.timeFormatter = DateTimeFormatter.ofPattern(yamlConfiguration.getString("date-format", "EEE, yyyy-MM-dd HH:mm z"));
         this.languageCode = yamlConfiguration.getString("language.code", "ru_ru");
         this.languageUrl = yamlConfiguration.getString("language.url", "https://github.com/MinersStudios/msTranslations/raw/release/lang/");
-
-        LanguageFile.loadLanguage(this.languageUrl, this.languageCode);
     }
 }

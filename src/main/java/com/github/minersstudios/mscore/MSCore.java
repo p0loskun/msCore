@@ -14,6 +14,9 @@ public final class MSCore extends MSPlugin {
     public void enable() {
         instance = this;
         cache = new Cache();
+        Config config = cache.config;
+
+        LanguageFile.loadLanguage(config.languageUrl, config.languageCode);
     }
 
     @Override
