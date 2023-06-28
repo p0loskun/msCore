@@ -125,7 +125,7 @@ public final class PlayerUtils {
      * @return Player UUID
      */
     public static @Nullable UUID getUUID(@NotNull String nickname) {
-        Map<String, UUID> map = MSCore.getConfigCache().playerUUIDs;
+        Map<String, UUID> map = MSCore.getCache().playerUUIDs;
         UUID uuid = map.get(nickname);
 
         if (uuid != null) return uuid;

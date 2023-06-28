@@ -67,7 +67,7 @@ public final class MSBlockUtils {
      * @throws MSCustomNotFoundException If {@link CustomBlockData} is not found
      */
     public static @NotNull CustomBlockData getCustomBlockData(@NotNull String key) throws MSCustomNotFoundException {
-        CustomBlockData customBlockData = MSCore.getConfigCache().customBlockMap.getByPrimaryKey(key);
+        CustomBlockData customBlockData = MSCore.getCache().customBlockMap.getByPrimaryKey(key);
         if (customBlockData == null) {
             throw new MSCustomNotFoundException("Custom block is not found : " + key);
         }

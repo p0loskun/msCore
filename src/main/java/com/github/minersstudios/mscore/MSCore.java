@@ -1,30 +1,34 @@
 package com.github.minersstudios.mscore;
 
-import com.github.minersstudios.mscore.config.ConfigCache;
+import com.github.minersstudios.mscore.config.Config;
+import com.github.minersstudios.mscore.config.LanguageFile;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("unused")
 public final class MSCore extends MSPlugin {
     private static MSCore instance;
-    private static ConfigCache configCache;
+    private static Cache cache;
 
     @Override
     public void enable() {
         instance = this;
-
-        this.reloadConfigs();
+        cache = new Cache();
     }
 
-    public void reloadConfigs() {
-        this.saveDefaultConfig();
-        this.reloadConfig();
-        configCache = new ConfigCache(this.getConfigFile());
+    @Override
+    public void disable() {
+        LanguageFile.unloadLanguage();
     }
 
     @Contract(pure = true)
-    public static @NotNull ConfigCache getConfigCache() {
-        return configCache;
+    public static @NotNull Cache getCache() {
+        return cache;
+    }
+
+    @Contract(pure = true)
+    public static @NotNull Config getConfiguration() {
+        return cache.config;
     }
 
     @Contract(pure = true)

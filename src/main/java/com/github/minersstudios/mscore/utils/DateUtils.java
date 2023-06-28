@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-import static com.github.minersstudios.mscore.MSCore.getConfigCache;
+import static com.github.minersstudios.mscore.MSCore.getConfiguration;
 
 @SuppressWarnings("unused")
 public final class DateUtils {
@@ -48,7 +48,7 @@ public final class DateUtils {
             @Nullable InetAddress address
     ) {
         if (address == null) {
-            return date.atZone(DEFAULT_ZONE_ID).format(getConfigCache().timeFormatter);
+            return date.atZone(DEFAULT_ZONE_ID).format(getConfiguration().timeFormatter);
         }
 
         String timeZone = getTimezone(address);
@@ -56,7 +56,7 @@ public final class DateUtils {
                 ZoneId.of(timeZone.equalsIgnoreCase("Europe/Kyiv")
                         ? "Europe/Kiev"
                         : timeZone
-                )).format(getConfigCache().timeFormatter);
+                )).format(getConfiguration().timeFormatter);
     }
 
     /**

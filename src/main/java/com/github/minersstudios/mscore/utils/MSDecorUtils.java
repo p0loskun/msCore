@@ -166,7 +166,7 @@ public final class MSDecorUtils {
      * @throws MSCustomNotFoundException If {@link CustomDecorData} is not found
      */
     public static @NotNull CustomDecorData getCustomDecorData(@NotNull String key) throws MSCustomNotFoundException {
-        CustomDecorData customDecorData = MSCore.getConfigCache().customDecorMap.getByPrimaryKey(key);
+        CustomDecorData customDecorData = MSCore.getCache().customDecorMap.getByPrimaryKey(key);
         if (customDecorData == null) {
             throw new MSCustomNotFoundException("Custom decor is not found : " + key);
         }

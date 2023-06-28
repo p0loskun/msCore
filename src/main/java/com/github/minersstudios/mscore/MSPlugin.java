@@ -3,7 +3,6 @@ package com.github.minersstudios.mscore;
 import com.github.minersstudios.mscore.command.Commodore;
 import com.github.minersstudios.mscore.command.MSCommand;
 import com.github.minersstudios.mscore.command.MSCommandExecutor;
-import com.github.minersstudios.mscore.config.ConfigCache;
 import com.github.minersstudios.mscore.listener.MSListener;
 import com.github.minersstudios.mscore.utils.ChatUtils;
 import com.google.common.base.Charsets;
@@ -176,9 +175,9 @@ public abstract class MSPlugin extends JavaPlugin {
 
     /**
      * Used in :
-     * <br>msBlock({@link ConfigCache#customBlockMap})
-     * <br>msDecor({@link ConfigCache#customDecorMap})
-     * <br>msItem({@link ConfigCache#customItemMap})
+     * <br>msBlock({@link Cache#customBlockMap})
+     * <br>msDecor({@link Cache#customDecorMap})
+     * <br>msItem({@link Cache#customItemMap})
      *
      * @return True if the plugin has loaded the customs to the cache
      */

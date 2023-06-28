@@ -79,7 +79,7 @@ public final class MSItemUtils {
      * @throws MSCustomNotFoundException If {@link CustomItem} is not found
      */
     public static @NotNull CustomItem getCustomItem(@NotNull String key) throws MSCustomNotFoundException {
-        CustomItem customItem = MSCore.getConfigCache().customItemMap.getByPrimaryKey(key);
+        CustomItem customItem = MSCore.getCache().customItemMap.getByPrimaryKey(key);
         if (customItem == null) {
             throw new MSCustomNotFoundException("Custom item is not found : " + key);
         }

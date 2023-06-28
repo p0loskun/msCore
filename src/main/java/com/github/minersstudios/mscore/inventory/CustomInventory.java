@@ -253,11 +253,16 @@ public class CustomInventory extends CraftInventoryCustom implements Inventory, 
         }
     }
 
-    public boolean validateSlot(int slot) {
+    /**
+     * Checks if slot is in inventory bounds
+     *
+     * @param slot Slot to validate
+     * @throws IllegalArgumentException If slot is out of inventory size
+     */
+    public void validateSlot(int slot) throws IllegalArgumentException {
         if (slot < 0 || slot >= this.getSize()) {
             throw new IllegalArgumentException("Slot must be between 0 and " + (this.getSize() - 1));
         }
-        return true;
     }
 
     /**
