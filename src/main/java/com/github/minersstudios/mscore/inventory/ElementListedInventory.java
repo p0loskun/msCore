@@ -2,6 +2,7 @@ package com.github.minersstudios.mscore.inventory;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,7 +26,7 @@ public class ElementListedInventory extends ListedInventory {
      * @param elementSlots Slots of the elements in the inventory
      */
     protected ElementListedInventory(
-            @NotNull String title,
+            @NotNull Component title,
             @Range(from = 1, to = 6) int verticalSize,
             int @Range(from = 0, to = Integer.MAX_VALUE) [] elementSlots
     ) {
@@ -44,7 +45,7 @@ public class ElementListedInventory extends ListedInventory {
      */
     @Contract("_, _, _ -> new")
     public static @NotNull ElementListedInventory create(
-            @NotNull String title,
+            @NotNull Component title,
             @Range(from = 1, to = 6) int verticalSize,
             int @Range(from = 0, to = Integer.MAX_VALUE) [] elementSlots
     ) {

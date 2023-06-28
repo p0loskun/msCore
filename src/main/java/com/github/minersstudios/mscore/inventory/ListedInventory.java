@@ -1,5 +1,6 @@
 package com.github.minersstudios.mscore.inventory;
 
+import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
@@ -21,7 +22,7 @@ public class ListedInventory extends CustomInventory {
      * @param verticalSize Vertical size of the inventory
      */
     protected ListedInventory(
-            @NotNull String title,
+            @NotNull Component title,
             @Range(from = 1, to = 6) int verticalSize
     ) {
         super(title, verticalSize);
@@ -35,7 +36,7 @@ public class ListedInventory extends CustomInventory {
      * @return New listed inventory
      */
     public static @NotNull ListedInventory create(
-            @NotNull String title,
+            @NotNull Component title,
             @Range(from = 1, to = 6) int verticalSize
     ) {
         return new ListedInventory(title, verticalSize);

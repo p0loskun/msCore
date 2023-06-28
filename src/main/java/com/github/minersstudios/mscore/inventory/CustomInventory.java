@@ -1,7 +1,7 @@
 package com.github.minersstudios.mscore.inventory;
 
 import com.github.minersstudios.mscore.inventory.actions.InventoryAction;
-import com.github.minersstudios.mscore.utils.ChatUtils;
+import net.kyori.adventure.text.Component;
 import net.minecraft.world.Container;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftInventory;
@@ -46,10 +46,10 @@ public class CustomInventory extends CraftInventoryCustom implements Inventory, 
      * @param verticalSize Vertical size of the inventory
      */
     protected CustomInventory(
-            @NotNull String title,
+            @NotNull Component title,
             @Range(from = 1, to = 6) int verticalSize
     ) {
-        super(null, verticalSize * 9, ChatUtils.createDefaultStyledText(title));
+        super(null, verticalSize * 9, title);
         this.size = verticalSize * 9;
         this.buttons = new HashMap<>(this.size);
     }
@@ -63,7 +63,7 @@ public class CustomInventory extends CraftInventoryCustom implements Inventory, 
      */
     @Contract("_, _ -> new")
     public static @NotNull CustomInventory create(
-            @NotNull String title,
+            @NotNull Component title,
             @Range(from = 1, to = 6) int verticalSize
     ) {
         return new CustomInventory(title, verticalSize);
