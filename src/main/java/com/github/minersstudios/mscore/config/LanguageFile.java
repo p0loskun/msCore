@@ -28,7 +28,7 @@ public class LanguageFile {
     /**
      * Registry for {@link GlobalTranslator}
      */
-    public static final TranslationRegistry REGISTRY = TranslationRegistry.create(Key.key("ms"));
+    public static TranslationRegistry registry = TranslationRegistry.create(Key.key("ms"));
 
     private LanguageFile(
             @NotNull String sourceUrl,
@@ -57,18 +57,19 @@ public class LanguageFile {
 
         Locale locale = Locale.US;
         languageFile.translations.entrySet().forEach(
-                entry -> REGISTRY.register(entry.getKey(), locale, new MessageFormat(entry.getValue().getAsString()))
+                entry -> registry.register(entry.getKey(), locale, new MessageFormat(entry.getValue().getAsString()))
         );
-        GlobalTranslator.translator().addSource(REGISTRY);
+        GlobalTranslator.translator().addSource(registry);
 
         ChatUtils.sendFine("Loaded language file: " + languageFile.file.getName() + " in " + (System.currentTimeMillis() - time) + "ms");
     }
 
     /**
-     * Unloads all languages registered in {@link #REGISTRY} from {@link GlobalTranslator}
+     * Unloads all languages registered in {@link #registry} from {@link GlobalTranslator}
      */
     public static void unloadLanguage() {
-        GlobalTranslator.translator().removeSource(REGISTRY);
+        GlobalTranslator.translator().removeSource(registry);
+        registry = TranslationRegistry.create(Key.key("ms"));
     }
 
     /**
