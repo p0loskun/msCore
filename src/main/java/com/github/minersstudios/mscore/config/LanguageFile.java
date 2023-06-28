@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationRegistry;
 import org.jetbrains.annotations.NotNull;
@@ -19,6 +20,7 @@ import java.nio.file.StandardCopyOption;
 import java.text.MessageFormat;
 import java.util.Locale;
 
+@SuppressWarnings("unused")
 public class LanguageFile {
     private final String sourceUrl;
     private final String languageCode;
@@ -83,6 +85,29 @@ public class LanguageFile {
 
         unloadLanguage();
         loadLanguage(config.languageUrl, config.languageCode);
+    }
+
+    /**
+     * Renders translated component to {@link Component}
+     * <br>
+     * Uses {@link GlobalTranslator}
+     *
+     * @param key Translation key
+     * @return Translated component
+     */
+    public static @NotNull Component renderTranslationComponent(@NotNull String key) {
+        return GlobalTranslator.render(Component.translatable(key), Locale.US);
+    }
+
+    /**
+     * Renders translated component to legacy string
+     *
+     * @param key Translation key
+     * @return Translated string
+     * @see #renderTranslationComponent(String)
+     */
+    public static @NotNull String renderTranslation(@NotNull String key) {
+        return ChatUtils.serializeLegacyComponent(renderTranslationComponent(key));
     }
 
     /**
