@@ -8,6 +8,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TranslatableComponent;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationRegistry;
 import org.jetbrains.annotations.NotNull;
@@ -27,10 +28,7 @@ public class LanguageFile {
     private final JsonObject translations;
     private File file;
 
-    /**
-     * Registry for {@link GlobalTranslator}
-     */
-    public static TranslationRegistry registry = TranslationRegistry.create(Key.key("ms"));
+    private static TranslationRegistry registry = TranslationRegistry.create(Key.key("ms"));
 
     private LanguageFile(
             @NotNull String sourceUrl,
@@ -88,26 +86,33 @@ public class LanguageFile {
     }
 
     /**
-     * Renders translated component to {@link Component}
+     * Renders the translation from {@link #registry} as {@link TranslatableComponent}
      * <br>
-     * Uses {@link GlobalTranslator}
+     * <br>
+     * <b>NOTE:</b> Use only for custom translations loaded from the language file
+     * <br>
+     * <b>NOTE:</b> Usually used for item names and lore, because they are renders it's without fallback
      *
      * @param key Translation key
-     * @return Translated component
+     * @return TranslatableComponent with translation from {@link #registry} or key if translation is not found
+     * @see #renderTranslation(String)
      */
     public static @NotNull Component renderTranslationComponent(@NotNull String key) {
-        return GlobalTranslator.render(Component.translatable(key), Locale.US);
+        return Component.translatable(key, renderTranslation(key));
     }
 
     /**
-     * Renders translated component to legacy string
+     * Renders the translation from {@link #registry} as {@link String}
+     * <br>
+     * <br>
+     * <b>NOTE:</b> Use only for custom translations loaded from the language file
      *
      * @param key Translation key
-     * @return Translated string
-     * @see #renderTranslationComponent(String)
+     * @return Translated string or key if translation is not found
      */
     public static @NotNull String renderTranslation(@NotNull String key) {
-        return ChatUtils.serializeLegacyComponent(renderTranslationComponent(key));
+        MessageFormat format = registry.translate(key, Locale.US);
+        return format == null ? key : format.toPattern();
     }
 
     /**
